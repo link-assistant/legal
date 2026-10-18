@@ -370,6 +370,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Generate pinned Formal AI dependency (Deno)
+        if: matrix.runtime == 'deno'
+        shell: bash
+        run: deno run -A scripts/bootstrap-formal-ai.mjs
+
       - name: Run tests (Deno)
         if: matrix.runtime == 'deno'
         shell: bash
@@ -430,6 +435,12 @@ jobs:
           # the rest of the pipeline reads.
           cache-from: type=gha,scope=docker-image
           cache-to: type=gha,mode=max,scope=docker-image
+
+      - name: Smoke test legal API container
+        if: steps.docker_config.outputs.enabled == 'true'
+        env:
+          SMOKE_IMAGE: pr-check:${{ github.sha }}
+        run: node experiments/docker-smoke.mjs "$SMOKE_IMAGE"
 
   # === DOCUMENTATION VALIDATION ===
   # Validate documentation files when docs change (hive-mind principle #12)

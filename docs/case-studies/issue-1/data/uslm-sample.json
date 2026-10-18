@@ -1,0 +1,19 @@
+{
+  "entry": {
+    "id": "us-code:xml_usc01@119-121.zip",
+    "sourceId": "us-code",
+    "title": "[XML]",
+    "url": "https://uscode.house.gov/download/releasepoints/us/pl/119/121/xml_usc01@119-121.zip",
+    "language": "en",
+    "format": "zip"
+  },
+  "url": "https://uscode.house.gov/download/releasepoints/us/pl/119/121/xml_usc01@119-121.zip",
+  "rawHash": "8fddb1a187fb36ece41c3077b6d070c4a1090a6ee282cef078a4a75303963e1e",
+  "retrievedAt": "2026-10-18T16:07:45.198Z",
+  "rawBytes": 42240,
+  "records": 40,
+  "context": 1,
+  "firstId": "us-code:xml_usc01@119-121.zip:usc01.xml:/us/usc/t1/s1",
+  "lastId": "us-code:xml_usc01@119-121.zip:usc01.xml:context",
+  "previousParserRecords": 39
+}

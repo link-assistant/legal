@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'test-anywhere';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { itUnless, noPosixShell, sandboxed } from './helpers/skip.js';
+import { runInNewContext } from 'node:vm';
 
 const exampleRoot = 'examples/universal-app';
 const packageJsonPath = `${exampleRoot}/package.json`;
@@ -18,6 +23,51 @@ function readJson(filePath) {
 }
 
 describe('universal React example app', () => {
+  itUnless(noPosixShell, sandboxed)(
+    'fails preview drift detection when Git cannot inspect the worktree',
+    () => {
+      const workflow = readText(workflowPath);
+      const script = workflow
+        .match(
+          / {6}- name: Detect drift\n[\s\S]*? {8}run: \|\n([\s\S]*?)\n {6}- name:/
+        )[1]
+        .split('\n')
+        .map((line) => line.slice(10))
+        .join('\n');
+      const root = mkdtempSync(join(tmpdir(), 'preview-drift-'));
+      try {
+        let failed = false;
+        try {
+          execFileSync('bash', ['-e', '-c', script], {
+            cwd: root,
+            stdio: 'pipe',
+            env: { ...process.env, GITHUB_OUTPUT: join(root, 'outputs') },
+          });
+        } catch {
+          failed = true;
+        }
+        expect(failed).toBe(true);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+  );
+  it('deploys branch demos without enabling the main preview writer', () => {
+    const workflow = readText(workflowPath);
+    const preview = workflow.slice(workflow.indexOf('  preview-regen:'));
+    const condition = preview.match(/ {4}if: \|\n((?: {6}.+\n)+)/)[1].trim();
+    const enabled = (event, ref, deploy) =>
+      runInNewContext(condition, {
+        github: { event_name: event, ref },
+        inputs: { deploy_pages: deploy },
+      });
+    expect(
+      enabled('workflow_dispatch', 'refs/heads/issue-1-c88ef43ecd12', true)
+    ).toBe(false);
+    expect(enabled('workflow_dispatch', 'refs/heads/main', false)).toBe(true);
+    expect(enabled('push', 'refs/heads/main', false)).toBe(true);
+    expect(enabled('pull_request', 'refs/pull/2/merge', false)).toBe(false);
+  });
   it('defines the expected app package and build targets', () => {
     expect(existsSync(packageJsonPath)).toBe(true);
 
@@ -48,7 +98,7 @@ describe('universal React example app', () => {
   it('renders a visual UI using the package add and multiply functions', () => {
     const appSource = readText(appSourcePath);
 
-    expect(appSource).toContain("from '../../../src/index.js'");
+    expect(appSource).toContain("from '../../../src/arithmetic.js'");
     expect(appSource).toContain('add(parsedLeft, parsedRight)');
     expect(appSource).toContain('multiply(parsedLeft, parsedRight)');
     expect(appSource).toContain('Addition');
@@ -120,7 +170,9 @@ describe('universal React example app', () => {
       /image: mcr\.microsoft\.com\/playwright@sha256:[0-9a-f]{64} # v1\.59\.1-noble/
     );
     expect(workflow).toContain('browser-commander');
-    expect(workflow).not.toContain('npx playwright install');
+    expect(workflow.slice(workflow.indexOf('  preview-regen:'))).not.toContain(
+      'npx playwright install'
+    );
     expect(workflow).toContain('node scripts/update-preview-images.mjs');
     expect(workflow).toContain(
       'git commit -m "chore(preview): regenerate example-app preview images"'

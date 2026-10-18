@@ -1,0 +1,30 @@
+{
+  "discoveredAt": "2026-10-18T16:38:00Z",
+  "officialMigrationNotice": "https://www.indiacode.nic.in/",
+  "announcedDestination": "https://indiacode.gov.in/",
+  "limits": "The notice establishes a new official origin. No new catalog schema or law body was verified: both robots-first probes stopped before requesting content.",
+  "probes": [
+    {
+      "id": "in-code-migrated",
+      "url": "https://indiacode.gov.in/",
+      "origin": "https://indiacode.gov.in",
+      "allowedOrigins": [],
+      "attemptedAt": "2026-10-18T16:38:34.499Z",
+      "status": "stopped",
+      "error": "HTTP 500: https://indiacode.gov.in/robots.txt",
+      "cause": null,
+      "policies": []
+    },
+    {
+      "id": "in-mea-constitution",
+      "url": "https://www.mea.gov.in/constitution-of-india.htm",
+      "origin": "https://www.mea.gov.in",
+      "allowedOrigins": [],
+      "attemptedAt": "2026-10-18T16:38:35.419Z",
+      "status": "stopped",
+      "error": "HTTP 403: https://www.mea.gov.in/robots.txt",
+      "cause": null,
+      "policies": []
+    }
+  ]
+}

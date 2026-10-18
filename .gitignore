@@ -5,6 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+# Compressed, reviewed evidence for the issue case study.
+!docs/case-studies/issue-1/data/logs/
+!docs/case-studies/issue-1/data/logs/*.gz
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -141,3 +144,12 @@ vite.config.ts.timestamp-*
 
 # jscpd reports
 reports/
+
+# Generated, hash-verified upstream code; only the pin and patch are committed.
+src/generated/
+# Temporary full collections and local tool logs.
+collections/
+ci-logs/
+experiments/official/
+playwright-report/
+test-results/

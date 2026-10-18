@@ -1,0 +1,83 @@
+[
+  {
+    "id": "in-constitution-2025-en",
+    "url": "https://www.legislative.gov.in/static/uploads/2025/12/f6ffd68fdbc63bef89c65e9963c6a1b5.pdf",
+    "origin": "https://www.legislative.gov.in",
+    "allowedOrigins": [
+      "https://legislative.gov.in"
+    ],
+    "attemptedAt": "2026-10-18T16:27:44.853Z",
+    "status": "stopped",
+    "error": "HTTP 403: https://www.legislative.gov.in/robots.txt",
+    "policies": []
+  },
+  {
+    "id": "ru-minjust-constitution",
+    "url": "https://www.minjust.gov.ru/ru/documents/8011/",
+    "origin": "https://www.minjust.gov.ru",
+    "allowedOrigins": [
+      "https://minjust.gov.ru"
+    ],
+    "attemptedAt": "2026-10-18T16:27:45.207Z",
+    "status": "stopped",
+    "error": "fetch failed",
+    "policies": [],
+    "transportReproduction": {
+      "name": "TypeError",
+      "message": "fetch failed",
+      "cause": {
+        "name": "Error",
+        "message": "read ECONNRESET",
+        "code": "ECONNRESET"
+      }
+    }
+  },
+  {
+    "id": "in-knowindia-constitution",
+    "url": "https://knowindia.india.gov.in/profile/the-union/constitution-of-india.php",
+    "origin": "https://knowindia.india.gov.in",
+    "allowedOrigins": [],
+    "attemptedAt": "2026-10-18T17:40:21.209Z",
+    "status": "stopped",
+    "error": "fetch failed",
+    "cause": {
+      "code": "ENOTFOUND",
+      "message": "getaddrinfo ENOTFOUND knowindia.india.gov.in"
+    },
+    "policies": [],
+    "browserPolicyCheck": {
+      "content": [
+        {
+          "type": "text",
+          "text": "### Error\nError: browserBackend.callTool: net::ERR_NAME_NOT_RESOLVED at https://knowindia.india.gov.in/robots.txt\nCall log:\n  - navigating to \"https://knowindia.india.gov.in/robots.txt\", waiting until \"domcontentloaded\"\n"
+        }
+      ],
+      "isError": true
+    },
+    "lawBodyRequested": false
+  },
+  {
+    "id": "ru-presidential-constitution",
+    "url": "https://constitution.kremlin.ru/",
+    "origin": "https://constitution.kremlin.ru",
+    "allowedOrigins": [],
+    "attemptedAt": "2026-10-18T17:40:21.597Z",
+    "status": "stopped",
+    "error": "fetch failed",
+    "cause": {
+      "code": "UND_ERR_CONNECT_TIMEOUT",
+      "message": "Connect Timeout Error (attempted address: constitution.kremlin.ru:443, timeout: 10000ms)"
+    },
+    "policies": [],
+    "browserPolicyCheck": {
+      "content": [
+        {
+          "type": "text",
+          "text": "### Error\nTimeoutError: browserBackend.callTool: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://constitution.kremlin.ru/robots.txt\", waiting until \"domcontentloaded\"\n"
+        }
+      ],
+      "isError": true
+    },
+    "lawBodyRequested": false
+  }
+]

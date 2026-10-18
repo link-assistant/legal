@@ -1,0 +1,10 @@
+node_modules
+.git
+collections
+ci-logs
+experiments/official
+dist
+reports
+test-results
+playwright-report
+src/generated

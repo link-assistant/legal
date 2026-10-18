@@ -16,6 +16,7 @@ import { delimiter, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { describe, it, expect } from 'test-anywhere';
 import { itUnless, sandboxed } from './helpers/skip.js';
+import { pendingReleasePlan } from './helpers/pending-release.js';
 
 const config = JSON.parse(readFileSync('.changeset/config.json', 'utf8'));
 const execFileAsync = promisify(execFile);
@@ -33,6 +34,20 @@ function createPrettierBins(dependencies) {
     '@echo off\r\nnode "%~dp0..\\prettier\\bin\\prettier.cjs" %*\r\n'
   );
 }
+
+itUnless(sandboxed)(
+  'assembles the real pending release plan without a local main branch',
+  async () => {
+    const { plan, pkg, fragments } = await pendingReleasePlan();
+    expect(plan.changesets.map((fragment) => fragment.id).sort()).toEqual(
+      fragments.map((name) => name.slice(0, -3)).sort()
+    );
+    expect(plan.releases.length).toBe(fragments.length ? 1 : 0);
+    expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
+      true
+    );
+  }
+);
 
 describe('Changesets release formatter', () => {
   it('uses the same formatter as the project formatting check', () => {

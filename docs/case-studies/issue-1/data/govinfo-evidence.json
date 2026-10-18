@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://www.govinfo.gov/robots.txt",
+    "path": "govinfo-robots.txt.gz",
+    "bytes": 5092,
+    "sha256": "44c5698f1245cef059b8722b6108a87a128c61dbf4c25fbe11402952b805309c",
+    "acquiredAt": "2026-10-18T15:27:34.246Z",
+    "timestampBasis": "local acquisition file modification time"
+  },
+  {
+    "url": "https://www.govinfo.gov/bulkdata/CFR",
+    "path": "govinfo-cfr-catalog.html.gz",
+    "bytes": 34303,
+    "sha256": "267f7dd4dc65d7a6ea9a34fcc4bb38851fe483af116adb54f14f398f6cd8a7ed",
+    "acquiredAt": "2026-10-18T15:27:34.543Z",
+    "timestampBasis": "local acquisition file modification time"
+  },
+  {
+    "url": "https://www.govinfo.gov/bulkdata/CFR/2026",
+    "path": "govinfo-cfr-year.html.gz",
+    "bytes": 28471,
+    "sha256": "92299b7ee0243daba9f22a118f124b23eb72d9bf4f0624506a1b17a185c486b3",
+    "acquiredAt": "2026-10-18T15:27:34.888Z",
+    "timestampBasis": "local acquisition file modification time"
+  },
+  {
+    "url": "https://www.govinfo.gov/bulkdata/CFR/2026/title-16",
+    "path": "govinfo-cfr-title.html.gz",
+    "bytes": 26011,
+    "sha256": "10f03b206129d3f457ef37bcae6cb75a3ea38b85b7ea57fcb7865432892a5852",
+    "acquiredAt": "2026-10-18T15:27:35.161Z",
+    "timestampBasis": "local acquisition file modification time"
+  },
+  {
+    "url": "https://www.govinfo.gov/bulkdata/CFR/2025/title-1/CFR-2025-title1-vol1.xml",
+    "path": "govinfo-cfr-sample.xml.gz",
+    "bytes": 814725,
+    "sha256": "443032797d95acd1d1f338e5f6252544b97ec35bd12e6fc0979d3773f9913595",
+    "acquiredAt": "2026-10-18T15:27:35.665Z",
+    "timestampBasis": "local acquisition file modification time"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "checkedOn": "2026-10-18",
+  "scope": "Two bounded official parliament publication alternatives; policy retrieval only, no PDFs requested or redistributed. Indexed text is not an ingested law.",
+  "sources": [
+    {
+      "id": "in-parliament-constitution-2024",
+      "url": "https://eparlib.sansad.in/bitstream/123456789/2982247/1/29-05-27_Constitution_English_Final.pdf",
+      "origin": "https://eparlib.sansad.in",
+      "allowedOrigins": [],
+      "attemptedAt": "2026-10-18T16:55:39.393Z",
+      "status": "stopped",
+      "error": "fetch failed",
+      "cause": {
+        "code": "UND_ERR_CONNECT_TIMEOUT",
+        "message": "Connect Timeout Error (attempted address: eparlib.sansad.in:443, timeout: 10000ms)"
+      },
+      "policies": [],
+      "lawBodyRequested": false,
+      "browserFallback": {
+        "transport": "Playwright Chromium",
+        "error": "Navigation to robots.txt exceeded the browser backend 60,000 ms deadline",
+        "completedBy": "2026-10-18T16:58:56Z",
+        "lawBodyRequested": false
+      }
+    },
+    {
+      "id": "ru-duma-constitution",
+      "url": "https://duma.gov.ru/media/files/8UkGJFXOUAPxwlIaG99vA6cAeWXkU8Ss.pdf",
+      "origin": "https://duma.gov.ru",
+      "allowedOrigins": [],
+      "attemptedAt": "2026-10-18T16:55:49.921Z",
+      "status": "stopped",
+      "error": "fetch failed",
+      "cause": {
+        "code": "UND_ERR_CONNECT_TIMEOUT",
+        "message": "Connect Timeout Error (attempted addresses: 95.173.130.41:443, 95.173.130.42:443, timeout: 10000ms)"
+      },
+      "policies": [],
+      "lawBodyRequested": false,
+      "browserFallback": {
+        "transport": "Playwright Chromium",
+        "error": "Navigation to robots.txt exceeded the browser backend 60,000 ms deadline",
+        "completedBy": "2026-10-18T16:58:56Z",
+        "lawBodyRequested": false
+      }
+    }
+  ]
+}

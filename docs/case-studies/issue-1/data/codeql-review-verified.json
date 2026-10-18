@@ -1,0 +1,56 @@
+{
+  "headSha": "61d9fc9c22e9b07acc91407c10a7f53c8b51cf71",
+  "mergeSha": "c5f2b7ef22f515cc0ea03fc732000337b5aae507",
+  "createdAt": "2026-10-18T16:57:35Z",
+  "runUrl": "https://github.com/link-assistant/legal/actions/runs/39147003747",
+  "resultsCount": 0,
+  "error": "",
+  "warning": "",
+  "reviewFindings": [
+    {
+      "number": 4,
+      "state": "fixed",
+      "rule": "js/identity-replacement"
+    },
+    {
+      "number": 3,
+      "state": "fixed",
+      "rule": "js/polynomial-redos"
+    },
+    {
+      "number": 2,
+      "state": "fixed",
+      "rule": "js/polynomial-redos"
+    }
+  ],
+  "combinedVerification": {
+    "headSha": "ef0ff368d838bcb66180a3bff01e109dc1030d5a",
+    "mergeSha": "2e1edeb16de54f5625c88cf776317c631e2f1a3e",
+    "runUrl": "https://github.com/link-assistant/legal/actions/runs/39150469104",
+    "javascriptResults": 1,
+    "actionsResults": 0,
+    "reviewFindings": [
+      {
+        "number": 2,
+        "state": "fixed"
+      },
+      {
+        "number": 3,
+        "state": "fixed"
+      },
+      {
+        "number": 4,
+        "state": "fixed"
+      }
+    ],
+    "remainingFinding": {
+      "number": 1,
+      "rule": "js/incomplete-url-substring-sanitization",
+      "path": "docs/case-studies/issue-3/original-format-release-notes.mjs",
+      "line": 87,
+      "status": "pre-existing on main, historical case-study snapshot unchanged",
+      "sha256": "54aaf0211d45961def975f8b8d86edd7a38c320db5154c2ed08d673c4e4f753c",
+      "baseSha": "ad22966e0f1529cbd480b3e528eacee6a139b961"
+    }
+  }
+}

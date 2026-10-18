@@ -1,0 +1,13 @@
+{
+  "full_name": "link-foundation/russian-laws",
+  "description": null,
+  "license": {
+    "key": "unlicense",
+    "name": "The Unlicense",
+    "spdx_id": "Unlicense",
+    "url": "https://api.github.com/licenses/unlicense",
+    "node_id": "MDc6TGljZW5zZTE1"
+  },
+  "default_branch": "bugfix/fix_struct_tsconfig_consequences",
+  "updated_at": "2024-09-05T04:51:20Z"
+}

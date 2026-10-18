@@ -6,6 +6,14 @@ on:
     paths:
       - 'examples/universal-app/**'
       - 'src/**'
+      - 'web/**'
+      - 'data/demo/**'
+      - 'patches/**'
+      - 'tests/browser/**'
+      - 'playwright.config.js'
+      - 'scripts/build-legal-demo.mjs'
+      - 'scripts/bootstrap-formal-ai.mjs'
+      - 'experiments/serve-demo.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/update-preview-images.mjs'
@@ -16,11 +24,24 @@ on:
     paths:
       - 'examples/universal-app/**'
       - 'src/**'
+      - 'web/**'
+      - 'data/demo/**'
+      - 'patches/**'
+      - 'tests/browser/**'
+      - 'playwright.config.js'
+      - 'scripts/build-legal-demo.mjs'
+      - 'scripts/bootstrap-formal-ai.mjs'
+      - 'experiments/serve-demo.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/update-preview-images.mjs'
       - '.github/workflows/example-app.yml'
   workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: Deploy the built site from the selected branch
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -53,7 +74,7 @@ jobs:
           cache-dependency-path: examples/universal-app/package-lock.json
 
       - name: Configure GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.deploy_pages)
         uses: actions/configure-pages@v6
 
       - name: Install app dependencies
@@ -62,8 +83,22 @@ jobs:
       - name: Build app
         run: npm run example:web:build
         env:
-          GITHUB_PAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          GITHUB_PAGES: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.deploy_pages) }}
           VITE_REPOSITORY_URL: https://github.com/${{ github.repository }}
+
+      - name: Install legal explorer dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify installable legal package
+        run: node experiments/package-smoke.mjs
+
+      - name: Verify legal explorer in Chromium
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+
+      - name: Include legal explorer in Pages site
+        run: cp -r dist/legal-demo examples/universal-app/dist/legal
 
       - name: Upload web build artifact
         uses: actions/upload-artifact@v7
@@ -73,7 +108,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload GitHub Pages artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.deploy_pages)
         uses: actions/upload-pages-artifact@v5
         with:
           path: examples/universal-app/dist
@@ -84,7 +119,7 @@ jobs:
   pages-deploy:
     name: Deploy GitHub Pages
     needs: [web-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.deploy_pages)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     concurrency:
@@ -246,11 +281,17 @@ jobs:
       cancel-in-progress: false
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      github.event_name == 'workflow_dispatch'
+      (github.event_name == 'workflow_dispatch' && !inputs.deploy_pages)
     permissions:
       contents: write
     env:
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      GIT_CONFIG_COUNT: '2'
+      GIT_CONFIG_KEY_1: safe.directory
+      GIT_CONFIG_VALUE_1: ${{ github.workspace }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v6
         with:
@@ -277,10 +318,11 @@ jobs:
       - name: Detect drift
         id: drift
         run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
+          status=$(git status --porcelain)
+          if [[ -n "$status" ]]; then
             echo "drift=true" >> "$GITHUB_OUTPUT"
             echo "Preview images drifted:"
-            git status --porcelain
+            printf '%s\n' "$status"
           else
             echo "drift=false" >> "$GITHUB_OUTPUT"
             echo "Preview images already current."
@@ -331,8 +373,11 @@ jobs:
         if: always()
         env:
           DRIFT: ${{ steps.drift.outputs.drift }}
+          DRIFT_OUTCOME: ${{ steps.drift.outcome }}
         run: |
-          if [[ "$DRIFT" == "true" ]]; then
+          if [[ "$DRIFT_OUTCOME" != "success" ]]; then
+            echo "::error::Preview drift detection did not complete; inspect the failed steps."
+          elif [[ "$DRIFT" == "true" ]]; then
             echo "::notice::Preview images regenerated and (if applicable) committed to main."
           else
             echo "::notice::Preview images are already up to date."
