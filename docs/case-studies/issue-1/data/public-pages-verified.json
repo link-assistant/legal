@@ -83,5 +83,65 @@
     "firstSource": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
     "resourceCount": 3,
     "passed": true
+  },
+  "combinedDeploymentVerification": {
+    "checkedAt": "2026-10-18T17:40:41.164Z",
+    "url": "https://link-assistant.github.io/legal/legal/",
+    "records": 5,
+    "corpusHash": "fa03427badc62a03d08626e594d5df2641e09596405a8b8de64e80db3d4ae4e9",
+    "queries": [
+      {
+        "query": "data minimisation",
+        "resultCount": 1,
+        "officialUrls": [
+          "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng"
+        ],
+        "quoteLength": 2025,
+        "quoteHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1",
+        "summary": "1 source matches · exact quotations"
+      },
+      {
+        "query": "法律",
+        "resultCount": 4,
+        "officialUrls": [
+          "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm"
+        ],
+        "quoteLength": 27,
+        "quoteHash": "3c414809f5751a9b8f8571d6def06a83b06fd53426c8d58a6680517545dc00f3",
+        "summary": "4 source matches · exact quotations"
+      },
+      {
+        "query": "unmatchablexyznoevidence",
+        "resultCount": 0,
+        "officialUrls": [],
+        "quoteHash": null,
+        "summary": "0 source matches · exact quotations"
+      }
+    ],
+    "searchRequestsAdded": 0,
+    "runtimeResources": [
+      "https://link-assistant.github.io/legal/legal/style.css",
+      "https://link-assistant.github.io/legal/legal/app.js",
+      "https://link-assistant.github.io/legal/legal/corpus.json"
+    ],
+    "unicodeNegative": {
+      "checkedAt": "2026-10-18T17:40:42.249Z",
+      "url": "https://link-assistant.github.io/legal/legal/",
+      "query": "नाती",
+      "fixtureText": "नीति",
+      "contentHash": "fbb7a6fa55fed0eb79d3710536db2763ebd332344b66309c6d483f97f9267c34",
+      "fixtureAuthority": "synthetic-test-fixture",
+      "uploadStatus": "Corpus loaded and checksums verified.",
+      "resultCount": 0
+    },
+    "unicodePositive": {
+      "checkedAt": "2026-10-18T17:40:52.505Z",
+      "query": "नीति",
+      "resultCount": 1,
+      "quote": "नीति"
+    },
+    "deployedHead": "ef0ff368d838bcb66180a3bff01e109dc1030d5a",
+    "deploymentRun": "https://github.com/link-assistant/legal/actions/runs/39150514578",
+    "passed": true
   }
 }

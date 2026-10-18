@@ -54,7 +54,7 @@ Local verification after recovery passed:
 - Chromium: three browser tests, including desktop/phone layouts and the Unicode corpus-import regression.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.06%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.06%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted checks on combined head `ef0ff36` also passed, as recorded below; older runs retain their own timestamps.
 
 Compressed test, browser and package logs are in `data/logs/`. The conditional-redirect and combining-mark search red/green traces, latest complete runtime suites, browser evidence and repository checks are preserved in `data/logs/unicode-policy-verification.tar.gz`, with per-file SHA-256 checksums alongside it.
 
@@ -69,3 +69,25 @@ A local Docker image build passed. Launching a container in this workspace faile
 The [public Pages explorer](https://link-assistant.github.io/legal/legal/) initially deployed four records from `2b7dbd2`. [Workflow dispatch 39145656487](https://github.com/link-assistant/legal/actions/runs/39145656487) then successfully deployed the five-record corpus from `1835e8d`. Chromium verification at 17:00 UTC on 18 October 2026 confirmed five records, Chinese and GDPR queries with their exact official URLs, and abstention for unmatched text. Searches made no additional requests; the runtime uses three distinct same-origin resources (CSS, JavaScript and corpus JSON). Downloaded corpus SHA-256 `fa03427badc62a03d08626e594d5df2641e09596405a8b8de64e80db3d4ae4e9` exactly matches the committed five-record corpus. An independent Chromium check also matched the entire 2,025-character Article 5 quotation SHA-256 to the collected law record; its timestamp and hash are retained in the same evidence file. The captured result is in `data/public-pages-verified.json`; the updated [public-site screenshot](../../screenshots/legal-demo-public.png) is committed. The workflow packages the explorer alongside the existing app and supports branch deployment without modifying main. This PR remains unmerged. Deployment verification does not establish exhaustive corpus coverage.
 
 The additional current-government probes stopped at robots retrieval: Legislative Department HTTP 403 and Ministry of Justice `ECONNRESET`. Their URLs, timestamps and transport evidence are in `data/current-government-probes.json`; no law bodies were requested. A Chromium fallback at 16:35 UTC independently returned HTTP 403 for the Ministry's robots endpoint, preserved in `data/minjust-browser-policy.json`. These results leave Indian and Russian live collection criteria unfinished.
+
+## Hosted verification of the combined fixes
+
+All five PR workflows and all nine runtime/OS jobs passed on `ef0ff368d838bcb66180a3bff01e109dc1030d5a`, started at 17:37:48 UTC on 18 October 2026. [Checks and release 39150468993](https://github.com/link-assistant/legal/actions/runs/39150468993) passed across Ubuntu, macOS and Windows. Existing runtime/platform skips remain explicit, with zero failed tests:
+
+| Platform | Node passed / skipped | Bun passed / skipped | Deno passed / ignored |
+| -------- | --------------------- | -------------------- | --------------------- |
+| Ubuntu   | 912 / 0               | 912 / 0              | 909 / 3               |
+| macOS    | 912 / 0               | 912 / 0              | 909 / 3               |
+| Windows  | 852 / 60              | 856 / 56             | 849 / 63              |
+
+Workflows 39150468999, links 39150469044, Security 39150469104 and example app 39150468987 also passed. No new skip was introduced to obtain these results. The archived API responses identify each job, SHA, timestamp and conclusion.
+
+The fresh [Docker job 117742927707](https://github.com/link-assistant/legal/actions/runs/39150468993/job/117742927707) launched the container and returned `{"health":"ok","status":"sources-found","citations":3}` at 17:38:40 UTC, line 1639 of `ef0-docker-runtime.log`. This verifies runtime behavior on the combined code.
+
+The latest CodeQL SARIF has one JavaScript finding and zero Actions findings. The remaining finding, alert 1, concerns substring matching at `docs/case-studies/issue-3/original-format-release-notes.mjs:87`, a historical snapshot already present on main `ad22966`. Its bytes match main exactly. All three collector review findings (2, 3 and 4) remain fixed; no alert was dismissed or suppressed. The actual SARIF, alert metadata and file checksum are preserved, distinguishing this baseline finding from the earlier zero-result analyses.
+
+[Pages dispatch 39150514578](https://github.com/link-assistant/legal/actions/runs/39150514578) deployed `ef0ff36` successfully. Chromium verification at 17:40 UTC reproduced the exact five-record corpus and complete GDPR Article 5 quotation hashes, official Chinese/EU citations and unmatched-query abstention, with zero search requests. The same synthetic Hindi import now rejects `नाती` and returns exactly `नीति` for the matching query on the public site. The fixture is not an additional collected law. Structured proof is appended to `data/public-pages-verified.json`.
+
+Two further candidates were checked with the production policy client: the Know India constitutional index failed DNS resolution for robots.txt (`ENOTFOUND`), and the presidential constitution origin failed robots connection (`UND_ERR_CONNECT_TIMEOUT`). Chromium independently returned `ERR_NAME_NOT_RESOLVED` and a 60-second navigation timeout respectively. Neither law page was requested. These dated failures are appended to `data/current-government-probes.json`; they do not verify publisher availability elsewhere or complete Indian/Russian collection.
+
+All raw hosted logs, SARIF, browser proof and additional policy probes are preserved with per-file checksums in `data/logs/unicode-policy-verification.tar.gz`. The source, tests and workflow changes were reviewed from the complete 300-file PR diff. Universal inventories and automatic legal semantics remain unfinished; these passing checks do not close those acceptance gaps.

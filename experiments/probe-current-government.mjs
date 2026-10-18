@@ -42,6 +42,18 @@ const targets = [
     origin: 'https://duma.gov.ru',
     allowedOrigins: [],
   },
+  {
+    id: 'in-knowindia-constitution',
+    url: 'https://knowindia.india.gov.in/profile/the-union/constitution-of-india.php',
+    origin: 'https://knowindia.india.gov.in',
+    allowedOrigins: [],
+  },
+  {
+    id: 'ru-presidential-constitution',
+    url: 'https://constitution.kremlin.ru/',
+    origin: 'https://constitution.kremlin.ru',
+    allowedOrigins: [],
+  },
 ];
 const requested = process.argv.slice(2);
 if (requested.some((id) => !targets.some((target) => target.id === id))) {

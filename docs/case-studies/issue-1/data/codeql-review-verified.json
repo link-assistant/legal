@@ -22,5 +22,35 @@
       "state": "fixed",
       "rule": "js/polynomial-redos"
     }
-  ]
+  ],
+  "combinedVerification": {
+    "headSha": "ef0ff368d838bcb66180a3bff01e109dc1030d5a",
+    "mergeSha": "2e1edeb16de54f5625c88cf776317c631e2f1a3e",
+    "runUrl": "https://github.com/link-assistant/legal/actions/runs/39150469104",
+    "javascriptResults": 1,
+    "actionsResults": 0,
+    "reviewFindings": [
+      {
+        "number": 2,
+        "state": "fixed"
+      },
+      {
+        "number": 3,
+        "state": "fixed"
+      },
+      {
+        "number": 4,
+        "state": "fixed"
+      }
+    ],
+    "remainingFinding": {
+      "number": 1,
+      "rule": "js/incomplete-url-substring-sanitization",
+      "path": "docs/case-studies/issue-3/original-format-release-notes.mjs",
+      "line": 87,
+      "status": "pre-existing on main, historical case-study snapshot unchanged",
+      "sha256": "54aaf0211d45961def975f8b8d86edd7a38c320db5154c2ed08d673c4e4f753c",
+      "baseSha": "ad22966e0f1529cbd480b3e528eacee6a139b961"
+    }
+  }
 }

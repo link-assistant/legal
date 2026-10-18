@@ -31,3 +31,10 @@ less /tmp/legal-recent-logs/bootstrap-platforms-node-full.log
 Some older source probes and hosted logs remain individually compressed
 alongside the archives. The verification report distinguishes local checks,
 older hosted proofs and unfinished acceptance criteria.
+
+The latest `ef0-*` entries preserve all five passing workflows and the Pages
+dispatch for combined head `ef0ff36`, all nine runtime jobs, Docker runtime
+health/citations, full CodeQL SARIF and alert metadata, and public browser
+verification. The SARIF retains one baseline finding in the unchanged issue-3
+historical snapshot; it does not report zero results. `additional-source-*`
+retains the later Know India and presidential-origin policy retrieval failures.

@@ -95,3 +95,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Run the complete combined suites: Node/Bun 912 each, Deno 909 plus three ignored, three Chromium tests, package consumer and repository checks.
 - [x] Consolidate all recent evidence without losing an entry, keeping the complete PR within the 300-file diff limit.
 - [ ] Verify every fresh hosted workflow and Docker runtime on the combined pushed revision.
+
+- [x] Verify every hosted workflow, nine runtime jobs and an actual Docker API smoke on combined revision `ef0ff36`; preserve full logs and the one unchanged baseline CodeQL finding.
+- [x] Deploy the combined revision and verify exact public corpus/quotation hashes, no search requests, and both synthetic Unicode positive/negative cases.
+- [x] Check Know India and the presidential constitution origin through the policy client and Chromium; preserve DNS/connection failures without requesting a law body.
