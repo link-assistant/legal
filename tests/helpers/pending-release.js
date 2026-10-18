@@ -1,0 +1,65 @@
+import { execFile } from 'node:child_process';
+import {
+  copyFile,
+  mkdtemp,
+  mkdir,
+  readFile,
+  readdir,
+  rm,
+} from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { promisify } from 'node:util';
+
+// Changesets status resolves baseBranch even when reading all pending fragments.
+// Supply an isolated main ref so detached PR checkouts need no local branch.
+export async function pendingReleasePlan() {
+  const root = await mkdtemp(join(tmpdir(), 'legal-release-'));
+  const execute = promisify(execFile);
+  try {
+    await copyFile('package.json', join(root, 'package.json'));
+    await mkdir(join(root, '.changeset'));
+    const files = (await readdir('.changeset')).filter(
+      (file) =>
+        file === 'config.json' || (file.endsWith('.md') && file !== 'README.md')
+    );
+    for (const file of files) {
+      await copyFile(join('.changeset', file), join(root, '.changeset', file));
+    }
+    await execute('git', ['init', '--initial-branch=main'], { cwd: root });
+    await execute(
+      'git',
+      [
+        '-c',
+        'user.name=Release fixture',
+        '-c',
+        'user.email=fixture@example.test',
+        'commit',
+        '--allow-empty',
+        '-m',
+        'Initialize release fixture',
+      ],
+      { cwd: root }
+    );
+    const output = join(root, 'plan.json');
+    const execution = execute(
+      'node',
+      [
+        resolve('node_modules/@changesets/cli/bin.js'),
+        'status',
+        '--output',
+        output,
+      ],
+      { cwd: root, encoding: 'utf8', timeout: 20000 }
+    );
+    execution.child.stdin.end();
+    await execution;
+    return {
+      plan: JSON.parse(await readFile(output, 'utf8')),
+      pkg: JSON.parse(await readFile('package.json', 'utf8')),
+      fragments: files.filter((file) => file.endsWith('.md')),
+    };
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}

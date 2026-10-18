@@ -70,3 +70,12 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce the nested robots.txt path policy bypass, restrict the policy exception to the root path, and rerun all three full runtime suites.
 
 - [x] Probe two additional official parliamentary publication origins through the production client and Chromium; preserve their policy-retrieval timeouts without requesting either PDF.
+
+## Fresh checkout CI regressions
+
+- [x] Match failed run 39148071370 to head 215c952 and preserve its full log, all nine failed job logs, timestamps and exact errors.
+- [x] Reproduce the missing local main branch in a clean detached clone; share the isolated real Changesets fixture between release tests.
+- [x] Reproduce Windows CRLF patch rejection and Deno's missing generated module before test discovery; normalize patch line endings and bootstrap explicitly in the Deno job.
+- [x] Reproduce release-test failures after pending fragments are consumed; verify both real pending and empty release plans without changing the worktree's fragments.
+- [x] Verify clean checkout release, Deno import-graph and actual CRLF upstream-patch scenarios; run Node/Bun (907 each), Deno (904 plus three ignored), browser, package and repository checks.
+- [ ] Obtain fresh hosted checks for the CI setup fixes on every runtime and operating system. Preserve and investigate any new failures.

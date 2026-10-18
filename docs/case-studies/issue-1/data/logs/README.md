@@ -1,6 +1,14 @@
 # Preserved verification logs
 
-Current integrated checks are in `unicode-policy-verification.tar.gz`: Node/Bun
+The latest CI setup verification is in `ci-clean-checkout-verification.tar.gz`:
+Node/Bun each pass 907 tests; Deno passes 904 with three expected skips. It
+preserves the complete failed run 39148071370, every failed matrix job,
+clean-checkout and CRLF reproductions, passing checks, latest hosted Docker
+smoke evidence and zero-result CodeQL analyses. The companion `.sha256` file
+records each archived file's checksum. This evidence distinguishes local
+success from fresh hosted checks still required after the setup fixes.
+
+Earlier integrated checks are in `unicode-policy-verification.tar.gz`: Node/Bun
 each pass 905 tests; Deno passes 902 with three runtime-specific skips. It also
 preserves lint/format/duplication, browser, package, focused red/green and small
 hostile-input probe logs. `unicode-policy-verification.sha256` records each

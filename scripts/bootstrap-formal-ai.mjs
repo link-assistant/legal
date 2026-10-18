@@ -16,7 +16,7 @@ const patch = resolve(root, 'patches/formal-ai/legal-context.patch');
 // Apply only exact unified patches; refuse silently drifting upstream code.
 export function applyExactPatch(source, diff) {
   const lines = source.split('\n');
-  const patchLines = diff.split('\n');
+  const patchLines = diff.replaceAll('\r\n', '\n').split('\n');
   let delta = 0;
   for (let i = 0; i < patchLines.length; i++) {
     const hunk = patchLines[i].match(

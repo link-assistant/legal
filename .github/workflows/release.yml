@@ -370,6 +370,10 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Bootstrap Formal AI (Deno)
+        if: matrix.runtime == 'deno'
+        run: deno run -A scripts/bootstrap-formal-ai.mjs
+
       - name: Run tests (Deno)
         if: matrix.runtime == 'deno'
         shell: bash

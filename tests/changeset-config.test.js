@@ -16,6 +16,7 @@ import { delimiter, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { describe, it, expect } from 'test-anywhere';
 import { itUnless, sandboxed } from './helpers/skip.js';
+import { pendingReleasePlan } from './helpers/pending-release.js';
 
 const config = JSON.parse(readFileSync('.changeset/config.json', 'utf8'));
 const execFileAsync = promisify(execFile);
@@ -37,24 +38,10 @@ function createPrettierBins(dependencies) {
 itUnless(sandboxed)(
   'assembles the real pending release plan for the current package name',
   async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'changeset-plan-'));
-    const output = join(directory, 'plan.json');
-    try {
-      const execution = execFileAsync(
-        'node',
-        ['node_modules/@changesets/cli/bin.js', 'status', '--output', output],
-        { encoding: 'utf8', timeout: 20000 }
-      );
-      execution.child.stdin.end();
-      await execution;
-      const plan = JSON.parse(readFileSync(output, 'utf8'));
-      const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-      expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
-        true
-      );
-    } finally {
-      rmSync(directory, { recursive: true, force: true });
-    }
+    const { plan, pkg } = await pendingReleasePlan();
+    expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
+      true
+    );
   }
 );
 
