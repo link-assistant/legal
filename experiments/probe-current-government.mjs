@@ -30,6 +30,18 @@ const targets = [
     origin: 'https://www.mea.gov.in',
     allowedOrigins: [],
   },
+  {
+    id: 'in-parliament-constitution-2024',
+    url: 'https://eparlib.sansad.in/bitstream/123456789/2982247/1/29-05-27_Constitution_English_Final.pdf',
+    origin: 'https://eparlib.sansad.in',
+    allowedOrigins: [],
+  },
+  {
+    id: 'ru-duma-constitution',
+    url: 'https://duma.gov.ru/media/files/8UkGJFXOUAPxwlIaG99vA6cAeWXkU8Ss.pdf',
+    origin: 'https://duma.gov.ru',
+    allowedOrigins: [],
+  },
 ];
 const requested = process.argv.slice(2);
 if (requested.some((id) => !targets.some((target) => target.id === id))) {
