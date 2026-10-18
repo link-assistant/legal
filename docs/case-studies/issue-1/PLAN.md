@@ -56,7 +56,8 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Add a fifth actual source record: the complete selected GDPR Article 5 subdivision, with raw SHA-256, acquisition date, official link and honest edition scope.
 - [x] Run combined Node/Bun (904 each), Deno (901 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
 - [x] Inspect the earlier hosted Docker smoke log: healthy container and three citations, rather than relying on a successful build alone.
-- [ ] Push the combined code, check all runs against its actual SHA, inspect any new failures and verify the updated public demo.
+- [x] Push the combined code and verify the updated five-record public demo in Chromium with exact corpus/text hashes and only same-origin runtime resources.
+- [ ] Finish every hosted check against the final pushed SHA and preserve any new failure logs.
 
 - [x] Reproduce encoded-path robots bypass before fixing it; normalize RFC 9309 matching and verify reserved separators remain distinct. Preserve the red/green trace and rerun all three runtime suites.
 - [x] Independently reproduce small directive and wildcard timeouts under process limits; integrate the shared parser fix, add the Unicode-comment prohibition/delay regression, and rerun Node/Bun (905 each), Deno (902 plus three ignored), browser and repository checks.
@@ -67,3 +68,5 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Read the new CodeQL inline review; reproduce bounded robots comment/wildcard stalls and remove untrusted regular-expression backtracking. Verify the full runtime suites and packed consumer.
 
 - [x] Reproduce the nested robots.txt path policy bypass, restrict the policy exception to the root path, and rerun all three full runtime suites.
+
+- [x] Probe two additional official parliamentary publication origins through the production client and Chromium; preserve their policy-retrieval timeouts without requesting either PDF.

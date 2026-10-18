@@ -36,5 +36,52 @@
   ],
   "searchRequestsAdded": 0,
   "extraResourceRequests": "One explicit verification fetch of corpus.json before searching; UI runtime uses three distinct same-origin assets.",
-  "passed": true
+  "passed": true,
+  "independentVerification": {
+    "queries": [
+      {
+        "checkedAt": "2026-10-18T17:00:36.385Z",
+        "query": "data minimisation",
+        "jurisdiction": "EU",
+        "language": "en",
+        "results": 1,
+        "title": "GDPR Article 5 — original 2016 English publication",
+        "quoteLength": 2025,
+        "quoteHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1",
+        "officialUrl": "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng",
+        "resources": [
+          "https://link-assistant.github.io/legal/legal/style.css",
+          "https://link-assistant.github.io/legal/legal/app.js",
+          "https://link-assistant.github.io/legal/legal/corpus.json"
+        ],
+        "matchesCollectedTextHash": true
+      },
+      {
+        "checkedAt": "2026-10-18T17:00:50.491Z",
+        "query": "法律",
+        "jurisdiction": "CN",
+        "language": "zh",
+        "results": 4,
+        "officialUrls": [
+          "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm"
+        ],
+        "resources": [
+          "https://link-assistant.github.io/legal/legal/style.css",
+          "https://link-assistant.github.io/legal/legal/app.js",
+          "https://link-assistant.github.io/legal/legal/corpus.json"
+        ]
+      }
+    ],
+    "corpusMatchesRepository": true
+  },
+  "previousVerification": {
+    "deploymentSha": "2b7dbd2",
+    "runUrl": "https://github.com/link-assistant/legal/actions/runs/39141691021",
+    "checkedAt": "2026-10-18T15:53:00Z",
+    "count": "4 source records",
+    "query": "法律",
+    "firstSource": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
+    "resourceCount": 3,
+    "passed": true
+  }
 }
