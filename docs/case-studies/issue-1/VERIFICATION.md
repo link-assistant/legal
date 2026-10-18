@@ -20,18 +20,19 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 - A same-origin redirect could bypass a robots prohibition. A reproducing test verifies that the disallowed redirect target is never fetched. HTML denial responses masquerading as robots.txt now stop collection, and publisher crawl delays are honored; a delay beyond the bounded wait budget stops the request. These have failing-before/passing-after policy tests.
 - A shared multilingual law ID silently returned the first translation. CLI and HTTP tests reproduced this; callers must now explicitly select a language when an ID is ambiguous. Unknown language editions are rejected.
 - Preview drift detection masked Git failures inside a shell conditional. The preserved run log also showed dubious ownership and Bash syntax executed under sh. The workflow now configures the container worktree, selects Bash, and propagates a failed Git command; a test executes the actual drift script outside a repository to verify failure.
+- USLM extraction also discarded title-level notes outside numbered sections. The minimal regression failed with two records instead of three. A robots-compliant, bounded official Title 1 download (42,240 archive bytes; catalog and SHA-256 preserved in `data/uslm-sample*`) confirmed 39 sections plus omitted statutory repeal/rights language. Extraction now retains all 39 sections and a separate context record. The offline archive regression rechecks its hash, distinct IDs and actual title-level statutory notes. This title is a temporary fixture outside the five-record browser corpus, not an exhaustive US Code collection.
 
 ## Evidence and limits
 
 Local verification after recovery passed:
 
-- Node: 891 tests, zero failures.
-- Bun: 891 tests, zero failures.
-- Deno: 888 tests, zero failures, three runtime-specific tests ignored.
+- Node: 896 tests, zero failures.
+- Bun: 896 tests, zero failures.
+- Deno: 893 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.22%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.18%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
 
 Compressed test, browser and package logs are in `data/logs/`.
 
