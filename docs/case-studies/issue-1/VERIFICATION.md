@@ -17,17 +17,19 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 
 - Release CI on `2b7dbd2` failed at line 238 of `data/logs/release-117718678351.log.gz`: four inherited changesets still referenced the starter package name after the package rename. A regression assembles the actual pending release plan and failed with the same workspace error. Retargeting those fragments preserves their release notes and makes the regression pass. `experiments/pending-release-version.mjs` runs the complete versioning command in an isolated copy, confirms version `0.12.0` and its synchronized lockfile, and leaves the checkout's fragments intact.
 
+- USLM extraction also discarded title-level notes outside numbered sections. The minimal regression failed with two records instead of three. A robots-compliant, bounded official Title 1 download (42,240 archive bytes; catalog and SHA-256 preserved in `data/uslm-sample*`) confirmed 39 sections plus omitted statutory repeal/rights language. Extraction now retains all 39 sections and a separate context record. The offline archive regression rechecks its hash, distinct IDs and actual title-level statutory notes. This title is a temporary fixture outside the four-record browser corpus, not an exhaustive US Code collection.
+
 ## Evidence and limits
 
 Local verification after recovery passed:
 
-- Node: 868 tests, zero failures.
-- Bun: 868 tests, zero failures.
-- Deno: 865 tests, zero failures, three runtime-specific tests ignored.
+- Node: 873 tests, zero failures.
+- Bun: 873 tests, zero failures.
+- Deno: 870 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.30%, below the existing 10% limit), secret scanning, syntax, required documentation, line limits and workflow policy are checked locally. Fresh hosted CI remains pending. At 15:43 UTC, most Linux jobs for head `5f42124` were still queued without runners; desktop packaging on Windows/macOS and the Actions CodeQL job had passed.
+- ESLint, formatting, duplication (below the existing 10% limit), secret scanning, syntax, required documentation, line limits and workflow policy are checked locally. Fresh hosted CI remains pending. At 15:43 UTC, most Linux jobs for head `5f42124` were still queued without runners; desktop packaging on Windows/macOS and the Actions CodeQL job had passed.
 
 Compressed test, browser and package logs are in `data/logs/`.
 

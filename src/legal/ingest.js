@@ -124,6 +124,18 @@ function parseJson(text, entry) {
     },
   ];
 }
+function appendXmlContext($, entry, records, selector) {
+  const context = htmlText($.xml(), selector, { xml: true });
+  if (context.trim()) {
+    records.push({
+      ...entry,
+      id: `${entry.id}:context`,
+      title: `${entry.title} — context and appendices`,
+      text: context,
+    });
+  }
+  return records;
+}
 function parseXml(text, entry) {
   if (/<!ENTITY/i.test(text)) {
     throw new Error('XML entity declarations are not supported');
@@ -143,25 +155,20 @@ function parseXml(text, entry) {
     });
     // Authorities, appendices and headings can carry legal content outside SECTION.
     cfrSections.remove();
-    const context = htmlText($.xml(), 'CFRDOC', { xml: true });
-    if (context.trim()) {
-      records.push({
-        ...entry,
-        id: `${entry.id}:context`,
-        title: `${entry.title} — context and appendices`,
-        text: context,
-      });
-    }
-    return records;
+    return appendXmlContext($, entry, records, 'CFRDOC');
   }
   const sections = $('section[identifier]');
   if (sections.length) {
-    return sections.toArray().map((element) => ({
+    const records = sections.toArray().map((element) => ({
       ...entry,
       id: `${entry.id}:${$(element).attr('identifier')}`,
       title: `${entry.title} ${$(element).find('num,heading').first().text()}`,
       text: htmlText($.xml(element), 'section', { xml: true }),
     }));
+    sections.remove();
+    return $('main').length
+      ? appendXmlContext($, entry, records, 'main')
+      : records;
   }
   const selector = [
     'main',
