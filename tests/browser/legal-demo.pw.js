@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 test('searches only collected law, shows missing coverage and exports formalization', async ({
   page,
 }) => {
@@ -8,6 +9,12 @@ test('searches only collected law, shows missing coverage and exports formalizat
   await expect(page.locator('#document-count')).toHaveText('4 source records');
   await expect(page.locator('.result').first()).toBeVisible();
   await expect(page.locator('#coverage')).toContainText('Not collected');
+  const corpusDownload = page.waitForEvent('download');
+  await page.getByRole('link', { name: 'Download collected data' }).click();
+  const corpusPath = await (await corpusDownload).path();
+  expect(JSON.parse(await readFile(corpusPath, 'utf8'))).toEqual(
+    JSON.parse(await readFile('data/demo/corpus.json', 'utf8'))
+  );
   await page.getByRole('button', { name: '法律', exact: true }).click();
   await expect(page.locator('.result').first()).toContainText('CN / zh');
   const citation = page.locator('.result').first();

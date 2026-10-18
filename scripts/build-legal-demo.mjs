@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { mkdir, copyFile } from 'node:fs/promises';
+import { mkdir, copyFile, readFile, writeFile } from 'node:fs/promises';
 await mkdir('dist/legal-demo', { recursive: true });
 await build({
   entryPoints: ['web/app.js'],
@@ -10,8 +10,13 @@ await build({
   minify: true,
   legalComments: 'eof',
 });
-for (const file of ['index.html', 'style.css']) {
-  await copyFile(`web/${file}`, `dist/legal-demo/${file}`);
-}
+await writeFile(
+  'dist/legal-demo/index.html',
+  (await readFile('web/index.html', 'utf8')).replace(
+    '../data/demo/corpus.json',
+    'corpus.json'
+  )
+);
+await copyFile('web/style.css', 'dist/legal-demo/style.css');
 await copyFile('data/demo/corpus.json', 'dist/legal-demo/corpus.json');
 console.log('Built dist/legal-demo');

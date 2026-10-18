@@ -36,7 +36,7 @@ npm run test:legal
 npm run test:browser
 ```
 
-The Pages workflow includes the legal explorer at `/legal/legal/` under the repository's project site, while retaining the original universal app at the site root. Deployment runs after a merge to main. The demo uses collected data bundled with the site and performs queries locally.
+The [public legal explorer](https://link-assistant.github.io/legal/legal/) uses collected data bundled with the site and performs queries locally. The Pages workflow includes it at `/legal/legal/` under the repository's project site, alongside the original universal app at the site root. Deployment runs on main pushes or an explicit `Example app` workflow dispatch with `deploy_pages:true`.
 
 ![Legal source explorer](docs/screenshots/legal-demo.png)
 
@@ -160,7 +160,7 @@ Note: `package-lock.json` is not committed by default to allow any package manag
 ### Universal App Example
 
 The template includes `examples/universal-app`, a Vite React app that imports
-`add` and `multiply` from `src/index.js` and renders a visual calculator UI.
+`add` and `multiply` from `src/arithmetic.js` and renders a visual calculator UI.
 The same static build is used by:
 
 - GitHub Pages (`npm run example:web:build`)
@@ -269,7 +269,9 @@ This design decouples PR validation from the need to pull changes from the defau
 ### Deploying the example app
 
 The `example-app.yml` workflow deploys the universal example app to GitHub
-Pages on every push to `main`. Before the first run on `main` in a new
+Pages on every push to `main`, or on an explicit workflow dispatch with
+`deploy_pages:true`. A branch deployment requires that branch to be allowed
+by the `github-pages` environment. Before the first run in a new
 repository created from this template, open **Settings → Pages** and set
 **Source = GitHub Actions**. This is a one-time manual step and cannot be
 configured from a workflow because the Pages source defaults to
@@ -285,7 +287,7 @@ the built example app in a headless Chromium via
 [`browser-commander`](https://www.npmjs.com/package/browser-commander) +
 Playwright and writes fresh screenshots to
 `docs/screenshots/example-app/example-app-{locale}-{theme}.png` on every
-push to `main` (and on `workflow_dispatch`). Any drift is committed back to
+push to `main` (and on `workflow_dispatch` with `deploy_pages:false`). Any drift is committed back to
 `main` so README/site images never go stale between releases. Screenshot-only
 pushes do not match this workflow's path filter, while a protected-branch
 fallback PR remains eligible for its required checks. The job runs in the

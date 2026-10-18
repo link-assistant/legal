@@ -272,6 +272,9 @@ export class SourceClient {
           target.protocol = 'https:';
         }
         current = allowedUrl(target.href, source);
+        if (!robots) {
+          await this.checkRobots(current, source);
+        }
         continue;
       }
       if (result.status === 304) {
