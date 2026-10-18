@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'test-anywhere';
 import { existsSync, readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 
 const exampleRoot = 'examples/universal-app';
 const packageJsonPath = `${exampleRoot}/package.json`;
@@ -18,6 +19,22 @@ function readJson(filePath) {
 }
 
 describe('universal React example app', () => {
+  it('deploys branch demos without enabling the main preview writer', () => {
+    const workflow = readText(workflowPath);
+    const preview = workflow.slice(workflow.indexOf('  preview-regen:'));
+    const condition = preview.match(/ {4}if: \|\n((?: {6}.+\n)+)/)[1].trim();
+    const enabled = (event, ref, deploy) =>
+      runInNewContext(condition, {
+        github: { event_name: event, ref },
+        inputs: { deploy_pages: deploy },
+      });
+    expect(
+      enabled('workflow_dispatch', 'refs/heads/issue-1-c88ef43ecd12', true)
+    ).toBe(false);
+    expect(enabled('workflow_dispatch', 'refs/heads/main', false)).toBe(true);
+    expect(enabled('push', 'refs/heads/main', false)).toBe(true);
+    expect(enabled('pull_request', 'refs/pull/2/merge', false)).toBe(false);
+  });
   it('defines the expected app package and build targets', () => {
     expect(existsSync(packageJsonPath)).toBe(true);
 
