@@ -74,3 +74,6 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce stale-law reuse when a redirect changes targets with the same ETag; bind validators to the cached final URL, reject unmatched/POST 304 responses and verify Node/Bun (908 each), Deno (905 plus three ignored), and repository checks.
 
 - [x] Reproduce combining-mark search collisions, preserve Indic/Urdu word distinctions, verify all three runtime suites (910/910/907 plus three Deno skips) and three browser tests, and capture before/after screenshots using the same synthetic import.
+
+- [x] Download all nine failed runtime job logs from `215c952`, distinguish release-reference, Windows patch line-ending and missing Deno generation failures, and reproduce/fix the detached release-plan check against the remote reference.
+- [ ] Reproduce/fix Windows CRLF patch application and generate the Formal AI module before Deno type checking; rerun the final local and hosted checks.
