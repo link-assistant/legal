@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { CollectionStore, SourceClient } from '../src/legal/collector.js';
 
-// Two official document URLs found in current government indexes. Research only:
+// Finite official URLs found in current government indexes. Research only:
 // no discovery loop, no retries, 8 MB per response and 25 seconds per request.
 // Production policy, origin allowlists and publisher delays apply before content.
 const root = 'experiments/official/current-government';
@@ -18,10 +18,28 @@ const targets = [
     origin: 'https://www.minjust.gov.ru',
     allowedOrigins: ['https://minjust.gov.ru'],
   },
+  {
+    id: 'in-code-migrated',
+    url: 'https://indiacode.gov.in/',
+    origin: 'https://indiacode.gov.in',
+    allowedOrigins: [],
+  },
+  {
+    id: 'in-mea-constitution',
+    url: 'https://www.mea.gov.in/constitution-of-india.htm',
+    origin: 'https://www.mea.gov.in',
+    allowedOrigins: [],
+  },
 ];
+const requested = process.argv.slice(2);
+if (requested.some((id) => !targets.some((target) => target.id === id))) {
+  throw new Error('Unknown target ID');
+}
 await mkdir(root, { recursive: true });
 const results = [];
-for (const target of targets) {
+for (const target of targets.filter(
+  (item) => requested.length === 0 || requested.includes(item.id)
+)) {
   const store = new CollectionStore(`${root}/${target.id}`);
   const client = new SourceClient({
     store,
