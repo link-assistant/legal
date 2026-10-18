@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'test-anywhere';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { itUnless, noPosixShell, sandboxed } from './helpers/skip.js';
 import { runInNewContext } from 'node:vm';
 
 const exampleRoot = 'examples/universal-app';
@@ -19,6 +23,35 @@ function readJson(filePath) {
 }
 
 describe('universal React example app', () => {
+  itUnless(noPosixShell, sandboxed)(
+    'fails preview drift detection when Git cannot inspect the worktree',
+    () => {
+      const workflow = readText(workflowPath);
+      const script = workflow
+        .match(
+          / {6}- name: Detect drift\n[\s\S]*? {8}run: \|\n([\s\S]*?)\n {6}- name:/
+        )[1]
+        .split('\n')
+        .map((line) => line.slice(10))
+        .join('\n');
+      const root = mkdtempSync(join(tmpdir(), 'preview-drift-'));
+      try {
+        let failed = false;
+        try {
+          execFileSync('bash', ['-e', '-c', script], {
+            cwd: root,
+            stdio: 'pipe',
+            env: { ...process.env, GITHUB_OUTPUT: join(root, 'outputs') },
+          });
+        } catch {
+          failed = true;
+        }
+        expect(failed).toBe(true);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+  );
   it('deploys branch demos without enabling the main preview writer', () => {
     const workflow = readText(workflowPath);
     const preview = workflow.slice(workflow.indexOf('  preview-regen:'));

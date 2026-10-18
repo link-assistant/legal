@@ -286,6 +286,12 @@ jobs:
       contents: write
     env:
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      GIT_CONFIG_COUNT: '2'
+      GIT_CONFIG_KEY_1: safe.directory
+      GIT_CONFIG_VALUE_1: ${{ github.workspace }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v6
         with:
@@ -312,10 +318,11 @@ jobs:
       - name: Detect drift
         id: drift
         run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
+          status=$(git status --porcelain)
+          if [[ -n "$status" ]]; then
             echo "drift=true" >> "$GITHUB_OUTPUT"
             echo "Preview images drifted:"
-            git status --porcelain
+            printf '%s\n' "$status"
           else
             echo "drift=false" >> "$GITHUB_OUTPUT"
             echo "Preview images already current."
@@ -366,8 +373,11 @@ jobs:
         if: always()
         env:
           DRIFT: ${{ steps.drift.outputs.drift }}
+          DRIFT_OUTCOME: ${{ steps.drift.outcome }}
         run: |
-          if [[ "$DRIFT" == "true" ]]; then
+          if [[ "$DRIFT_OUTCOME" != "success" ]]; then
+            echo "::error::Preview drift detection did not complete; inspect the failed steps."
+          elif [[ "$DRIFT" == "true" ]]; then
             echo "::notice::Preview images regenerated and (if applicable) committed to main."
           else
             echo "::notice::Preview images are already up to date."
