@@ -72,3 +72,5 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Probe two additional official parliamentary publication origins through the production client and Chromium; preserve their policy-retrieval timeouts without requesting either PDF.
 
 - [x] Reproduce stale-law reuse when a redirect changes targets with the same ETag; bind validators to the cached final URL, reject unmatched/POST 304 responses and verify Node/Bun (908 each), Deno (905 plus three ignored), and repository checks.
+
+- [x] Reproduce combining-mark search collisions, preserve Indic/Urdu word distinctions, verify all three runtime suites (910/910/907 plus three Deno skips) and three browser tests, and capture before/after screenshots using the same synthetic import.

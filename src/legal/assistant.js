@@ -11,7 +11,8 @@ const ignored = new Set(
 );
 export function tokenize(text) {
   const normalized = String(text).normalize('NFKC').toLowerCase();
-  const tokens = normalized.match(/[\p{L}\p{N}]+/gu) ?? [];
+  // Vowel signs and other combining marks belong to the word they modify.
+  const tokens = normalized.match(/[\p{L}\p{N}][\p{L}\p{M}\p{N}]*/gu) ?? [];
   return [
     ...new Set(
       tokens.flatMap((token) => {

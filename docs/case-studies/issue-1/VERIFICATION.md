@@ -32,19 +32,21 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 
 - An independent smaller reproduction found the directive timeout too: an 8 KiB whitespace line containing a Unicode line separator exceeded a five-second deadline. A 74-byte wildcard policy also exceeded that deadline. Both ran in finite 96 MiB-heap child processes stopped by their parent. The original parser additionally lost a prohibition and crawl delay when a comment contained Unicode line/paragraph separators. The committed regression verifies both directives; the merged parser completes the small probes in approximately one and two milliseconds respectively. The red traces, probe outputs and complete integrated checks are preserved in `data/logs/unicode-policy-verification.tar.gz`, with per-file SHA-256 checksums alongside it. The reusable small probe is `experiments/robots-parser-probe.mjs`; the suite's hostile-input tests retain explicit heap, stack and parent-deadline limits.
 
+- The tokenizer split combining vowel signs from Hindi, Bengali and other scripts, so different words could collapse to the same search tokens. A failing regression returned Hindi `नीति` for the query `नाती`. Tokenization now retains combining marks with their initial letter or number; nine Indic script cases, marked Urdu words, composed accents, isolated marks and stopwords are covered. The browser import regression verifies both rejection of the unrelated query and an exact quotation for the matching query. Chromium reproduced the old result on the public deployment and verified the local fixed bundle with the same checksummed synthetic fixture; the [before](../../screenshots/unicode-search-before.png) and [after](../../screenshots/unicode-search-after.png) screenshots are committed. This fixture is not an additional collected law, and this change does not establish complete language segmentation.
+
 ## Evidence and limits
 
 Local verification after recovery passed:
 
-- Node: 908 tests, zero failures.
-- Bun: 908 tests, zero failures.
-- Deno: 905 tests, zero failures, three runtime-specific tests ignored.
-- Chromium: two browser tests, including desktop and phone layouts.
+- Node: 910 tests, zero failures.
+- Bun: 910 tests, zero failures.
+- Deno: 907 tests, zero failures, three runtime-specific tests ignored.
+- Chromium: three browser tests, including desktop/phone layouts and the Unicode corpus-import regression.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.12%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.10%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
 
-Compressed test, browser and package logs are in `data/logs/`. The latest conditional-redirect red/green traces, all three complete runtime suites and repository checks are preserved in `data/logs/conditional-cache-verification.tar.gz`, with per-file SHA-256 checksums alongside it.
+Compressed test, browser and package logs are in `data/logs/`. The conditional-redirect and combining-mark search red/green traces, latest complete runtime suites, browser evidence and repository checks are preserved in `data/logs/conditional-cache-verification.tar.gz`, with per-file SHA-256 checksums alongside it.
 
 The pinned actionlint 1.7.12 binary and zizmor 1.30.1 regular/high-severity pedantic passes also passed locally. The native actionlint run had no ShellCheck on PATH; the hosted workflow uses its pinned Docker image with ShellCheck and remains the full shell-block check. Zizmor reported no findings under the repository's existing configuration; ignored/suppressed rules are visible in its preserved logs.
 

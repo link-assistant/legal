@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { normalizeLaw } from '../../src/legal/model.js';
 test('searches only collected law, shows missing coverage and exports formalization', async ({
   page,
 }) => {
@@ -72,4 +73,35 @@ test('remains usable on a phone and rejects corrupted imported data', async ({
       () => document.documentElement.scrollWidth <= window.innerWidth
     )
   ).toBe(true);
+});
+
+test('distinguishes vowel marks in an imported synthetic search fixture', async ({
+  page,
+}) => {
+  const law = normalizeLaw({
+    id: 'synthetic-unicode-search',
+    jurisdiction: 'IN',
+    language: 'hi',
+    title: 'Synthetic tokenizer fixture',
+    url: 'https://www.indiacode.nic.in/',
+    retrievedAt: '2026-10-18T00:00:00.000Z',
+    authority: 'synthetic-test-fixture',
+    text: 'नीति',
+  });
+  await page.goto('/');
+  await page.locator('#corpus-file').setInputFiles({
+    name: 'synthetic-unicode.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ schemaVersion: 1, laws: [law] })),
+  });
+  await expect(page.locator('#upload-status')).toHaveText(
+    'Corpus loaded and checksums verified.'
+  );
+  await page.getByLabel('What are you looking for?').fill('नाती');
+  await page.getByRole('button', { name: 'Find sources' }).click();
+  await expect(page.locator('.result')).toHaveCount(0);
+  await expect(page.locator('#results')).toContainText('insufficient evidence');
+  await page.getByLabel('What are you looking for?').fill('नीति');
+  await page.getByRole('button', { name: 'Find sources' }).click();
+  await expect(page.locator('.result blockquote')).toHaveText('नीति');
 });

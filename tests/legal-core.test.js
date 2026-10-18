@@ -9,6 +9,7 @@ import {
   decodeKnowledge,
   buildCoverage,
   sources,
+  tokenize,
 } from '../src/legal/index.js';
 
 const specimen = {
@@ -130,5 +131,40 @@ describe('provenance and deterministic legal knowledge', () => {
       expect(normalizeLaw(law).contentHash).toBe(law.contentHash);
     }
     expect(corpus.laws.length > 0).toBe(true);
+  });
+});
+
+describe('Unicode word integrity', () => {
+  it('retains combining marks in government-language search tokens', () => {
+    expect(
+      tokenize('शिक्षा শিক্ষা நீதி న్యాయం നീതി ನ್ಯಾಯ ન્યાય ਨਿਆਂ ନ୍ୟାୟ')
+    ).toEqual([
+      'शिक्षा',
+      'শিক্ষা',
+      'நீதி',
+      'న్యాయం',
+      'നീതി',
+      'ನ್ಯಾಯ',
+      'ન્યાય',
+      'ਨਿਆਂ',
+      'ନ୍ୟାୟ',
+    ]);
+    expect(tokenize('कानून')).toEqual([]);
+    expect(tokenize('\u0301')).toEqual([]);
+    expect(tokenize('re\u0301sume\u0301')).toEqual(['résumé']);
+  });
+  it('does not collapse distinct marked terms into the same legal search match', () => {
+    for (const [language, text, other] of [
+      ['hi', 'नीति', 'नाती'],
+      ['bn', 'নীতি', 'নেতা'],
+      ['ur', 'عَلَم', 'عِلْم'],
+    ]) {
+      // Synthetic text probes token identity, not a purported legal rule.
+      const law = normalizeLaw({ ...specimen, language, text });
+      expect(queryLaws([law], other)).toEqual([]);
+      const [citation] = queryLaws([law], text);
+      expect(citation.quote).toBe(text);
+      expect(citation.contentHash).toBe(law.contentHash);
+    }
   });
 });
