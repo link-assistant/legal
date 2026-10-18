@@ -101,6 +101,19 @@ describe('shared CLI and HTTP assistant', () => {
       expect(result.status).toBe(200);
       expect((await result.text()).includes(law.id)).toBe(true);
     }));
+  it('keeps local source HTML links resolvable before building the demo', async () => {
+    const { access } = await import('node:fs/promises');
+    const { load } = await import('cheerio');
+    const base = new URL('../web/index.html', import.meta.url);
+    const $ = load(await readFile(base, 'utf8'));
+    for (const element of $('[href], [src]').toArray()) {
+      const path = $(element).attr('href') ?? $(element).attr('src');
+      const url = new URL(path, base);
+      if (url.protocol === 'file:') {
+        await access(url);
+      }
+    }
+  });
   it('ships official raw evidence that can reproduce every demo sample', async () => {
     const { gunzipSync } = await import('node:zlib');
     const { parseDocument } = await import('../src/legal/ingest.js');

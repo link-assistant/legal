@@ -1,0 +1,13 @@
+{
+  "url": "https://link-assistant.github.io/legal/legal/",
+  "query": "法律",
+  "count": "4 source records",
+  "firstSource": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
+  "resourceCount": 3,
+  "runtimeResources": [
+    "https://link-assistant.github.io/legal/legal/style.css",
+    "https://link-assistant.github.io/legal/legal/app.js",
+    "https://link-assistant.github.io/legal/legal/corpus.json"
+  ],
+  "passed": true
+}

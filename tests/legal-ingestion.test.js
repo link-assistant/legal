@@ -31,6 +31,39 @@ const response = (body, status = 200, headers = {}) =>
     headers: { 'content-type': 'text/html', ...headers },
   });
 
+it('checks robots policy before following same-origin and allowed-origin redirects', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'legal-redirect-robots-'));
+  try {
+    for (const origin of [source.origin, 'https://www.matsne.gov.ge']) {
+      const target = `${origin}/restricted/law`;
+      const calls = [];
+      const client = new SourceClient({
+        store: new CollectionStore(root),
+        retries: 0,
+        fetchImpl: async (url) => {
+          calls.push(url);
+          return url.endsWith('/robots.txt')
+            ? response('User-agent: *\nDisallow: /restricted/\n')
+            : url === entry.url
+              ? response('', 302, { location: target })
+              : response(html);
+        },
+      });
+      let message = '';
+      try {
+        await client.get(entry.url, source);
+      } catch (error) {
+        message = error.message;
+      }
+      expect(message.includes('robots.txt disallows')).toBe(true);
+      expect(calls.includes(target)).toBe(false);
+      expect(calls.includes(`${origin}/robots.txt`)).toBe(true);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 describe('official document adapters', () => {
   it('extracts only the configured law body and preserves paragraph boundaries', async () => {
     const records = await parseDocument(

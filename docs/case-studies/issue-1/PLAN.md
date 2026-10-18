@@ -18,9 +18,9 @@ Objective: implement and verify all requirements in issue 1 in PR 2. Keep genuin
 - [x] Verify UI with browser and commit final screenshots. Verify CLI/API/browser share the same data and engine.
 - [ ] Add meaningful tests for multilingual ingestion, parsing, pagination, persistence, updates, errors, formalization limits, citations, reasoning, API, CLI, and browser; bound stress probes and store them in experiments.
 - [x] Add automation, API/source/architecture/collection documentation, case study, requirement evidence, and a changeset release trigger.
-- [ ] Run all local tests and repository checks, review diff and dependency audit, fix failures; use logs for large output.
-- [ ] Commit useful atomic increments; push only issue-1-c88ef43ecd12; preserve history.
-- [ ] Merge current default branch, update PR title/body with implementation, reproductions, tests, screenshots, remaining blocked acceptance criteria and positive closing references.
+- [x] Run all local tests and repository checks, review diff and dependency audit, fix failures; use logs for large output.
+- [x] Commit useful atomic increments; push only issue-1-c88ef43ecd12; preserve history.
+- [x] Merge current default branch, update PR title/body with implementation, reproductions, tests, screenshots, remaining blocked acceptance criteria and positive closing references.
 - [ ] Inspect latest CI timestamps and SHAs, preserve failed logs in ci-logs, fix and verify every failing check, read final PR diff, confirm clean worktree.
 - [ ] Mark PR ready; report URL, verified results, and exact unresolved external blockers without merging.
 
@@ -31,3 +31,16 @@ JavaScript runtime implementation only. Reuse upstream components where executab
 ## Recovery verification
 
 The interrupted session left its implementation uncommitted. Its worktree and logs were recovered into the prepared checkout on 18 October 2026. Node and Bun each passed 834 tests before recovery; Deno passed 835 after calendar-date validation was added. A real PDF extraction test then reproduced a PDF.js cleanup incompatibility, now fixed using the loading task API. Final checks and CI are tracked in VERIFICATION.md. Universal collection and automatic semantic interpretation remain unfinished, as listed in README.md.
+
+## Latest verification progress
+
+- [x] Preserve history while integrating the other recovery session's NPC and demo fixes; verify current main is an ancestor.
+- [x] Reproduce and fix real GovInfo directory discovery, bounded resumable traversal, CFR section/context loss, EUR-Lex metadata acceptance and CLI error handling.
+- [x] Reproduce and fix Deno HTTP test cleanup and redirected-source robots enforcement.
+- [x] Download the fresh failing link-check log, reproduce its missing corpus link and verify both source HTML and the built corpus download.
+- [x] Run Node (868), Bun (868), Deno (865 plus three ignored), Chromium (two), package-consumer, lint/format/duplication and repository checks.
+- [x] Reproduce the hosted release failure caused by inherited fragments targeting the old package name, retarget those fragments and verify the real release plan plus full versioning command.
+- [x] Run pinned actionlint and both configured zizmor passes locally; preserve results and analyzer limits.
+- [x] Deploy the Pages site from the prepared branch and verify Chinese search, official citations and local-only runtime resources in Chromium; commit screenshot and result evidence.
+- [ ] Obtain all hosted checks and an actual Docker runtime smoke result on the latest pushed code.
+- [ ] Resolve the source-access, corpus inventory and semantic requirements listed in the requirement table. These are not completed by the sample or CI results.
