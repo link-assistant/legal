@@ -54,6 +54,8 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Honor robots crawl delays and reject HTML denial responses; verify disallowed redirect targets are never fetched.
 - [x] Make preview Git failures propagate under Bash and configure container ownership; execute the actual drift script in a failing fixture.
 - [x] Add a fifth actual source record: the complete selected GDPR Article 5 subdivision, with raw SHA-256, acquisition date, official link and honest edition scope.
-- [x] Run combined Node/Bun (896 each), Deno (893 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
+- [x] Run combined Node/Bun (898 each), Deno (895 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
 - [x] Inspect the earlier hosted Docker smoke log: healthy container and three citations, rather than relying on a successful build alone.
 - [ ] Push the combined code, check all runs against its actual SHA, inspect any new failures and verify the updated public demo.
+
+- [x] Reproduce encoded-path robots bypass before fixing it; normalize RFC 9309 matching and verify reserved separators remain distinct. Preserve the red/green trace and rerun all three runtime suites.

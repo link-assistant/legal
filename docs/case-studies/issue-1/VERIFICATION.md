@@ -23,6 +23,8 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 - USLM extraction also discarded title-level notes outside numbered sections. The minimal regression failed with two records instead of three. A robots-compliant, bounded official Title 1 download (42,240 archive bytes; catalog and SHA-256 preserved in `data/uslm-sample*`) confirmed 39 sections plus omitted statutory repeal/rights language. Extraction now retains all 39 sections and a separate context record. The offline archive regression rechecks its hash, distinct IDs and actual title-level statutory notes. This title is a temporary fixture outside the five-record browser corpus, not an exhaustive US Code collection.
 - The documented EU XHTML media type was incorrectly routed to the legislative XML parser and rejected. `tests/legal-eu.test.js` first reproduced this with the actual collected Article 5 response, without a format override. Media types are now normalized and XHTML uses the HTML body selector; both ordinary and mixed-case/parameterized media types reproduce the exact collected text. The failing and passing logs are preserved in `data/logs/xhtml-*.log.gz`.
 
+- Percent-encoded ASCII and non-ASCII robots paths could bypass a publisher prohibition. The failing regression fetched `/%70rivate/law` despite `Disallow: /private/`. Matching now follows [RFC 9309 section 2.2.2](https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.2): normalize unreserved escapes and UTF-8 octets, preserve reserved separators, and retain wildcard/end-anchor behavior. The same regression now stops after the robots request. Both the focused failing/passing logs and the full runtime checks are preserved.
+
 ## Evidence and limits
 
 Local verification after recovery passed:

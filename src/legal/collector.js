@@ -198,23 +198,47 @@ export function robotsIntervalMs(text, userAgent = 'LegalAssistant') {
   }
   return delay;
 }
+// RFC 9309 section 2.2.2: decode unreserved ASCII octets only; keep reserved
+// escapes distinct, canonicalize hex case and encode literal UTF-8 characters.
+function normalizeRobotsPath(value, pattern = false) {
+  return value.replace(/%[0-9a-f]{2}|[^\x21-\x7e]|[$*]/giu, (part) => {
+    if (part.startsWith('%')) {
+      const decoded = String.fromCharCode(Number.parseInt(part.slice(1), 16));
+      return /^[a-z0-9._~-]$/i.test(decoded) ? decoded : part.toUpperCase();
+    }
+    if (part === '*') {
+      return pattern ? '*' : '%2A';
+    }
+    return encodeURIComponent(part);
+  });
+}
 export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
   const selected = selectedRobotsGroups(text, userAgent);
-  const path = new URL(url).pathname + new URL(url).search;
+  const parsed = new URL(url);
+  const path = normalizeRobotsPath(parsed.pathname + parsed.search);
   const rules = selected
     .flatMap((group) => group.rules)
-    .filter((rule) => {
-      const expression = rule.path
-        .split('*')
-        .map((part) => part.replace(/[.+?^{}()|[\]\\]/g, '\\$&'))
-        .join('.*')
-        .replace(/\$$/, '$');
-      return new RegExp(`^${expression}`).test(path);
+    .map((rule) => {
+      const end = rule.path.endsWith('$');
+      const normalized = normalizeRobotsPath(
+        end ? rule.path.slice(0, -1) : rule.path,
+        true
+      );
+      return {
+        ...rule,
+        normalized,
+        end,
+        octets: normalized.replace(/%[0-9a-f]{2}/gi, 'x').length,
+      };
     })
-    .sort(
-      (a, b) =>
-        b.path.length - a.path.length || Number(b.allow) - Number(a.allow)
-    );
+    .filter((rule) => {
+      const expression = rule.normalized
+        .split('*')
+        .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+        .join('.*');
+      return new RegExp(`^${expression}${rule.end ? '$' : ''}`).test(path);
+    })
+    .sort((a, b) => b.octets - a.octets || Number(b.allow) - Number(a.allow));
   return rules[0]?.allow ?? true;
 }
 export class SourceClient {
