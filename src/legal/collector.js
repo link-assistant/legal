@@ -322,13 +322,13 @@ export class SourceClient {
     const key = method === 'GET' ? url : `${method}\n${url}\n${body}`;
     const cached = await this.store.cache(key);
     for (let redirect = 0; redirect < 6; redirect++) {
-      const result = await this.attempt(
-        current,
-        source,
-        method === 'GET' ? cached : null,
-        robots,
-        { method, body }
-      );
+      // Validators identify a representation of one resource. Redirect routers
+      // and replacement targets must not receive another URL's validators.
+      const conditional = conditionalEvidence(cached, method, current);
+      const result = await this.attempt(current, source, conditional, robots, {
+        method,
+        body,
+      });
       if (result.redirect) {
         if (method !== 'GET') {
           throw new Error(
@@ -350,8 +350,10 @@ export class SourceClient {
         continue;
       }
       if (result.status === 304) {
-        if (!cached) {
-          throw new Error('Source returned 304 without cached evidence');
+        if (!conditional) {
+          throw new Error(
+            'Source returned 304 without matching conditional cached evidence'
+          );
         }
         return {
           ...cached,
@@ -641,6 +643,13 @@ function requestHeaders(cached, body) {
   }
 
   return headers;
+}
+
+function conditionalEvidence(cached, method, url) {
+  if (method !== 'GET' || !cached || !(cached.etag || cached.lastModified)) {
+    return null;
+  }
+  return (cached.finalUrl ?? cached.url) === url ? cached : null;
 }
 
 async function readResponse(response, maxBytes) {

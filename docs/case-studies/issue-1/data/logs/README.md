@@ -26,3 +26,5 @@ gzip -dc /tmp/legal-earlier-logs/tests-node-final.log.gz | less
 These logs record different historical revisions. The verification report
 distinguishes the latest local results, older hosted proofs and unfinished
 acceptance criteria.
+
+`conditional-cache-verification.tar.gz` preserves the failing redirect-cache regression, passing focused tests, complete Node/Bun/Deno suites and repository checks. Its companion `conditional-cache-verification.sha256` verifies each archived log. This run follows the cache validator fix; the Unicode archive retains the earlier runtime counts.

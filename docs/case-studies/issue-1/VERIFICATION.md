@@ -13,6 +13,7 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 - A EUR-Lex title-only metadata fixture was accepted as law text. Removing the title selector makes that fixture fail closed. CLI resume tests also reproduced asynchronous collection errors escaping the error handler; those now return exit code 1.
 - The full Deno run exposed an HTTP test waiting indefinitely for a keep-alive socket after `server.close()`. Explicitly closing test connections fixes cleanup; the focused run with leak tracing and the full Deno rerun pass. The interrupted log is preserved separately.
 - A redirect could bypass the destination's robots policy. A mocked regression first demonstrated the request reaching a prohibited path; same-origin and explicitly allowed alternate-origin redirects now check the destination policy before requesting content.
+- Conditional requests could reuse an old law after a publisher changed a redirect target: the previous target's ETag was sent to the replacement resource, and its 304 response incorrectly selected the old body. Three regressions first failed, demonstrating leaked validators, stale text and unsolicited 304 acceptance. Validators now apply only at the cached response's final URL; changed targets are downloaded, and unmatched or POST 304 responses fail closed. A stable redirect still revalidates its original target. This follows the target-resource scope of validators in [RFC 9110 section 13.1.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.2).
 - The fresh link-check job for `2b7dbd2` failed at line 285 because source HTML linked to a build-only `web/corpus.json`. The preserved job log is `data/logs/links-39141675940.log.gz`. A local source-link test reproduced the missing file. The source now links to the canonical collected corpus; the build rewrites that link for its packaged layout, and a browser test downloads and compares the entire JSON corpus.
 
 - Release CI on `2b7dbd2` failed at line 238 of `data/logs/release-117718678351.log.gz`: four inherited changesets still referenced the starter package name after the package rename. A regression assembles the actual pending release plan and failed with the same workspace error. Retargeting those fragments preserves their release notes and makes the regression pass. `experiments/pending-release-version.mjs` runs the complete versioning command in an isolated copy, confirms version `0.12.0` and its synchronized lockfile, and leaves the checkout's fragments intact.
@@ -35,15 +36,15 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 
 Local verification after recovery passed:
 
-- Node: 905 tests, zero failures.
-- Bun: 905 tests, zero failures.
-- Deno: 902 tests, zero failures, three runtime-specific tests ignored.
+- Node: 908 tests, zero failures.
+- Bun: 908 tests, zero failures.
+- Deno: 905 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.11%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.12%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
 
-Compressed test, browser and package logs are in `data/logs/`.
+Compressed test, browser and package logs are in `data/logs/`. The latest conditional-redirect red/green traces, all three complete runtime suites and repository checks are preserved in `data/logs/conditional-cache-verification.tar.gz`, with per-file SHA-256 checksums alongside it.
 
 The pinned actionlint 1.7.12 binary and zizmor 1.30.1 regular/high-severity pedantic passes also passed locally. The native actionlint run had no ShellCheck on PATH; the hosted workflow uses its pinned Docker image with ShellCheck and remains the full shell-block check. Zizmor reported no findings under the repository's existing configuration; ignored/suppressed rules are visible in its preserved logs.
 

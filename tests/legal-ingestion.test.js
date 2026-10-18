@@ -136,6 +136,116 @@ describe('official document adapters', () => {
   });
 });
 
+describe('conditional source evidence', () => {
+  it('revalidates a redirected response only at its original final URL', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'legal-redirect-cache-'));
+    try {
+      const calls = [];
+      const finalUrl = `${source.origin}/published/law`;
+      const client = new SourceClient({
+        store: new CollectionStore(root),
+        respectRobots: false,
+        retries: 0,
+        fetchImpl: async (url, options) => {
+          calls.push({ url, headers: options.headers });
+          if (url === entry.url) {
+            return response('', 302, { location: finalUrl });
+          }
+          return options.headers['if-none-match']
+            ? response(null, 304)
+            : response(html, 200, { etag: '"edition-1"' });
+        },
+      });
+      await client.get(entry.url, source);
+      const result = await client.get(entry.url, source);
+      expect(result.fromCache).toBe(true);
+      expect(result.finalUrl).toBe(finalUrl);
+      expect(calls[2].headers['if-none-match']).toBe(undefined);
+      expect(calls[3].headers['if-none-match']).toBe('"edition-1"');
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+  it('downloads a changed redirect target even when its ETag matches the previous resource', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'legal-redirect-edition-'));
+    try {
+      const store = new CollectionStore(root);
+      let finalUrl = `${source.origin}/published/old`;
+      const oldUrl = finalUrl;
+      const client = new SourceClient({
+        store,
+        respectRobots: false,
+        retries: 0,
+        fetchImpl: async (url, options) => {
+          if (url === entry.url) {
+            return response('', 302, { location: finalUrl });
+          }
+          return options.headers['if-none-match']
+            ? response(null, 304)
+            : response(url === oldUrl ? 'old edition' : 'new edition', 200, {
+                etag: '"shared-tag"',
+                'last-modified': 'Wed, 01 Jan 2025 00:00:00 GMT',
+              });
+        },
+      });
+      await client.get(entry.url, source);
+      finalUrl = 'https://www.matsne.gov.ge/published/new';
+      const result = await client.get(entry.url, source);
+      expect(new TextDecoder().decode(result.bytes)).toBe('new edition');
+      expect(result.finalUrl).toBe(finalUrl);
+      expect(result.fromCache).toBe(false);
+      expect(new TextDecoder().decode(await store.raw(result.rawHash))).toBe(
+        'new edition'
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+  it('rejects 304 responses without a conditional request for the matching cached resource', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'legal-unmatched-304-'));
+    try {
+      for (const mode of ['changed-target', 'unvalidated', 'post']) {
+        const store = new CollectionStore(join(root, mode));
+        let second = false;
+        const client = new SourceClient({
+          store,
+          respectRobots: false,
+          retries: 0,
+          fetchImpl: async (url) => {
+            if (mode === 'changed-target' && url === entry.url) {
+              return response('', 302, {
+                location: second ? '/published/new' : '/published/old',
+              });
+            }
+            return second
+              ? response(null, 304)
+              : response(
+                  html,
+                  200,
+                  mode === 'unvalidated' ? {} : { etag: 'v1' }
+                );
+          },
+        });
+        const fetch = () =>
+          mode === 'post'
+            ? client.postJson(entry.url, { page: 1 }, source)
+            : client.get(entry.url, source);
+        await fetch();
+        second = true;
+        let message = '';
+        try {
+          await fetch();
+        } catch (error) {
+          message = error.message;
+        }
+        expect(message.includes('304')).toBe(true);
+      }
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('bounded collection and persistent evidence', () => {
   it('checks robots before following an allowed-origin redirect', async () => {
     const root = await mkdtemp(join(tmpdir(), 'legal-redirect-robots-'));
