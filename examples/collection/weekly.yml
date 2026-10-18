@@ -1,0 +1,53 @@
+# Copy into the separate data repository's .github/workflows directory.
+name: Update collected laws
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: collected-laws
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      # The data repository pins @link-assistant/legal in its own package lock.
+      - run: npm ci
+      - name: Restore collection checkpoints and HTTP evidence
+        uses: actions/cache/restore@v5
+        with:
+          path: collections
+          key: laws-${{ github.run_id }}
+          restore-keys: laws-
+      - name: Collect bounded resumable batch
+        id: collection
+        continue-on-error: true
+        run: node node_modules/@link-assistant/legal/scripts/update-collection.mjs collection.config.json > collection-report.json
+      - name: Save evidence and next-run checkpoints
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: collections
+          key: laws-${{ github.run_id }}
+      - name: Preserve results for review
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: collection-report
+          path: |
+            collection-report.json
+            collections/scheduled/corpus.json
+      - name: Fail partial collections visibly
+        if: steps.collection.outcome != 'success'
+        run: exit 1
+# Publishing collected data is a separate step after reviewing each publisher's
+# distribution terms. This template makes no unreviewed public data pushes.

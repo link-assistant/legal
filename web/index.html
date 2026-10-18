@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore collected official law texts with verifiable citations and deterministic local search."
+    />
+    <title>Legal · Source explorer</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./">◈ legal<span> / source explorer</span></a
+      ><a href="https://github.com/link-assistant/legal">View project ↗</a>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">OFFICIAL TEXTS · OPEN SOURCES · LOCAL SEARCH</p>
+        <h1>Start with the source.</h1>
+        <p class="lead">
+          Explore a small collection of published law. Every result links to an
+          official source and the exact text we collected.
+        </p>
+      </section>
+      <div class="workspace">
+        <section class="search-panel">
+          <form id="question-form">
+            <label for="question">What are you looking for?</label>
+            <div class="input-row">
+              <input
+                id="question"
+                name="question"
+                required
+                maxlength="4000"
+                value="equal before the law"
+                placeholder="Search words in the source language"
+              /><button type="submit">
+                Find sources <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div class="filters">
+              <label
+                >Jurisdiction<select id="jurisdiction">
+                  <option value="">All collected</option>
+                </select></label
+              ><label
+                >Language<select id="language">
+                  <option value="">All collected</option>
+                </select></label
+              >
+            </div>
+          </form>
+          <div class="examples">
+            <span>Try</span
+            ><button type="button" data-query="freedom">freedom</button
+            ><button type="button" data-query="法律">法律</button
+            ><button type="button" data-query="Parliament">Parliament</button>
+          </div>
+          <div id="results" aria-live="polite"></div>
+        </section>
+        <aside>
+          <div class="scope">
+            <p class="eyebrow">COLLECTION STATUS</p>
+            <h2 id="document-count">Loading sources…</h2>
+            <p>
+              This is an incomplete sample. Some texts are historical or
+              translated. The collection date does not establish when a law
+              applies.
+            </p>
+            <div id="coverage"></div>
+            <p class="small">
+              Search returns quotations. It does not determine your rights or
+              resolve legal conflicts.
+            </p>
+            <a href="corpus.json" download>Download collected data ↓</a>
+          </div>
+          <div class="scope">
+            <p class="eyebrow">YOUR DATA STAYS HERE</p>
+            <p>
+              Search runs in your browser using the downloaded collection. No
+              question is sent to a server.
+            </p>
+            <label class="upload" for="corpus-file"
+              >Open another collected corpus<input
+                id="corpus-file"
+                type="file"
+                accept="application/json,.json"
+            /></label>
+            <p id="upload-status" role="status"></p>
+          </div>
+        </aside>
+      </div>
+      <section class="library">
+        <div class="section-title">
+          <h2>Inside the collection</h2>
+          <span>Source editions &amp; evidence</span>
+        </div>
+        <div id="documents"></div>
+      </section>
+    </main>
+    <footer>
+      <span>Traceable text. Explicit limits.</span
+      ><a href="https://github.com/link-assistant/legal/tree/main/docs"
+        >Documentation ↗</a
+      >
+    </footer>
+  </body>
+</html>

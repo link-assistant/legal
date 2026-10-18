@@ -431,6 +431,12 @@ jobs:
           cache-from: type=gha,scope=docker-image
           cache-to: type=gha,mode=max,scope=docker-image
 
+      - name: Smoke test legal API container
+        if: steps.docker_config.outputs.enabled == 'true'
+        env:
+          SMOKE_IMAGE: pr-check:${{ github.sha }}
+        run: node experiments/docker-smoke.mjs "$SMOKE_IMAGE"
+
   # === DOCUMENTATION VALIDATION ===
   # Validate documentation files when docs change (hive-mind principle #12)
   validate-docs:

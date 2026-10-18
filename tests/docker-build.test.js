@@ -83,10 +83,10 @@ describe('pull-request Docker build check', () => {
 });
 
 describe('Docker build configuration', () => {
-  it('stays disabled when the repository ships no Dockerfile', () => {
+  it('enables the shipped API Dockerfile', () => {
     const config = evaluateDockerBuildConfig({ cwd: '.', env: {} });
 
-    expect(config.enabled).toBe(false);
+    expect(config.enabled).toBe(true);
     expect(config.errors).toEqual([]);
     expect(config.dockerfile).toBe('./Dockerfile');
     expect(config.context).toBe('.');

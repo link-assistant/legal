@@ -80,7 +80,7 @@ function runPrepare(cwd, extraEnv = {}) {
 describe('install-git-hooks.mjs', () => {
   it('replaces the unconditionally-masked prepare script', () => {
     expect(packageJson.scripts.prepare).toBe(
-      'node scripts/install-git-hooks.mjs'
+      'node scripts/install-git-hooks.mjs && node scripts/bootstrap-formal-ai.mjs'
     );
     expect(packageJson.scripts.prepare).not.toContain('|| true');
     expect(packageJson.devDependencies.husky).toBeTruthy();

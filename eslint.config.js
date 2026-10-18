@@ -32,6 +32,12 @@ export default [
         module: 'readonly',
         // Node.js 18+ globals
         fetch: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
         AbortController: 'readonly',
         AbortSignal: 'readonly',
         setTimeout: 'readonly',
@@ -95,19 +101,31 @@ export default [
     },
   },
   {
-    files: ['examples/universal-app/src/**/*.js'],
+    files: [
+      'examples/universal-app/src/**/*.js',
+      'web/**/*.js',
+      'tests/browser/**/*.js',
+    ],
     languageOptions: {
       globals: {
         document: 'readonly',
         window: 'readonly',
+        Blob: 'readonly',
+        Option: 'readonly',
       },
     },
+  },
+  {
+    files: ['scripts/update-preview-images.mjs'],
+    // This script declares URL in its existing inline browser-global list.
+    languageOptions: { globals: { URL: 'off' } },
   },
   {
     // Test files have different requirements
     files: ['tests/**/*.js', '**/*.test.js'],
     rules: {
       'require-await': 'off', // Async functions without await are common in tests
+      'local/no-changelog-comments': ['warn', { allowDatesInStrings: true }],
     },
   },
   {
@@ -124,6 +142,8 @@ export default [
   {
     ignores: [
       'node_modules/**',
+      'src/generated/**',
+      'experiments/official/**',
       '**/node_modules/**',
       'coverage/**',
       'dist/**',

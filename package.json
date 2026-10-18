@@ -1,25 +1,38 @@
 {
-  "name": "@link-foundation/example-package-name",
+  "name": "@link-assistant/legal",
   "version": "0.11.31",
-  "description": "A JavaScript/TypeScript package template for AI-driven development",
+  "description": "Deterministic legal-source collection, formalization and cited search in JavaScript",
   "type": "module",
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "bin": {
-    "example-package-name": "./bin/example-package-name.js"
+    "example-package-name": "./bin/example-package-name.js",
+    "legal-assistant": "./bin/legal-assistant.js"
   },
   "files": [
     "bin/",
     "src/",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "data/demo/",
+    "patches/",
+    "scripts/bootstrap-formal-ai.mjs",
+    "docs/openapi.json",
+    "data/sources.sample.json",
+    "scripts/update-collection.mjs"
   ],
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
-    }
+    },
+    "./legal": {
+      "types": "./src/legal/index.d.ts",
+      "import": "./src/legal/index.js"
+    },
+    "./collector": "./src/legal/collector.js",
+    "./server": "./src/legal/server.js"
   },
   "scripts": {
     "test": "node --test --test-timeout=30000 tests/*.test.js",
@@ -37,17 +50,25 @@
     "example:desktop:package": "npm --prefix examples/universal-app run desktop:package",
     "example:desktop:make": "npm --prefix examples/universal-app run desktop:make",
     "example:mobile:sync": "npm --prefix examples/universal-app run mobile:sync",
-    "prepare": "node scripts/install-git-hooks.mjs",
+    "prepare": "node scripts/install-git-hooks.mjs && node scripts/bootstrap-formal-ai.mjs",
     "changeset": "changeset",
     "changeset:version": "node scripts/changeset-version.mjs",
     "changeset:publish": "changeset publish",
-    "changeset:status": "changeset status --since=origin/main"
+    "changeset:status": "changeset status --since=origin/main",
+    "pretest": "node scripts/bootstrap-formal-ai.mjs",
+    "test:legal": "node scripts/bootstrap-formal-ai.mjs && node --test --test-timeout=30000 tests/legal-*.test.js",
+    "test:browser": "playwright test",
+    "build:demo": "node scripts/build-legal-demo.mjs",
+    "start": "node bin/legal-assistant.js serve",
+    "prepack": "node scripts/bootstrap-formal-ai.mjs",
+    "collect:update": "node scripts/update-collection.mjs"
   },
   "keywords": [
-    "template",
-    "javascript",
-    "typescript",
-    "ai-driven"
+    "law",
+    "legal",
+    "links-notation",
+    "meta-language",
+    "javascript"
   ],
   "author": "",
   "license": "Unlicense",
@@ -61,13 +82,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/link-foundation/js-ai-driven-development-pipeline-template.git"
+    "url": "git+https://github.com/link-assistant/legal.git"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.13.0"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
+    "@playwright/test": "1.64.1",
+    "esbuild": "0.28.2",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -87,5 +110,19 @@
       "prettier --write",
       "prettier --check"
     ]
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0",
+    "cheerio": "1.2.0",
+    "events": "3.3.0",
+    "fflate": "0.8.3",
+    "links-notation": "0.27.0",
+    "lino-objects-codec": "0.9.2",
+    "meta-language": "0.46.0",
+    "pdfjs-dist": "6.4.299"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "@napi-rs/canvas": false
   }
 }

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Temporary bounded official-source collection for reproducible tests and demo",
+  "entries": [
+    {
+      "id": "us-constitution-original",
+      "sourceId": "us-archives",
+      "language": "en",
+      "title": "Constitution of the United States (original transcription)",
+      "url": "https://www.archives.gov/founding-docs/constitution-transcript",
+      "scope": "Original 1787 text with amendment references; not a consolidated current constitution",
+      "translation": false,
+      "rawHash": "124e60487d88d4dd13f36f09999d8d0701385e0188fb3e0c8427b101886379fb",
+      "rawPath": "raw/124e60487d88d4dd13f36f09999d8d0701385e0188fb3e0c8427b101886379fb.html.gz",
+      "format": "html",
+      "sampleCharacters": 18000,
+      "fullTextCharacters": 27644,
+      "selection": "First 18000 normalized characters; explicitly incomplete",
+      "retrievedAt": "2026-10-18T14:20:00.000Z"
+    },
+    {
+      "id": "cn-constitution-2014-en",
+      "sourceId": "cn-npc",
+      "language": "en",
+      "title": "Constitution of the People’s Republic of China (2014 English publication)",
+      "url": "https://english.www.gov.cn/archive/laws_regulations/2014/08/23/content_281474982987458.htm",
+      "scope": "Historical government English publication; predates the 2018 amendments",
+      "translation": true,
+      "rawHash": "e11965c15b20635f0dad750f4eef10d06ec7607cd1b749a12b785a884a660a8c",
+      "rawPath": "raw/e11965c15b20635f0dad750f4eef10d06ec7607cd1b749a12b785a884a660a8c.html.gz",
+      "format": "html",
+      "sampleCharacters": 18000,
+      "fullTextCharacters": 72969,
+      "selection": "First 18000 normalized characters; explicitly incomplete",
+      "retrievedAt": "2026-10-18T14:20:00.000Z"
+    },
+    {
+      "id": "cn-constitution-2018-zh",
+      "sourceId": "cn-npc",
+      "language": "zh",
+      "title": "中华人民共和国宪法（2018）",
+      "url": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
+      "scope": "2018 government publication; legal currency unverified",
+      "translation": false,
+      "rawHash": "c529b6c76c44d7d54e208075c32697430144875183a3d3beb8ff4d8752b5ab98",
+      "rawPath": "raw/c529b6c76c44d7d54e208075c32697430144875183a3d3beb8ff4d8752b5ab98.html.gz",
+      "format": "html",
+      "sampleCharacters": 17913,
+      "fullTextCharacters": 17913,
+      "selection": "First 18000 normalized characters; explicitly incomplete",
+      "retrievedAt": "2026-10-18T14:20:00.000Z"
+    },
+    {
+      "id": "ge-constitution-en",
+      "sourceId": "ge-matsne",
+      "language": "en",
+      "title": "Constitution of Georgia (official English translation)",
+      "url": "https://matsne.gov.ge/en/document/view/30346",
+      "scope": "Matsne English translation; verify consolidation edition against Georgian original",
+      "translation": true,
+      "rawHash": "bd889d39520ed6e1fc20b1e889216d423919966e6d6c3fa5f72b73029a5fe01e",
+      "rawPath": "raw/bd889d39520ed6e1fc20b1e889216d423919966e6d6c3fa5f72b73029a5fe01e.html.gz",
+      "format": "html",
+      "sampleCharacters": 18000,
+      "fullTextCharacters": 107198,
+      "selection": "First 18000 normalized characters; explicitly incomplete",
+      "retrievedAt": "2026-10-18T14:20:00.000Z"
+    }
+  ]
+}

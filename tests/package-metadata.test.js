@@ -37,18 +37,17 @@ function windowsSymlinkSkipReason() {
 const symlinkSkipReason = windowsSymlinkSkipReason();
 
 describe('publishable package metadata', () => {
-  it('uses the real link-foundation example package name', () => {
-    expect(packageJson.name).toBe('@link-foundation/example-package-name');
+  it('uses the legal package name', () => {
+    expect(packageJson.name).toBe('@link-assistant/legal');
     expect(packageJson.publishConfig).toEqual({ access: 'public' });
-    expect(lockJson.name).toBe('@link-foundation/example-package-name');
-    expect(lockJson.packages[''].name).toBe(
-      '@link-foundation/example-package-name'
-    );
+    expect(lockJson.name).toBe('@link-assistant/legal');
+    expect(lockJson.packages[''].name).toBe('@link-assistant/legal');
   });
 
   it('defines a globally installable CLI command', () => {
     expect(packageJson.bin).toEqual({
       'example-package-name': './bin/example-package-name.js',
+      'legal-assistant': './bin/legal-assistant.js',
     });
     expect(existsSync('bin/example-package-name.js')).toBe(true);
   });
@@ -106,6 +105,12 @@ describe('publishable package metadata', () => {
       'CHANGELOG.md',
       'LICENSE',
       'README.md',
+      'data/demo/',
+      'patches/',
+      'scripts/bootstrap-formal-ai.mjs',
+      'docs/openapi.json',
+      'data/sources.sample.json',
+      'scripts/update-collection.mjs',
     ]);
   });
 });
