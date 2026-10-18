@@ -198,8 +198,8 @@ async function pdfText(bytes) {
     isEvalSupported: false,
     useSystemFonts: true,
   });
-  const doc = await task.promise;
   try {
+    const doc = await task.promise;
     if (doc.numPages > 3000) {
       throw new Error('PDF exceeds page budget');
     }
@@ -371,7 +371,7 @@ function discoverPravo(item, source) {
   );
 }
 function discoverNpc(item, source, resources) {
-  const id = item.id ?? item.lawId;
+  const id = item.id ?? item.lawId ?? item.bbbs;
   if (!id) {
     throw new Error('NPC discovery entry has no identifier');
   }
@@ -399,7 +399,14 @@ function discoverStructured(body, source, pageSize) {
   const rows =
     source.adapter === 'cellar'
       ? json.results?.bindings
-      : (json.items ?? json.data?.list ?? json.result?.data);
+      : (json.rows ?? json.items ?? json.data?.list ?? json.result?.data);
+  if (
+    source.adapter === 'npc' &&
+    json.code !== undefined &&
+    json.code !== 200
+  ) {
+    throw new Error(`NPC catalog error: ${json.code}`);
+  }
   if (!Array.isArray(rows)) {
     throw new Error(`Unrecognized ${source.adapter} discovery response`);
   }

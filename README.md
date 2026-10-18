@@ -56,9 +56,9 @@ The original template APIs (`add`, `multiply`, `delay`), CLI alias and universal
 
 A comprehensive template for AI-driven JavaScript/TypeScript development with full CI/CD pipeline support.
 
-The template originally published `@link-foundation/example-package-name`. This
-repository prepares releases of `@link-assistant/legal`; trusted publishing must
-be configured for that package before the first release.
+The retained template originally published `@link-foundation/example-package-name`.
+This repository prepares releases of `@link-assistant/legal`; npm trusted publishing
+must be configured for that package before the first release.
 
 ## Features
 

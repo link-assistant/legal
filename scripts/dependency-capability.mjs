@@ -34,8 +34,10 @@ async function main() {
     process.env.GITHUB_EVENT_NAME
   );
   if (!available) {
+    const action =
+      'Enable Dependency graph under Settings → Advanced Security → Dependency graph, then rerun Security.';
     console.log(
-      '::notice::Dependency review API unavailable. Both npm locks are audited instead. Enable Dependency graph in repository settings.'
+      `::notice::Dependency review API unavailable (HTTP ${response.status}). Both npm locks are audited instead. ${action}`
     );
   }
   await appendFile(process.env.GITHUB_OUTPUT, `available=${available}\n`);

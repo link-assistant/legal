@@ -2,7 +2,7 @@ import { it, expect } from 'test-anywhere';
 import { pdfFixture } from '../experiments/pdf-fixture.mjs';
 import { parseDocument } from '../src/legal/ingest.js';
 import { getSource } from '../src/legal/registry.js';
-it('extracts text from a real PDF and releases its loading task', async () => {
+it('extracts the exact contents of a text-bearing PDF', async () => {
   const fixture = pdfFixture();
   const records = await parseDocument(
     fixture.bytes,

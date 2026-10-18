@@ -1,8 +1,8 @@
-import { isISODate, isOptionalISODate } from './model.js';
 import {
   assessLegalContext,
   Stance,
 } from '../generated/formal-ai-relative.mjs';
+import { isISODate, isOptionalISODate } from './model.js';
 
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 function matchFacts(conditions, facts) {
@@ -27,7 +27,6 @@ function validateRule(rule, laws) {
     );
   }
   validateCitation(rule, law);
-  validateRuleDates(rule);
   if (
     !rule.when ||
     !rule.unless ||
@@ -45,10 +44,17 @@ function validateRule(rule, laws) {
       throw new Error('Facts must be primitive values');
     }
   }
-  if (!isISODate(rule.effectiveFrom)) {
-    throw new Error('Reviewed rules require an effectiveFrom date');
-  }
+  validateRuleDates(rule);
   return law;
+}
+function validateRuleDates(rule) {
+  if (
+    !isISODate(rule.effectiveFrom) ||
+    !isOptionalISODate(rule.effectiveTo) ||
+    (rule.effectiveTo && rule.effectiveTo <= rule.effectiveFrom)
+  ) {
+    throw new Error('Reviewed rules require a valid effective date range');
+  }
 }
 // Executable meaning is supplied by a named reviewer, never inferred from modal cues.
 export function evaluateRules(laws, rules, facts, context) {
@@ -114,6 +120,7 @@ function validateCitation(rule, law) {
     !Number.isInteger(rule.end) ||
     rule.start < 0 ||
     rule.end <= rule.start ||
+    rule.end > law.text.length ||
     law.text.slice(rule.start, rule.end) !== rule.quote
   ) {
     throw new Error('Rule citation does not match source text');
@@ -127,13 +134,4 @@ function inRuleScope(rule, context) {
     context.asOf >= rule.effectiveFrom &&
     (!rule.effectiveTo || context.asOf < rule.effectiveTo)
   );
-}
-
-function validateRuleDates(rule) {
-  if (
-    !isOptionalISODate(rule.effectiveTo) ||
-    (rule.effectiveTo && rule.effectiveTo <= rule.effectiveFrom)
-  ) {
-    throw new Error('Invalid rule effective date range');
-  }
 }

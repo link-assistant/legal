@@ -1,6 +1,7 @@
 import { it, expect } from 'test-anywhere';
 import { applyExactPatch } from '../scripts/bootstrap-formal-ai.mjs';
 import { dependencyReviewAvailable } from '../scripts/dependency-capability.mjs';
+
 it('applies exact dependency patch context and rejects source drift', () => {
   const patch = '--- a/source\n+++ b/source\n@@ -1,2 +1,2 @@\n a\n-b\n+c\n';
   expect(applyExactPatch('a\nb\n', patch)).toBe('a\nc\n');

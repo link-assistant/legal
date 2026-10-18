@@ -76,6 +76,7 @@ it('refuses unreviewed semantics and citations that drift from the source', () =
     { ...rule, reviewedBy: '' },
     { ...rule, quote: 'invented' },
     { ...rule, contentHash: 'stale' },
+    { ...rule, end: law.text.length + 1 },
   ]) {
     let failed = false;
     try {

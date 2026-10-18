@@ -1,4 +1,4 @@
-// Finite one-page PDF fixture for actual text extraction, without an external service.
+// A finite one-page PDF fixture, used to verify actual text extraction.
 export function pdfFixture() {
   const text = 'Every person shall have equal protection under this test law.';
   const stream = `BT /F1 12 Tf 30 100 Td (${text}) Tj ET`;

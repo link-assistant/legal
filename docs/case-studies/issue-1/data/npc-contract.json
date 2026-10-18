@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-18",
+  "catalogTotal": 30995,
+  "responseCode": 200,
+  "keys": [
+    "total",
+    "rows",
+    "code",
+    "msg",
+    "searchType",
+    "searchContent"
+  ],
+  "rowKeys": [
+    "bbbs",
+    "title",
+    "gbrq",
+    "sxrq",
+    "sxx",
+    "zdjgName",
+    "xgzlHighLight",
+    "flxz",
+    "zdjgCodeId",
+    "flfgCodeId",
+    "titleHightLightList",
+    "score"
+  ],
+  "rawResponseSHA256": "d8b3d74dd5e42e52f5303f13af28e1f5c018c8d6a61c016e9c9ecfb2e3f44647",
+  "collectionAllowed": false,
+  "reason": "Publisher robots.txt disallows all automated collection; stop before POST in future probes."
+}

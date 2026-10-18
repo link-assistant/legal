@@ -1,8 +1,8 @@
-import { isISODate } from './model.js';
 import {
   assessLegalContext,
   Stance,
 } from '../generated/formal-ai-relative.mjs';
+import { isISODate } from './model.js';
 
 const ignored = new Set(
   'a an the is are of to in on and or what which how can i do does law laws article section all de la le les des en el и в на по что как о это कानून'.split(
