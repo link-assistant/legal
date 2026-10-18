@@ -2,7 +2,7 @@
 
 JavaScript tools to collect official legal texts, preserve their provenance, export lossless meta-language networks, and search them with exact citations. The library, CLI, HTTP API, Docker image and browser demo share the same engine. No LLM is used.
 
-**Coverage is incomplete.** The demo contains four bounded official-source records from the US, China and Georgia. It includes historical text and translations. The publisher registry also describes Europe, India and Russia, but their adapters and language coverage are not fully verified. Search finds text; it does not answer arbitrary legal questions or establish applicability. See the [issue 1 case study](docs/case-studies/issue-1/README.md) for every requirement, evidence and blocked criteria.
+**Coverage is incomplete.** The demo contains five bounded official-source records from the US, EU, China and Georgia. It includes historical text and translations. The publisher registry also describes India and Russia, but their adapters and language coverage are not fully verified. Search finds text; it does not answer arbitrary legal questions or establish applicability. See the [issue 1 case study](docs/case-studies/issue-1/README.md) for every requirement, evidence and blocked criteria.
 
 ## Run the assistant
 

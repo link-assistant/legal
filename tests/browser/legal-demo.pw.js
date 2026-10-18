@@ -6,7 +6,7 @@ test('searches only collected law, shows missing coverage and exports formalizat
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
-  await expect(page.locator('#document-count')).toHaveText('4 source records');
+  await expect(page.locator('#document-count')).toHaveText('5 source records');
   await expect(page.locator('.result').first()).toBeVisible();
   await expect(page.locator('#coverage')).toContainText('Not collected');
   const corpusDownload = page.waitForEvent('download');
@@ -30,6 +30,19 @@ test('searches only collected law, shows missing coverage and exports formalizat
     .first()
     .click();
   expect((await downloaded).suggestedFilename()).toMatch(/\.lino$/);
+  await page.getByLabel('What are you looking for?').fill('data minimisation');
+  await page.getByRole('button', { name: 'Find sources' }).click();
+  await expect(page.locator('.result').first()).toContainText('EU / en');
+  await expect(page.locator('.result').first()).toContainText('accountability');
+  await expect(
+    page
+      .locator('.result')
+      .first()
+      .getByRole('link', { name: 'Official source' })
+  ).toHaveAttribute(
+    'href',
+    'https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng'
+  );
   await page
     .getByLabel('What are you looking for?')
     .fill('equal before the law');
@@ -45,7 +58,7 @@ test('remains usable on a phone and rejects corrupted imported data', async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.locator('#document-count')).toContainText('4');
+  await expect(page.locator('#document-count')).toContainText('5');
   await page.locator('#corpus-file').setInputFiles({
     name: 'corrupt.json',
     mimeType: 'application/json',

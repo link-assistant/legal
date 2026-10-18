@@ -14,7 +14,7 @@ Objective: implement and verify all requirements in issue 1 in PR 2. Keep genuin
 - [ ] Implement JavaScript library, six-jurisdiction official-source collectors with discovery/pagination, cache/rate limits/retries, conditional requests, immutable raw evidence, update tracking, configurable scheduled collection.
 - [x] Perform bounded temporary live collection, preserve actual evidence, build deterministic offline fixtures and integration tests from it. Do not mislabel sample data as complete laws coverage.
 - [ ] Implement associative representation and deterministic formalization, inspectable source spans, legal query/answer grounding, and Formal AI compatibility/copy/patch integration without LLMs.
-- [ ] Implement CLI, HTTP API, Docker API server, collected-data-only GitHub Pages demo, and examples.
+- [x] Implement CLI, HTTP API, Docker API server, collected-data-only GitHub Pages demo, and examples.
 - [x] Verify UI with browser and commit final screenshots. Verify CLI/API/browser share the same data and engine.
 - [ ] Add meaningful tests for multilingual ingestion, parsing, pagination, persistence, updates, errors, formalization limits, citations, reasoning, API, CLI, and browser; bound stress probes and store them in experiments.
 - [x] Add automation, API/source/architecture/collection documentation, case study, requirement evidence, and a changeset release trigger.
@@ -44,3 +44,14 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Deploy the Pages site from the prepared branch and verify Chinese search, official citations and local-only runtime resources in Chromium; commit screenshot and result evidence.
 - [ ] Obtain all hosted checks and an actual Docker runtime smoke result on the latest pushed code.
 - [ ] Resolve the source-access, corpus inventory and semantic requirements listed in the requirement table. These are not completed by the sample or CI results.
+
+## Combined recovery checks
+
+- [x] Merge the concurrent policy/link/release fixes without rewriting commits; retain both independent failing policy traces.
+- [x] Require a language when CLI/API law identifiers match multiple editions; verify explicit selection and unknown-language errors.
+- [x] Honor robots crawl delays and reject HTML denial responses; verify disallowed redirect targets are never fetched.
+- [x] Make preview Git failures propagate under Bash and configure container ownership; execute the actual drift script in a failing fixture.
+- [x] Add a fifth actual source record: the complete selected GDPR Article 5 subdivision, with raw SHA-256, acquisition date, official link and honest edition scope.
+- [x] Run combined Node/Bun (891 each), Deno (888 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
+- [x] Inspect the earlier hosted Docker smoke log: healthy container and three citations, rather than relying on a successful build alone.
+- [ ] Push the combined code, check all runs against its actual SHA, inspect any new failures and verify the updated public demo.

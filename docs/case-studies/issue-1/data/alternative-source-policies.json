@@ -1,0 +1,19 @@
+{
+  "policies": [
+    {
+      "path": "eu-robots.txt",
+      "sha256": "a5987a744e454da2ba668f26b21ba79b016bb0c13ac42679de95a285e6b7735f",
+      "bytes": 2475,
+      "acquiredAt": "2026-10-18T15:42:12.942602+00:00",
+      "timestampBasis": "local acquisition file modification time"
+    },
+    {
+      "path": "india-language-robots.html",
+      "sha256": "30aa4afba372cabff87c91071381b800fe15bcae88a5c9bf90eee6104f233146",
+      "bytes": 246,
+      "acquiredAt": "2026-10-18T15:41:51.425763+00:00",
+      "timestampBasis": "local acquisition file modification time"
+    }
+  ],
+  "notes": "The initial finite probe did not reject HTML robots responses or apply published crawl delay. Production and reusable probe are corrected. India language page is excluded; no permission or language assertion is made."
+}
