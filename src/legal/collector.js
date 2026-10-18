@@ -149,21 +149,27 @@ function allowedUrl(url, source) {
   }
   return value.href;
 }
+function robotsDirective(line) {
+  const comment = line.indexOf('#');
+  const directive = (comment < 0 ? line : line.slice(0, comment)).trim();
+  const colon = directive.indexOf(':');
+  const key = directive.slice(0, colon).trim().toLowerCase();
+  return colon < 0 || !/^[\w-]+$/.test(key)
+    ? null
+    : { key, value: directive.slice(colon + 1).trim() };
+}
 function selectedRobotsGroups(text, userAgent) {
   if (/^\s*</.test(text)) {
     throw new Error('Unverified robots.txt policy: received HTML or XML');
   }
   const groups = [];
   let current = null;
-  for (const line of text.split(/\r?\n/)) {
-    const parts = line
-      .replace(/#.*$/, '')
-      .match(/^\s*([\w-]+)\s*:\s*(.*?)\s*$/);
-    if (!parts) {
+  for (const line of text.split(/\r\n|\r|\n/)) {
+    const directive = robotsDirective(line);
+    if (!directive) {
       continue;
     }
-    const key = parts[1].toLowerCase(),
-      value = parts[2];
+    const { key, value } = directive;
     if (key === 'user-agent') {
       if (!current || current.rules.length || current.delayMs !== null) {
         current = { agents: [], rules: [], delayMs: null };
@@ -212,6 +218,27 @@ function normalizeRobotsPath(value, pattern = false) {
     return encodeURIComponent(part);
   });
 }
+// A robots pattern has only the '*' wildcard and an optional terminal '$'.
+// Literal chunks match in order without publisher-controlled regex backtracking.
+function matchesRobotsPath(path, pattern, end) {
+  const parts = pattern.split('*');
+  if (!path.startsWith(parts[0])) {
+    return false;
+  }
+  let offset = parts[0].length;
+  for (let index = 1; index < parts.length; index++) {
+    const part = parts[index];
+    if (end && index === parts.length - 1) {
+      return path.endsWith(part) && path.length - part.length >= offset;
+    }
+    const found = path.indexOf(part, offset);
+    if (found < 0) {
+      return false;
+    }
+    offset = found + part.length;
+  }
+  return !end || offset === path.length;
+}
 export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
   const selected = selectedRobotsGroups(text, userAgent);
   const parsed = new URL(url);
@@ -231,13 +258,7 @@ export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
         octets: normalized.replace(/%[0-9a-f]{2}/gi, 'x').length,
       };
     })
-    .filter((rule) => {
-      const expression = rule.normalized
-        .split('*')
-        .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
-        .join('.*');
-      return new RegExp(`^${expression}${rule.end ? '$' : ''}`).test(path);
-    })
+    .filter((rule) => matchesRobotsPath(path, rule.normalized, rule.end))
     .sort((a, b) => b.octets - a.octets || Number(b.allow) - Number(a.allow));
   return rules[0]?.allow ?? true;
 }

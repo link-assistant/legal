@@ -2,6 +2,8 @@ import { it, expect } from 'test-anywhere';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import {
   CollectionStore,
   SourceClient,
@@ -29,6 +31,52 @@ async function withClient(policy, run) {
 }
 const source = { origin: 'https://example.gov', intervalMs: 0 };
 const url = 'https://example.gov/law';
+
+for (const kind of ['comment', 'directive', 'wildcard']) {
+  it(`parses a bounded hostile robots ${kind} without excessive backtracking`, async () => {
+    const { stdout } = await promisify(execFile)(
+      'node',
+      [
+        '--max-old-space-size=64',
+        '--stack-size=512',
+        'experiments/robots-parser-budget.mjs',
+        kind,
+      ],
+      { timeout: 3000, maxBuffer: 4096, encoding: 'utf8' }
+    );
+    expect(JSON.parse(stdout).passed).toBe(true);
+  });
+}
+
+it('preserves literal paths, ordered wildcards and terminal anchors', () => {
+  for (const [pattern, path, allowed] of [
+    ['/a*b$', '/axxb', false],
+    ['/a*b$', '/axxbx', true],
+    ['/a*b$', '/ab', false],
+    ['/a**b$', '/ab', false],
+    ['/*a*a$', '/a', true],
+    ['/*a*a$', '/aa', false],
+    ['/a.b$', '/axb', true],
+    ['/a.b$', '/a.b', false],
+    ['/a+b$', '/aaab', true],
+    ['/a+b$', '/a+b', false],
+    ['/a$b$', '/a$b', false],
+    ['/a', '/abc', false],
+  ]) {
+    expect(
+      robotsAllowed(
+        `User-agent: *\nDisallow: ${pattern}`,
+        `${source.origin}${path}`
+      )
+    ).toBe(allowed);
+  }
+  expect(
+    robotsAllowed(
+      'User-agent: *\rDisallow: /private # comment',
+      `${source.origin}/private`
+    )
+  ).toBe(false);
+});
 
 it('matches equivalent encoded and non-ASCII paths without decoding reserved separators', () => {
   const policy =
