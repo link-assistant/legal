@@ -300,7 +300,7 @@ export class SourceClient {
   }
   async checkRobots(url, source) {
     allowedUrl(url, source);
-    if (this.respectRobots && !new URL(url).pathname.endsWith('/robots.txt')) {
+    if (this.respectRobots && new URL(url).pathname !== '/robots.txt') {
       const origin = new URL(url).origin;
       if (!this.robots.has(origin)) {
         const robots = await this.request(`${origin}/robots.txt`, source, {

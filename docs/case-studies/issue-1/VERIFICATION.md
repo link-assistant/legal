@@ -27,17 +27,19 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 
 - CodeQL review identified potentially expensive robots parsing expressions. Finite probes in a 64 MiB heap/512 KiB stack child reproduced comment parsing and wildcard matching exceeding a three-second deadline; the parent stopped both processes. Directive parsing now uses delimiter positions and trimming, and wildcard matching scans literal chunks without building a publisher-controlled regex. The same probes and literal/anchor/encoded-path regressions pass. The directive stress case passed before the fix too; its static warning is addressed without claiming an observed timeout. Red/green traces are preserved in `data/logs/robots-parser-*.log.gz`.
 
+- A nested document path named `/private/robots.txt` skipped policy checks because the root-policy exception used a suffix match. Its regression first fetched the forbidden target; restricting the exception to the exact root path makes collection stop after the root policy request. Both traces are preserved in `data/logs/robots-nested-*.log.gz`.
+
 ## Evidence and limits
 
 Local verification after recovery passed:
 
-- Node: 903 tests, zero failures.
-- Bun: 903 tests, zero failures.
-- Deno: 900 tests, zero failures, three runtime-specific tests ignored.
+- Node: 904 tests, zero failures.
+- Bun: 904 tests, zero failures.
+- Deno: 901 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.07%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.12%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
 
 Compressed test, browser and package logs are in `data/logs/`.
 

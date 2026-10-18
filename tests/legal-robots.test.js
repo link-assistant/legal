@@ -117,6 +117,22 @@ it('never requests an encoded path forbidden by the publisher', async () => {
   );
 });
 
+it('checks publisher rules for nested paths named robots.txt', async () => {
+  await withClient(
+    'User-agent: *\nDisallow: /private/',
+    async (client, requests) => {
+      let failure = '';
+      try {
+        await client.get(`${source.origin}/private/robots.txt`, source);
+      } catch (error) {
+        failure = error.message;
+      }
+      expect(failure.includes('robots.txt disallows')).toBe(true);
+      expect(requests).toEqual([`${source.origin}/robots.txt`]);
+    }
+  );
+});
+
 it('rejects a successful HTML denial response masquerading as robots.txt', async () => {
   await withClient(
     '<html><title>Request Rejected</title></html>',
