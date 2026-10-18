@@ -1,0 +1,35 @@
+[
+  {
+    "id": "in-constitution-2025-en",
+    "url": "https://www.legislative.gov.in/static/uploads/2025/12/f6ffd68fdbc63bef89c65e9963c6a1b5.pdf",
+    "origin": "https://www.legislative.gov.in",
+    "allowedOrigins": [
+      "https://legislative.gov.in"
+    ],
+    "attemptedAt": "2026-10-18T16:27:44.853Z",
+    "status": "stopped",
+    "error": "HTTP 403: https://www.legislative.gov.in/robots.txt",
+    "policies": []
+  },
+  {
+    "id": "ru-minjust-constitution",
+    "url": "https://www.minjust.gov.ru/ru/documents/8011/",
+    "origin": "https://www.minjust.gov.ru",
+    "allowedOrigins": [
+      "https://minjust.gov.ru"
+    ],
+    "attemptedAt": "2026-10-18T16:27:45.207Z",
+    "status": "stopped",
+    "error": "fetch failed",
+    "policies": [],
+    "transportReproduction": {
+      "name": "TypeError",
+      "message": "fetch failed",
+      "cause": {
+        "name": "Error",
+        "message": "read ECONNRESET",
+        "code": "ECONNRESET"
+      }
+    }
+  }
+]
