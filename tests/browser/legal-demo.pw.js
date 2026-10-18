@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { normalizeLaw } from '../../src/legal/model.js';
+import { decodeKnowledge } from '../../src/legal/formalize.js';
 test('searches only collected law, shows missing coverage and exports formalization', async ({
   page,
 }) => {
@@ -44,6 +45,25 @@ test('searches only collected law, shows missing coverage and exports formalizat
     'href',
     'https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng'
   );
+  const referencesDownload = page.waitForEvent('download');
+  await page
+    .locator('.document-row')
+    .filter({ hasText: 'GDPR Article 5' })
+    .getByRole('button', { name: 'Export formalization' })
+    .click();
+  const exported = decodeKnowledge(
+    await readFile(await (await referencesDownload).path(), 'utf8')
+  );
+  expect(exported.lawId).toBe('eu-gdpr-2016-article5-en');
+  const missingReferences = exported.references.filter(
+    (reference) => reference.target.identifier === '89'
+  );
+  expect(missingReferences).toHaveLength(2);
+  expect(
+    missingReferences.every(
+      (reference) => !reference.verified && !reference.localCandidateCount
+    )
+  ).toBe(true);
   await page
     .getByLabel('What are you looking for?')
     .fill('equal before the law');

@@ -10,6 +10,7 @@ import {
   buildCoverage,
   sources,
   tokenize,
+  extractLawReferences,
 } from '../src/legal/index.js';
 
 const specimen = {
@@ -166,5 +167,129 @@ describe('Unicode word integrity', () => {
       expect(citation.quote).toBe(text);
       expect(citation.contentHash).toBe(law.contentHash);
     }
+  });
+});
+
+describe('source-bound reference formalization', () => {
+  it('retains both actual GDPR references to the uncollected Article 89(1)', () => {
+    const { laws } = JSON.parse(readFileSync('data/demo/corpus.json', 'utf8'));
+    const law = laws.find((record) => record.id === 'eu-gdpr-2016-article5-en');
+    const references = formalizeLaw(law).references;
+    expect(Array.isArray(references)).toBe(true);
+    const mentions = references.filter(
+      (reference) => reference.target.identifier === '89'
+    );
+    expect(mentions.length).toBe(2);
+    for (const reference of mentions) {
+      expect(reference.target).toEqual({
+        unit: 'article',
+        identifier: '89',
+        subdivisions: ['1'],
+      });
+      expect(reference.quote).toBe('Article 89(1)');
+      expect(reference.role).toBe('reference-candidate');
+      expect(reference.localCandidates).toEqual([]);
+      expect(reference.verified).toBe(false);
+      expect(reference.semantics).toBe('citation-syntax-only');
+      expect(reference.contentHash).toBe(law.contentHash);
+      expect(reference.url).toBe(law.url);
+      expect(law.text.slice(reference.start, reference.end)).toBe(
+        reference.quote
+      );
+      expect(
+        new TextDecoder().decode(
+          new TextEncoder()
+            .encode(law.text)
+            .slice(reference.byteStart, reference.byteEnd)
+        )
+      ).toBe(reference.quote);
+    }
+  });
+  it('keeps multilingual reference spans separate from unreviewed heading candidates', () => {
+    for (const [language, text, identifier, quote] of [
+      ['en', 'Article 2\nSee Article 2(1)(a).', '2', 'Article 2(1)(a)'],
+      ['ru', 'Статья 2\nСогласно статье 2.', '2', 'статье 2'],
+      ['zh', '第十二条\n依照第十二条。', '十二', '第十二条'],
+      ['ka', 'მუხლი 2\nიხილეთ მუხლი 2.', '2', 'მუხლი 2'],
+      ['hi', 'अनुच्छेद २\nइसके अनुसार अनुच्छेद २।', '२', 'अनुच्छेद २'],
+    ]) {
+      const law = normalizeLaw({ ...specimen, language, text });
+      const references = formalizeLaw(law).references;
+      expect(Array.isArray(references)).toBe(true);
+      const mention = references.find(
+        (reference) => reference.role === 'reference-candidate'
+      );
+      expect(mention.quote).toBe(quote);
+      expect(mention.target.identifier).toBe(identifier);
+      expect(mention.localCandidates).toEqual([law.sections[0].id]);
+      expect(mention.verified).toBe(false);
+      expect(law.text.slice(mention.start, mention.end)).toBe(quote);
+    }
+  });
+  it('preserves ambiguous local headings and does not assume a target subdivision exists', () => {
+    const law = normalizeLaw({
+      ...specimen,
+      text: 'Article I\nSection 1\nFirst provision.\nArticle II\nSection 1\nSee Section 1(9)(z); also paragraph 1.',
+    });
+    const references = extractLawReferences(law);
+    const mention = references.find((item) => item.quote === 'Section 1(9)(z)');
+    expect(mention.localCandidates).toEqual(['s2', 's4']);
+    expect(mention.localCandidateCount).toBe(2);
+    expect(mention.candidatesTruncated).toBe(false);
+    expect(mention.target.subdivisions).toEqual(['9', 'z']);
+    expect(mention.verified).toBe(false);
+    expect(references.at(-1).localCandidates).toEqual([]);
+  });
+  it('does not treat parts of words or invalid Roman numerals as citations', () => {
+    const law = normalizeLaw({
+      ...specimen,
+      text: 'Particle 5, subsection 4, Article civil, Article IIII; see Article IV and § 12.3(a).',
+    });
+    expect(extractLawReferences(law).map((item) => item.quote)).toEqual([
+      'Article IV',
+      '§ 12.3(a)',
+    ]);
+  });
+  it('preserves UTF-8 offsets and deterministic references through LiNo interchange', () => {
+    const law = normalizeLaw({
+      ...specimen,
+      text: '🙂 नीती 中文\nSee Article 2(1); then 第十二条.',
+    });
+    const references = extractLawReferences(law);
+    const encoded = new TextEncoder().encode(law.text);
+    for (const reference of references) {
+      expect(
+        new TextDecoder().decode(
+          encoded.slice(reference.byteStart, reference.byteEnd)
+        )
+      ).toBe(reference.quote);
+      expect(reference.byteEnd > reference.end).toBe(true);
+    }
+    expect(extractLawReferences(law)).toEqual(references);
+    expect(decodeKnowledge(encodeKnowledge(references))).toEqual(references);
+  });
+  it('bounds repeated heading candidates and rejects excessive reference counts', () => {
+    const law = normalizeLaw({
+      ...specimen,
+      text: 'Article 1\nSame heading.\n'.repeat(20),
+    });
+    const [reference] = extractLawReferences(law);
+    expect(reference.localCandidateCount).toBe(20);
+    expect(reference.localCandidates.length).toBe(16);
+    expect(reference.candidatesTruncated).toBe(true);
+    expect(
+      extractLawReferences(
+        normalizeLaw({ ...specimen, text: 'See Article 1; '.repeat(10000) })
+      ).length
+    ).toBe(10000);
+    let failed = false;
+    try {
+      extractLawReferences(
+        normalizeLaw({ ...specimen, text: 'See Article 1; '.repeat(10001) })
+      );
+    } catch (error) {
+      failed = error instanceof RangeError && error.message.includes('10000');
+    }
+    expect(failed).toBe(true);
   });
 });

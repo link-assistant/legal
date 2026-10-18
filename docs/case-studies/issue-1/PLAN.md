@@ -2,6 +2,8 @@
 
 Objective: implement and verify all requirements in issue 1 in PR 2. Keep genuinely blocked criteria explicit and unfinished; never substitute passing tests for unverified coverage.
 
+Workflow blocker observed on 18 October 2026: `konard` merged PR 2 at 17:54:12 UTC while work continued, and issue 1 closed automatically. The citation increment below was not included. Preserve and test that increment on the prepared branch; GitHub cannot accept further changes into the merged PR. The original all-law/all-language and semantic requirements remain unfinished.
+
 ## Checklist
 
 - [x] Read complete issue, all issue comments, PR conversation, inline comments, reviews, and required sub-issues (none at initial inspection).
@@ -21,7 +23,7 @@ Objective: implement and verify all requirements in issue 1 in PR 2. Keep genuin
 - [x] Run all local tests and repository checks, review diff and dependency audit, fix failures; use logs for large output.
 - [x] Commit useful atomic increments; push only issue-1-c88ef43ecd12; preserve history.
 - [x] Merge current default branch, update PR title/body with implementation, reproductions, tests, screenshots, remaining blocked acceptance criteria and positive closing references.
-- [ ] Inspect latest CI timestamps and SHAs, preserve failed logs in ci-logs, fix and verify every failing check, read final PR diff, confirm clean worktree.
+- [x] Inspect latest CI timestamps and SHAs, preserve failed logs in ci-logs, fix and verify every failing check, read final PR diff, confirm clean worktree. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 - [ ] Mark PR ready; report URL, verified results, and exact unresolved external blockers without merging.
 
 ## Constraints
@@ -44,7 +46,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce XHTML ingestion failure from the actual EU sample; normalize media types, preserve exact text, and record bounded Cellar/India follow-up access evidence.
 - [x] Run pinned actionlint and both configured zizmor passes locally; preserve results and analyzer limits.
 - [x] Deploy the Pages site from the prepared branch and verify Chinese search, official citations and local-only runtime resources in Chromium; commit screenshot and result evidence.
-- [ ] Obtain all hosted checks and an actual Docker runtime smoke result on the latest pushed code.
+- [x] Obtain all hosted checks and an actual Docker runtime smoke result on the latest pushed code. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 - [ ] Resolve the source-access, corpus inventory and semantic requirements listed in the requirement table. These are not completed by the sample or CI results.
 
 ## Combined recovery checks
@@ -57,7 +59,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Run combined Node/Bun (904 each), Deno (901 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
 - [x] Inspect the earlier hosted Docker smoke log: healthy container and three citations, rather than relying on a successful build alone.
 - [x] Push the combined code and verify the updated five-record public demo in Chromium with exact corpus/text hashes and only same-origin runtime resources.
-- [ ] Finish every hosted check against the final pushed SHA and preserve any new failure logs.
+- [x] Finish every hosted check against the final pushed SHA and preserve any new failure logs. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 
 - [x] Reproduce encoded-path robots bypass before fixing it; normalize RFC 9309 matching and verify reserved separators remain distinct. Preserve the red/green trace and rerun all three runtime suites.
 - [x] Independently reproduce small directive and wildcard timeouts under process limits; integrate the shared parser fix, add the Unicode-comment prohibition/delay regression, and rerun Node/Bun (905 each), Deno (902 plus three ignored), browser and repository checks.
@@ -77,7 +79,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 
 - [x] Download all nine failed runtime job logs from `215c952`, distinguish release-reference, Windows patch line-ending and missing Deno generation failures, and reproduce/fix the detached release-plan check against the remote reference.
 - [x] Reproduce/fix Windows CRLF patch application and generate the Formal AI module before Deno type checking; verify byte-identical fresh Node/Deno builds.
-- [ ] Verify all nine hosted runtime jobs and every other required workflow on the final pushed SHA.
+- [x] Verify all nine hosted runtime jobs and every other required workflow on the final pushed SHA. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 
 ## Fresh checkout CI regressions
 
@@ -86,7 +88,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce Windows CRLF patch rejection and Deno's missing generated module before test discovery; normalize patch line endings and bootstrap explicitly in the Deno job.
 - [x] Reproduce release-test failures after pending fragments are consumed; verify both real pending and empty release plans without changing the worktree's fragments.
 - [x] Verify clean checkout release, Deno import-graph and actual CRLF upstream-patch scenarios; run Node/Bun (907 each), Deno (904 plus three ignored), browser, package and repository checks.
-- [ ] Obtain fresh hosted checks for the CI setup fixes on every runtime and operating system. Preserve and investigate any new failures.
+- [x] Obtain fresh hosted checks for the CI setup fixes on every runtime and operating system. Preserve and investigate any new failures. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 
 ## Integrated platform fixes
 
@@ -94,8 +96,24 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Verify the shared release fixture in a detached repository with only `origin/main`, including pending and consumed fragments.
 - [x] Run the complete combined suites: Node/Bun 912 each, Deno 909 plus three ignored, three Chromium tests, package consumer and repository checks.
 - [x] Consolidate all recent evidence without losing an entry, keeping the complete PR within the 300-file diff limit.
-- [ ] Verify every fresh hosted workflow and Docker runtime on the combined pushed revision.
+- [x] Verify every fresh hosted workflow and Docker runtime on the combined pushed revision. Verified on functional head `ef0ff36`; the later evidence-only head `3b4283a` also passed its applicable checks.
 
 - [x] Verify every hosted workflow, nine runtime jobs and an actual Docker API smoke on combined revision `ef0ff36`; preserve full logs and the one unchanged baseline CodeQL finding.
 - [x] Deploy the combined revision and verify exact public corpus/quotation hashes, no search requests, and both synthetic Unicode positive/negative cases.
 - [x] Check Know India and the presidential constitution origin through the policy client and Chromium; preserve DNS/connection failures without requesting a law body.
+
+## Citation formalization increment
+
+- [x] Reproduce the two missing Article 89(1) references using the actual collected GDPR record before implementing extraction.
+- [x] Preserve exact source spans/hashes, literal locators and unreviewed local heading candidates; expose the shared result through library, CLI, API and browser export.
+- [x] Add selected multilingual syntax, ambiguous/missing targets, LiNo round trip and finite count/candidate-bound tests.
+- [x] Run every local suite/check and packed consumer for this increment; independently verify the local browser export using Playwright MCP.
+- [ ] Verify fresh hosted checks and the public browser export for this increment.
+- [ ] Resolve all remaining corpus, semantic-reference and arbitrary-question criteria; source-bound syntax does not complete them.
+
+## External merge investigation
+
+- [x] Verify merge actor, timestamp, commit and automatic issue closure directly through GitHub.
+- [x] Download and inspect all three failed workflows on merged main `a208c29`; identify the credential and repository-setting requirements with exact log lines.
+- [x] Preserve the tested citation increment in a commit and push only the prepared branch.
+- [ ] Obtain an authorized review arrangement for work that cannot enter the already merged PR; keep the remaining acceptance criteria unfinished.
