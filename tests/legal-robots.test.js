@@ -8,6 +8,7 @@ import {
   CollectionStore,
   SourceClient,
   robotsAllowed,
+  robotsIntervalMs,
 } from '../src/legal/collector.js';
 
 async function withClient(policy, run) {
@@ -31,6 +32,13 @@ async function withClient(policy, run) {
 }
 const source = { origin: 'https://example.gov', intervalMs: 0 };
 const url = 'https://example.gov/law';
+
+it('strips whole comments including Unicode line separators before parsing directives', () => {
+  const policy =
+    'User-agent: *\nDisallow: /private/ # comment\u2028continued\nCrawl-delay: 2 # note\u2029continued';
+  expect(robotsAllowed(policy, `${source.origin}/private/law`)).toBe(false);
+  expect(robotsIntervalMs(policy)).toBe(2000);
+});
 
 for (const kind of ['comment', 'directive', 'wildcard']) {
   it(`parses a bounded hostile robots ${kind} without excessive backtracking`, async () => {

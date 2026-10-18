@@ -1,10 +1,12 @@
 # Preserved verification logs
 
-Current runtime checks are `node-robots-nested.log.gz`, `bun-robots-nested.log.gz`
-and `deno-robots-nested.log.gz`: 904, 904 and 901 passing tests respectively,
-with three Deno-specific skips. `check-robots-nested.log.gz` records lint,
-formatting and duplication checks. Failure reproductions, source probes and hosted
-CI logs remain individually compressed alongside them.
+Current integrated checks are in `unicode-policy-verification.tar.gz`: Node/Bun
+each pass 905 tests; Deno passes 902 with three runtime-specific skips. It also
+preserves lint/format/duplication, browser, package, focused red/green and small
+hostile-input probe logs. `unicode-policy-verification.sha256` records each
+archived file's checksum. Extract it and use `sha256sum -c` as shown below for
+the earlier archive. Failure reproductions, source probes and hosted CI logs
+also remain individually compressed alongside it.
 
 `earlier-local-verification.tar.gz` preserves 66 earlier local verification logs
 under their original filenames. Every archived compressed file was checked

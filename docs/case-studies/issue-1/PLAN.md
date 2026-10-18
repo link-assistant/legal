@@ -59,6 +59,8 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [ ] Push the combined code, check all runs against its actual SHA, inspect any new failures and verify the updated public demo.
 
 - [x] Reproduce encoded-path robots bypass before fixing it; normalize RFC 9309 matching and verify reserved separators remain distinct. Preserve the red/green trace and rerun all three runtime suites.
+- [x] Independently reproduce small directive and wildcard timeouts under process limits; integrate the shared parser fix, add the Unicode-comment prohibition/delay regression, and rerun Node/Bun (905 each), Deno (902 plus three ignored), browser and repository checks.
+- [x] Verify every SHA-256 in the 66-log consolidated evidence archive and download the now-reviewable complete GitHub PR diff.
 
 - [x] Read the new CodeQL inline review; reproduce bounded robots comment/wildcard stalls and remove untrusted regular-expression backtracking. Verify the full runtime suites and packed consumer.
 
