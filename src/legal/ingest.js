@@ -12,7 +12,7 @@ export function htmlText(html, selector, { xml = false } = {}) {
   body.find('br').replaceWith('\n');
   body
     .find(
-      'p, div, section, article, h1, h2, h3, h4, li, tr, num, heading, content, P, PARAG, TITLE, TI.ART, TXT'
+      'p, div, section, article, h1, h2, h3, h4, li, tr, num, heading, content, P, PARAG, TITLE, TI.ART, TXT, SECTNO, SUBJECT, HD, AUTH, SOURCE'
     )
     .each((_, element) => {
       $(element).prepend('\n');
@@ -129,6 +129,31 @@ function parseXml(text, entry) {
     throw new Error('XML entity declarations are not supported');
   }
   const $ = load(text, { xmlMode: true });
+  const cfrSections = $('CFRDOC SECTION');
+  if (cfrSections.length) {
+    const records = cfrSections.toArray().map((element, index) => {
+      const number = $(element).find('SECTNO').first().text().trim();
+      return {
+        ...entry,
+        id: `${entry.id}:section:${number || index + 1}`,
+        title:
+          `${entry.title} ${number} ${$(element).find('SUBJECT').first().text()}`.trim(),
+        text: htmlText($.xml(element), 'SECTION', { xml: true }),
+      };
+    });
+    // Authorities, appendices and headings can carry legal content outside SECTION.
+    cfrSections.remove();
+    const context = htmlText($.xml(), 'CFRDOC', { xml: true });
+    if (context.trim()) {
+      records.push({
+        ...entry,
+        id: `${entry.id}:context`,
+        title: `${entry.title} — context and appendices`,
+        text: context,
+      });
+    }
+    return records;
+  }
   const sections = $('section[identifier]');
   if (sections.length) {
     return sections.toArray().map((element) => ({
@@ -473,10 +498,7 @@ function discoverLink(link, source, languages, resources, url) {
       if (/\.xml$/.test(target.pathname)) {
         return [record(link, source, target.pathname, 'en', 'xml')];
       }
-      if (
-        target.pathname.endsWith('/') &&
-        target.pathname.length > new URL(url).pathname.length
-      ) {
+      if (isChildDirectory(target, url)) {
         resources.push({ url: link.url, kind: 'directory' });
       }
       return [];
@@ -547,5 +569,15 @@ export function linkedDocumentResources(html, entry, source) {
         }
         return result;
       })
+  );
+}
+
+function isChildDirectory(target, parent) {
+  return (
+    !target.search &&
+    !/\.[^/]+$/.test(target.pathname) &&
+    target.pathname.startsWith(
+      `${new URL(parent).pathname.replace(/\/$/, '')}/`
+    )
   );
 }

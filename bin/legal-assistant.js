@@ -19,7 +19,7 @@ const help = `legal-assistant <command> [arguments] [options]
   ask QUESTION [--jurisdiction ID] [--language TAG] [--as-of DATE]
   search QUESTION                 Cited source text matches
   formalize LAW_ID [--format lino|json]
-  discover SOURCE_ID --output FILE [--pages 2] [--start-page 0]
+  discover SOURCE_ID --output FILE [--pages 2] [--resume PREVIOUS_MANIFEST]
   collect --manifest FILE [--store collections/default] [--limit 100]
   export [--store DIR] --output FILE
   serve [--corpus FILE] [--host 127.0.0.1] [--port 8787]
@@ -42,6 +42,7 @@ function argumentsFor(args) {
       format: { type: 'string' },
       output: { type: 'string' },
       manifest: { type: 'string' },
+      resume: { type: 'string' },
       store: { type: 'string' },
       pages: { type: 'string' },
       'start-page': { type: 'string' },
@@ -84,7 +85,7 @@ export async function runLegalCli(
       return 0;
     }
     if (['collect', 'discover', 'export'].includes(command)) {
-      return collectionCommand(command, words, values, print, debug);
+      return await collectionCommand(command, words, values, print, debug);
     }
     const corpus = await loadCorpus(corpusPath(values));
     if (command === 'coverage') {
@@ -103,7 +104,7 @@ export async function runLegalCli(
       return formalizeCommand(corpus, words, values, print);
     }
     if (command === 'serve') {
-      return serveCommand(corpus, values, print, debug, onServer);
+      return await serveCommand(corpus, values, print, debug, onServer);
     }
     throw new Error(`Unknown command: ${command}`);
   } catch (error) {
@@ -137,11 +138,10 @@ async function collectionCommand(command, words, values, print, debug) {
   }
   const result =
     command === 'discover'
-      ? await collector.discover(words[0], {
-          maxPages: integer(values.pages, 2),
-          startPage: integer(values['start-page'], 0),
-          languages: values.language?.split(','),
-        })
+      ? await collector.discover(
+          words[0],
+          await discoveryOptions(values, words[0])
+        )
       : await collector.collect(
           JSON.parse(
             await readFile(
@@ -200,4 +200,23 @@ function queryOptions(values) {
 
 function corpusPath(values) {
   return values.corpus ?? process.env.LEGAL_CORPUS;
+}
+
+async function discoveryOptions(values, sourceId) {
+  const previous = values.resume
+    ? JSON.parse(await readFile(values.resume, 'utf8'))
+    : null;
+  if (
+    previous &&
+    (previous.schemaVersion !== 1 || previous.sourceId !== sourceId)
+  ) {
+    throw new Error('Resume manifest must match the requested source');
+  }
+  return {
+    maxPages: integer(values.pages, 2),
+    startPage: previous?.nextPage ?? integer(values['start-page'], 0),
+    startUrl: previous?.nextUrl,
+    cursor: previous?.cursor,
+    languages: values.language?.split(','),
+  };
 }

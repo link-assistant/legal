@@ -461,72 +461,68 @@ export class Collector {
       result[saved.unchanged ? 'unchanged' : 'collected']++;
     }
   }
-  async discover(
-    sourceId,
-    {
-      maxPages = 2,
-      pageSize = 100,
-      languages,
-      startPage = 0,
-      startUrl = null,
-    } = {}
-  ) {
+  async discover(sourceId, options = {}) {
+    const maxPages = options.maxPages ?? 2;
     if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 10000) {
       throw new Error('maxPages must be between 1 and 10000');
     }
     const source = getSource(sourceId);
-    const entries = [];
-    const errors = [];
-    const resources = [];
-    let next = startUrl;
-    let page = startPage;
-    const seen = new Set();
-    for (let count = 0; count < maxPages; count++, page++) {
-      const url =
-        next && next !== 'generated'
-          ? next
-          : catalogUrl(source, { page, languages, pageSize });
-      if (seen.has(url)) {
-        errors.push({ url, error: 'Discovery pagination cycle' });
-        break;
-      }
-      seen.add(url);
-      try {
-        const fetched = await fetchCatalog(
-          this.client,
-          source,
-          url,
-          page,
-          pageSize
-        );
-        const result = discoverPage(
-          new TextDecoder().decode(fetched.bytes),
-          source,
-          url,
-          { languages, pageSize }
-        );
-        entries.push(...result.entries);
-        resources.push(...result.resources);
-        next = result.next;
-        if (!next) {
-          break;
-        }
-      } catch (error) {
-        errors.push({ url, error: error.message });
-        next = url;
-        break;
-      }
-    }
-    return discoveryResult({
-      sourceId,
-      entries,
-      resources,
-      errors,
-      next,
-      page,
-    });
+    return await (source.adapter === 'directory'
+      ? discoverDirectory(this.client, source, { ...options, maxPages })
+      : discoverCatalog(this.client, source, { ...options, maxPages }));
   }
 }
+async function discoverCatalog(
+  client,
+  source,
+  { maxPages, pageSize = 100, languages, startPage = 0, startUrl = null }
+) {
+  const entries = [];
+  const errors = [];
+  const resources = [];
+  let next = startUrl;
+  let page = startPage;
+  const seen = new Set();
+  for (let count = 0; count < maxPages; count++, page++) {
+    const url =
+      next && next !== 'generated'
+        ? next
+        : catalogUrl(source, { page, languages, pageSize });
+    if (seen.has(url)) {
+      errors.push({ url, error: 'Discovery pagination cycle' });
+      break;
+    }
+    seen.add(url);
+    try {
+      const fetched = await fetchCatalog(client, source, url, page, pageSize);
+      const result = discoverPage(
+        new TextDecoder().decode(fetched.bytes),
+        source,
+        url,
+        { languages, pageSize }
+      );
+      entries.push(...result.entries);
+      resources.push(...result.resources);
+      next = result.next;
+      if (!next) {
+        break;
+      }
+    } catch (error) {
+      errors.push({ url, error: error.message });
+      next = url;
+      break;
+    }
+  }
+  return discoveryResult({
+    sourceId: source.id,
+    entries,
+    resources,
+    errors,
+    next,
+    page,
+  });
+}
+
 function npcCatalogBody(page, pageSize) {
   return {
     searchRange: 1,
@@ -631,4 +627,67 @@ function discoveryResult({ sourceId, entries, resources, errors, next, page }) {
 
 function terminalError(error, attempt, retries) {
   return attempt === retries || /HTTP |budget/.test(error.message);
+}
+
+// Breadth-first publisher directory traversal with a serializable run cursor.
+async function discoverDirectory(
+  client,
+  source,
+  { maxPages, startUrl, cursor }
+) {
+  const pending = [...(cursor?.pending ?? [startUrl ?? source.catalogUrl])];
+  const visited = new Set(cursor?.visited ?? []);
+  const entries = [],
+    errors = [],
+    resources = [];
+  for (let count = 0; count < maxPages && pending.length; count++) {
+    const url = pending.shift();
+    if (visited.has(url)) {
+      count--;
+      continue;
+    }
+    try {
+      allowedUrl(url, source);
+      const result = discoverPage(
+        new TextDecoder().decode((await client.get(url, source)).bytes),
+        source,
+        url
+      );
+      entries.push(...result.entries);
+      appendDirectoryResources(pending, visited, resources, result.resources);
+      visited.add(url);
+      if (pending.length + visited.size > 10000) {
+        throw new Error('Directory discovery exceeds 10000 path budget');
+      }
+    } catch (error) {
+      if (!visited.has(url)) {
+        pending.unshift(url);
+      }
+      errors.push({ url, error: error.message });
+      break;
+    }
+  }
+  return {
+    ...discoveryResult({
+      sourceId: source.id,
+      entries,
+      resources,
+      errors,
+      next: pending[0] ?? null,
+      page: visited.size,
+    }),
+    cursor: { pending, visited: [...visited] },
+  };
+}
+
+function appendDirectoryResources(pending, visited, resources, discovered) {
+  for (const resource of discovered) {
+    if (resource.kind === 'directory') {
+      if (!visited.has(resource.url) && !pending.includes(resource.url)) {
+        pending.push(resource.url);
+      }
+    } else {
+      resources.push(resource);
+    }
+  }
 }

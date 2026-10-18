@@ -45,10 +45,12 @@ async function discoverBatch(collector, selection, previous, pagesPerRun) {
     maxPages: pagesPerRun,
     startPage: previous.page,
     startUrl: previous.nextUrl,
+    cursor: previous.cursor,
     languages: selection.languages,
   });
   Object.assign(previous, {
     nextUrl: discovered.nextUrl,
+    cursor: discovered.cursor,
     pending: discovered.entries,
     page: discovered.nextPage ?? 0,
     catalogExhausted: discovered.status === 'catalog-exhausted',
@@ -81,6 +83,7 @@ async function updateSource(collector, selection, previous, limits, now) {
   if (!previous.pending.length && previous.catalogExhausted) {
     previous.lastCompleted = now.toISOString();
     previous.page = 0;
+    previous.cursor = null;
   }
   // Successful downloads do not erase unresolved discovery or remaining pages.
   const incomplete =

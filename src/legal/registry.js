@@ -154,7 +154,7 @@ export const sources = [
   }),
   source('eu-cellar', 'EU', 'https://publications.europa.eu', 'cellar', {
     catalogUrl: 'https://publications.europa.eu/webapi/rdf/sparql',
-    contentSelector: '#document1, #TexteOnly, .eli-main-title, #text',
+    contentSelector: '#document1, #TexteOnly, #text',
     allowedOrigins: ['https://eur-lex.europa.eu', 'https://op.europa.eu'],
     termsUrl:
       'https://eur-lex.europa.eu/content/legal-notice/legal-notice.html',

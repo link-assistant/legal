@@ -10,7 +10,11 @@ async function withServer(action) {
   try {
     await action(`http://127.0.0.1:${server.address().port}`, corpus);
   } finally {
-    await new Promise((resolve) => server.close(resolve));
+    await new Promise((resolve) => {
+      server.close(resolve);
+      // Deno's Node HTTP shim can retain fetch keep-alive sockets after close().
+      server.closeAllConnections();
+    });
   }
 }
 describe('shared CLI and HTTP assistant', () => {

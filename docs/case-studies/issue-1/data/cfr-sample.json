@@ -1,0 +1,10 @@
+{
+  "url": "https://www.govinfo.gov/bulkdata/CFR/2026/title-2/CFR-2026-title2-vol01.xml",
+  "rawHash": "75725b174cec8eb051db5893f4bb82815559f8ab6346aa0ff624fac4250acfb6",
+  "retrievedAt": "2026-10-18T15:31:07.251Z",
+  "rawBytes": 3984649,
+  "sections": 1508,
+  "records": 1509,
+  "firstId": "cfr-2026-title2-vol1:section:§ 1.100",
+  "lastId": "cfr-2026-title2-vol1:section:§ 6000.2"
+}
