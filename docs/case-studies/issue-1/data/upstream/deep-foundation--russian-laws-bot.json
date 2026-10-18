@@ -1,0 +1,13 @@
+{
+  "full_name": "deep-foundation/russian-laws-bot",
+  "description": null,
+  "license": {
+    "key": "unlicense",
+    "name": "The Unlicense",
+    "spdx_id": "Unlicense",
+    "url": "https://api.github.com/licenses/unlicense",
+    "node_id": "MDc6TGljZW5zZTE1"
+  },
+  "default_branch": "main",
+  "updated_at": "2024-06-01T09:15:12Z"
+}

@@ -141,3 +141,12 @@ vite.config.ts.timestamp-*
 
 # jscpd reports
 reports/
+
+# Generated, hash-verified upstream code; only the pin and patch are committed.
+src/generated/
+# Temporary full collections and local tool logs.
+collections/
+ci-logs/
+experiments/official/
+playwright-report/
+test-results/

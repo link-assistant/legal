@@ -1,0 +1,20 @@
+--- a/relative_meta_logic.mjs
++++ b/relative_meta_logic.mjs
+@@ -178,3 +178,17 @@
+ export function assessmentTracePayload(assessment) {
+   return `prior=${truthValueToString(assessment.prior)} support=${truthValueToString(assessment.support)} contradiction=${truthValueToString(assessment.contradiction)} posterior=${truthValueToString(assessment.posterior)} ignored=${assessment.ignored_sources.length}`;
+ }
++
++// Legal claims use evidence existence and explicit conflicts, never a numeric
++// probability as a substitute for legal validity. Keep jurisdictions, language
++// editions and effective-date contexts separate at the caller boundary.
++export function assessLegalContext(evidence) {
++  const support = evidence.filter((item) => item.stance === Stance.Supports);
++  const contradiction = evidence.filter((item) => item.stance === Stance.Contradicts);
++  return {
++    status: support.length && contradiction.length ? 'conflict'
++      : support.length ? 'supported' : contradiction.length ? 'contradicted' : 'unknown',
++    sources: evidence.map((item) => item.source_label),
++    inference: 'explicit-evidence-only',
++  };
++}

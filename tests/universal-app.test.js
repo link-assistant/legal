@@ -48,7 +48,7 @@ describe('universal React example app', () => {
   it('renders a visual UI using the package add and multiply functions', () => {
     const appSource = readText(appSourcePath);
 
-    expect(appSource).toContain("from '../../../src/index.js'");
+    expect(appSource).toContain("from '../../../src/arithmetic.js'");
     expect(appSource).toContain('add(parsedLeft, parsedRight)');
     expect(appSource).toContain('multiply(parsedLeft, parsedRight)');
     expect(appSource).toContain('Addition');
@@ -120,7 +120,9 @@ describe('universal React example app', () => {
       /image: mcr\.microsoft\.com\/playwright@sha256:[0-9a-f]{64} # v1\.59\.1-noble/
     );
     expect(workflow).toContain('browser-commander');
-    expect(workflow).not.toContain('npx playwright install');
+    expect(workflow.slice(workflow.indexOf('  preview-regen:'))).not.toContain(
+      'npx playwright install'
+    );
     expect(workflow).toContain('node scripts/update-preview-images.mjs');
     expect(workflow).toContain(
       'git commit -m "chore(preview): regenerate example-app preview images"'

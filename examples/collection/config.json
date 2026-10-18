@@ -1,0 +1,45 @@
+{
+  "store": "collections/scheduled",
+  "intervalDays": 7,
+  "pagesPerRun": 2,
+  "documentsPerRun": 25,
+  "redistributionReviewed": false,
+  "sources": [
+    { "id": "us-code", "languages": ["en"] },
+    { "id": "us-govinfo", "languages": ["en"] },
+    {
+      "id": "eu-cellar",
+      "languages": [
+        "bg",
+        "es",
+        "cs",
+        "da",
+        "de",
+        "et",
+        "el",
+        "en",
+        "fr",
+        "ga",
+        "hr",
+        "it",
+        "lv",
+        "lt",
+        "hu",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ron",
+        "sk",
+        "sl",
+        "fi",
+        "sv"
+      ]
+    },
+    { "id": "cn-npc", "languages": ["zh"] },
+    { "id": "in-code", "languages": ["en", "hi"] },
+    { "id": "ru-pravo", "languages": ["ru"] },
+    { "id": "ge-matsne", "languages": ["ka", "en", "ru"] }
+  ]
+}

@@ -55,7 +55,6 @@ jobs:
 
   dependency-review:
     name: Dependency Review
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     concurrency:
@@ -69,7 +68,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Check dependency review availability
+        id: capability
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEW_BASE: ${{ github.event.pull_request.base.sha || github.sha }}
+          REVIEW_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/dependency-capability.mjs
+
+      - name: Audit locks when dependency review is unavailable
+        if: steps.capability.outputs.available != 'true'
+        run: |
+          npm audit --package-lock-only --audit-level=high
+          npm audit --prefix examples/universal-app --package-lock-only --audit-level=high
+
       - name: Review dependency changes
+        if: github.event_name == 'pull_request' && steps.capability.outputs.available == 'true'
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high

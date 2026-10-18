@@ -6,6 +6,14 @@ on:
     paths:
       - 'examples/universal-app/**'
       - 'src/**'
+      - 'web/**'
+      - 'data/demo/**'
+      - 'patches/**'
+      - 'tests/browser/**'
+      - 'playwright.config.js'
+      - 'scripts/build-legal-demo.mjs'
+      - 'scripts/bootstrap-formal-ai.mjs'
+      - 'experiments/serve-demo.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/update-preview-images.mjs'
@@ -16,6 +24,14 @@ on:
     paths:
       - 'examples/universal-app/**'
       - 'src/**'
+      - 'web/**'
+      - 'data/demo/**'
+      - 'patches/**'
+      - 'tests/browser/**'
+      - 'playwright.config.js'
+      - 'scripts/build-legal-demo.mjs'
+      - 'scripts/bootstrap-formal-ai.mjs'
+      - 'experiments/serve-demo.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/update-preview-images.mjs'
@@ -64,6 +80,17 @@ jobs:
         env:
           GITHUB_PAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           VITE_REPOSITORY_URL: https://github.com/${{ github.repository }}
+
+      - name: Install legal explorer dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify legal explorer in Chromium
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+
+      - name: Include legal explorer in Pages site
+        run: cp -r dist/legal-demo examples/universal-app/dist/legal
 
       - name: Upload web build artifact
         uses: actions/upload-artifact@v7
