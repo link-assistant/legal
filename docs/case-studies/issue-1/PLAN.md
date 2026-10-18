@@ -38,7 +38,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce and fix real GovInfo directory discovery, bounded resumable traversal, CFR section/context loss, EUR-Lex metadata acceptance and CLI error handling.
 - [x] Reproduce and fix Deno HTTP test cleanup and redirected-source robots enforcement.
 - [x] Download the fresh failing link-check log, reproduce its missing corpus link and verify both source HTML and the built corpus download.
-- [x] Run Node (897), Bun (897), Deno (894 plus three ignored), Chromium (two), package-consumer, lint/format/duplication and repository checks.
+- [x] Run Node (899), Bun (899), Deno (896 plus three ignored), Chromium (two), package-consumer, lint/format/duplication and repository checks.
 - [x] Reproduce the hosted release failure caused by inherited fragments targeting the old package name, retarget those fragments and verify the real release plan plus full versioning command.
 - [x] Reproduce lost USLM title-level statutory notes, preserve a bounded official Title 1 archive and catalog, and verify 39 sections plus context offline.
 - [x] Reproduce XHTML ingestion failure from the actual EU sample; normalize media types, preserve exact text, and record bounded Cellar/India follow-up access evidence.
@@ -54,7 +54,7 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Honor robots crawl delays and reject HTML denial responses; verify disallowed redirect targets are never fetched.
 - [x] Make preview Git failures propagate under Bash and configure container ownership; execute the actual drift script in a failing fixture.
 - [x] Add a fifth actual source record: the complete selected GDPR Article 5 subdivision, with raw SHA-256, acquisition date, official link and honest edition scope.
-- [x] Run combined Node/Bun (898 each), Deno (895 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
+- [x] Run combined Node/Bun (899 each), Deno (896 plus three ignored), two Chromium tests and packed-consumer checks. Verify source HTML links and the entire built corpus download.
 - [x] Inspect the earlier hosted Docker smoke log: healthy container and three citations, rather than relying on a successful build alone.
 - [ ] Push the combined code, check all runs against its actual SHA, inspect any new failures and verify the updated public demo.
 

@@ -29,13 +29,13 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 
 Local verification after recovery passed:
 
-- Node: 897 tests, zero failures.
-- Bun: 897 tests, zero failures.
-- Deno: 894 tests, zero failures, three runtime-specific tests ignored.
+- Node: 899 tests, zero failures.
+- Bun: 899 tests, zero failures.
+- Deno: 896 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
-- ESLint, formatting, duplication (8.16%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
+- ESLint, formatting, duplication (8.10%, below the existing 10% limit), syntax, required documentation, line limits and terminal status-gate coverage passed locally on the combined recovery work. Dependency/security policies also have automated tests. Fresh hosted CI on the combined commit remains pending; older runs and their timestamps are preserved separately.
 
 Compressed test, browser and package logs are in `data/logs/`.
 
