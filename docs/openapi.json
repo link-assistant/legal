@@ -154,6 +154,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Required when this ID has multiple collected language editions.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -173,6 +181,9 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "409": {
+            "description": "Ambiguous law ID; select a language"
           }
         }
       }
@@ -196,6 +207,14 @@
               "type": "string",
               "enum": ["json", "lino"]
             }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Required when this ID has multiple collected language editions.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -215,6 +234,12 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "409": {
+            "description": "Ambiguous law ID; select a language"
+          },
+          "413": {
+            "description": "Law exceeds the 100000 character HTTP formalization limit"
           }
         }
       }

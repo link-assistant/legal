@@ -18,7 +18,7 @@ const help = `legal-assistant <command> [arguments] [options]
   coverage [--corpus FILE]         Explicit corpus and language gaps
   ask QUESTION [--jurisdiction ID] [--language TAG] [--as-of DATE]
   search QUESTION                 Cited source text matches
-  formalize LAW_ID [--format lino|json]
+  formalize LAW_ID [--language TAG] [--format lino|json]
   discover SOURCE_ID --output FILE [--pages 2] [--resume PREVIOUS_MANIFEST]
   collect --manifest FILE [--store collections/default] [--limit 100]
   export [--store DIR] --output FILE
@@ -160,7 +160,17 @@ async function collectionCommand(command, words, values, print, debug) {
 }
 
 function formalizeCommand(corpus, words, values, print) {
-  const law = corpus.laws.find((item) => item.id === words[0]);
+  const matches = corpus.laws.filter(
+    (item) =>
+      item.id === words[0] &&
+      (!values.language || item.language === values.language)
+  );
+  if (matches.length > 1) {
+    throw new Error(
+      'Ambiguous law ID; select a translation with --language TAG'
+    );
+  }
+  const law = matches[0];
   if (!law) {
     throw new Error('Unknown law ID');
   }

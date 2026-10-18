@@ -192,9 +192,19 @@ function listLaws(response, corpus, url) {
 }
 
 function serveLaw(response, corpus, url, document) {
-  const law = corpus.laws.find(
-    (item) => item.id === decodeURIComponent(document[1])
+  const matches = corpus.laws.filter(
+    (item) =>
+      item.id === decodeURIComponent(document[1]) &&
+      (!url.searchParams.has('language') ||
+        item.language === url.searchParams.get('language'))
   );
+  if (matches.length > 1) {
+    throw new HttpError(
+      409,
+      'Ambiguous law ID; select a language with ?language=TAG'
+    );
+  }
+  const law = matches[0];
   if (!law) {
     throw new HttpError(404, 'Law not found');
   }
