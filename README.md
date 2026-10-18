@@ -92,6 +92,7 @@ bun test --timeout 30000
 
 # Or with other runtimes:
 npm test
+deno run -A scripts/bootstrap-formal-ai.mjs
 deno test -A --parallel
 
 # Lint code

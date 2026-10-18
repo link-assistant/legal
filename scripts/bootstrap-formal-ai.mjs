@@ -16,7 +16,8 @@ const patch = resolve(root, 'patches/formal-ai/legal-context.patch');
 // Apply only exact unified patches; refuse silently drifting upstream code.
 export function applyExactPatch(source, diff) {
   const lines = source.split('\n');
-  const patchLines = diff.split('\n');
+  // Git may check out the patch with CRLF; the verified upstream stays exact.
+  const patchLines = diff.replaceAll('\r\n', '\n').split('\n');
   let delta = 0;
   for (let i = 0; i < patchLines.length; i++) {
     const hunk = patchLines[i].match(
@@ -52,7 +53,7 @@ export function applyExactPatch(source, diff) {
 }
 
 export async function bootstrapFormalAI({ sourceFile } = {}) {
-  const diff = await readFile(patch, 'utf8');
+  const diff = (await readFile(patch, 'utf8')).replaceAll('\r\n', '\n');
   const stamp = createHash('sha256')
     .update(JSON.stringify(upstream) + diff)
     .digest('hex');

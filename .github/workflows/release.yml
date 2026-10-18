@@ -370,6 +370,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Generate pinned Formal AI dependency (Deno)
+        if: matrix.runtime == 'deno'
+        shell: bash
+        run: deno run -A scripts/bootstrap-formal-ai.mjs
+
       - name: Run tests (Deno)
         if: matrix.runtime == 'deno'
         shell: bash
