@@ -1,0 +1,28 @@
+{
+  "cellar": {
+    "documentation": "https://op.europa.eu/en/web/cellar/cellar-data/publications",
+    "url": "https://publications.europa.eu/resource/celex/32016R0679?language=eng",
+    "acquiredAt": "2026-10-18T16:22:17.274Z",
+    "requests": [
+      {
+        "url": "https://publications.europa.eu/robots.txt",
+        "accept": "application/xml,application/json,text/html,application/pdf;q=0.9,*/*;q=0.1"
+      },
+      {
+        "url": "https://op.europa.eu/robots.txt",
+        "accept": "application/xml,application/json,text/html,application/pdf;q=0.9,*/*;q=0.1"
+      }
+    ],
+    "error": "HTTP 429: https://op.europa.eu/robots.txt"
+  },
+  "india": {
+    "url": "https://www.legislative.gov.in/document/constitution-of-india-in-english/",
+    "title": "Access Denied",
+    "text": "Access Denied\nYou don't have permission to access \"http://www.legislative.gov.in/document/constitution-of-india-in-english/\" on this server.\n\nReference #18.14cf3617.1792340539.16acd82c\n\nhttps://errors.edgesuite.net/18.14cf3617.1792340539.16acd82c",
+    "checkedAt": "2026-10-18T16:22:19Z",
+    "method": "Playwright Chromium navigation",
+    "httpStatus": 403,
+    "note": "Access research only; no law text collected."
+  },
+  "limits": "Finite access observations from this environment; neither result establishes a globally unavailable publisher or complete corpus coverage."
+}

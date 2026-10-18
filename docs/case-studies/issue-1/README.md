@@ -78,6 +78,8 @@ The probes in `experiments/probe-*.mjs` use finite byte/time budgets and preserv
 - Pravo publication/IPS and Kremlin alternate probes timed out. Old repository loader code is evidence of a previous mechanism, not proof that the present list/detail API works.
 - Matsne supplied the English Constitution through its `www` origin during recovery; original-language and edition-specific later requests returned short denial responses. The collector checks the actual law-body selector rather than treating navigation as content.
 
+A follow-up at 16:22 UTC on 18 October 2026 checked the [documented Cellar publication interface](https://op.europa.eu/en/web/cellar/cellar-data/publications) with explicit XHTML/English negotiation. Its source-client probe stopped at HTTP 429 for the redirected robots policy, before requesting a publication; it did not bypass that failure. A real-browser check of the Legislative Department's English Constitution page returned HTTP 403 and “Access Denied.” Requests and outcomes are preserved in [alternate-publication-checks.json](data/alternate-publication-checks.json). These observations leave those collection paths unverified. Independently, an offline regression using the actual collected EU body exposed and fixed incorrect handling of the documented XHTML media type; metadata-only XML still fails closed.
+
 ## Redistribution and publisher load
 
 This is a source-by-source investigation, not a blanket legal clearance. Legislation text and a site's photographs, branding, database structure and third-party annotations can have different terms. The software's Unlicense does not relicense collected source material.

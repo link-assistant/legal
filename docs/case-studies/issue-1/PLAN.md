@@ -38,9 +38,10 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Reproduce and fix real GovInfo directory discovery, bounded resumable traversal, CFR section/context loss, EUR-Lex metadata acceptance and CLI error handling.
 - [x] Reproduce and fix Deno HTTP test cleanup and redirected-source robots enforcement.
 - [x] Download the fresh failing link-check log, reproduce its missing corpus link and verify both source HTML and the built corpus download.
-- [x] Run Node (873), Bun (873), Deno (870 plus three ignored), Chromium (two), package-consumer, lint/format/duplication and repository checks.
+- [x] Run Node (897), Bun (897), Deno (894 plus three ignored), Chromium (two), package-consumer, lint/format/duplication and repository checks.
 - [x] Reproduce the hosted release failure caused by inherited fragments targeting the old package name, retarget those fragments and verify the real release plan plus full versioning command.
 - [x] Reproduce lost USLM title-level statutory notes, preserve a bounded official Title 1 archive and catalog, and verify 39 sections plus context offline.
+- [x] Reproduce XHTML ingestion failure from the actual EU sample; normalize media types, preserve exact text, and record bounded Cellar/India follow-up access evidence.
 - [x] Run pinned actionlint and both configured zizmor passes locally; preserve results and analyzer limits.
 - [x] Deploy the Pages site from the prepared branch and verify Chinese search, official citations and local-only runtime resources in Chromium; commit screenshot and result evidence.
 - [ ] Obtain all hosted checks and an actual Docker runtime smoke result on the latest pushed code.

@@ -29,17 +29,20 @@ export function htmlText(html, selector, { xml = false } = {}) {
 const denied =
   /<title[^>]*>\s*(?:Access Denied|Page Not Found|Error)|<h1[^>]*>\s*Access Denied|captcha|enable javascript to continue|not found<\/h1>/i;
 function documentFormat(entry, contentType) {
+  const type = contentType.split(';')[0].trim().toLowerCase();
   return (
     entry.format ??
-    (/zip/.test(contentType) || /\.zip(?:[?#]|$)/.test(entry.url)
+    (/zip/.test(type) || /\.zip(?:[?#]|$)/.test(entry.url)
       ? 'zip'
-      : /pdf/.test(contentType) || /\.pdf(?:[?#]|$)/.test(entry.url)
+      : /pdf/.test(type) || /\.pdf(?:[?#]|$)/.test(entry.url)
         ? 'pdf'
-        : /xml/.test(contentType)
-          ? 'xml'
-          : /json/.test(contentType)
-            ? 'json'
-            : 'html')
+        : type === 'application/xhtml+xml'
+          ? 'html'
+          : /xml/.test(type)
+            ? 'xml'
+            : /json/.test(type)
+              ? 'json'
+              : 'html')
   );
 }
 export async function parseDocument(bytes, entry, source, contentType = '') {
