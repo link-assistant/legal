@@ -34,6 +34,30 @@ function createPrettierBins(dependencies) {
   );
 }
 
+itUnless(sandboxed)(
+  'assembles the real pending release plan for the current package name',
+  async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'changeset-plan-'));
+    const output = join(directory, 'plan.json');
+    try {
+      const execution = execFileAsync(
+        'node',
+        ['node_modules/@changesets/cli/bin.js', 'status', '--output', output],
+        { encoding: 'utf8', timeout: 20000 }
+      );
+      execution.child.stdin.end();
+      await execution;
+      const plan = JSON.parse(readFileSync(output, 'utf8'));
+      const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+      expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
+        true
+      );
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }
+);
+
 describe('Changesets release formatter', () => {
   it('uses the same formatter as the project formatting check', () => {
     expect(config.format).toBe('prettier');

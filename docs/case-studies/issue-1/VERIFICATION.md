@@ -15,13 +15,15 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 - A redirect could bypass the destination's robots policy. A mocked regression first demonstrated the request reaching a prohibited path; same-origin and explicitly allowed alternate-origin redirects now check the destination policy before requesting content.
 - The fresh link-check job for `2b7dbd2` failed at line 285 because source HTML linked to a build-only `web/corpus.json`. The preserved job log is `data/logs/links-39141675940.log.gz`. A local source-link test reproduced the missing file. The source now links to the canonical collected corpus; the build rewrites that link for its packaged layout, and a browser test downloads and compares the entire JSON corpus.
 
+- Release CI on `2b7dbd2` failed at line 238 of `data/logs/release-117718678351.log.gz`: four inherited changesets still referenced the starter package name after the package rename. A regression assembles the actual pending release plan and failed with the same workspace error. Retargeting those fragments preserves their release notes and makes the regression pass. `experiments/pending-release-version.mjs` runs the complete versioning command in an isolated copy, confirms version `0.12.0` and its synchronized lockfile, and leaves the checkout's fragments intact.
+
 ## Evidence and limits
 
 Local verification after recovery passed:
 
-- Node: 867 tests, zero failures.
-- Bun: 867 tests, zero failures.
-- Deno: 864 tests, zero failures, three runtime-specific tests ignored.
+- Node: 868 tests, zero failures.
+- Bun: 868 tests, zero failures.
+- Deno: 865 tests, zero failures, three runtime-specific tests ignored.
 - Chromium: two browser tests, including desktop and phone layouts.
 - Packed npm artifact: installed into a clean directory with install scripts disabled; library, bundled corpus, exact citations and CLI worked outside the repository.
 - Root dependency audit: zero vulnerabilities. Existing universal-app dependencies have eight moderate audit findings; neither lock has a high/critical finding.
