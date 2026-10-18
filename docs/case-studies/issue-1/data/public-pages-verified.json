@@ -1,13 +1,40 @@
 {
+  "checkedAt": "2026-10-18T17:00:45.125Z",
   "url": "https://link-assistant.github.io/legal/legal/",
-  "query": "法律",
-  "count": "4 source records",
-  "firstSource": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
-  "resourceCount": 3,
+  "count": "5 source records",
+  "abstention": "0 source matches · exact quotations\n\nThe collected texts have insufficient evidence for these words. Try the source language or another collection.",
+  "requestsBeforeDownload": 4,
   "runtimeResources": [
     "https://link-assistant.github.io/legal/legal/style.css",
     "https://link-assistant.github.io/legal/legal/app.js",
     "https://link-assistant.github.io/legal/legal/corpus.json"
   ],
+  "downloadUrl": "https://link-assistant.github.io/legal/legal/corpus.json",
+  "downloadSha256": "fa03427badc62a03d08626e594d5df2641e09596405a8b8de64e80db3d4ae4e9",
+  "downloadRecords": 5,
+  "ids": [
+    "us-constitution-original",
+    "cn-constitution-2014-en",
+    "cn-constitution-2018-zh",
+    "ge-constitution-en",
+    "eu-gdpr-2016-article5-en"
+  ],
+  "deployedHead": "1835e8d255ad9d3b553460e3708eba6992151822",
+  "deploymentRun": "https://github.com/link-assistant/legal/actions/runs/39145656487",
+  "queries": [
+    {
+      "query": "法律",
+      "firstSource": "https://www.gov.cn/guoqing/2018-03/22/content_5276318.htm",
+      "count": "5 source records"
+    },
+    {
+      "query": "data minimisation",
+      "firstSource": "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng",
+      "count": "5 source records",
+      "containsAccountability": true
+    }
+  ],
+  "searchRequestsAdded": 0,
+  "extraResourceRequests": "One explicit verification fetch of corpus.json before searching; UI runtime uses three distinct same-origin assets.",
   "passed": true
 }

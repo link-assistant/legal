@@ -1,0 +1,26 @@
+{
+  "headSha": "61d9fc9c22e9b07acc91407c10a7f53c8b51cf71",
+  "mergeSha": "c5f2b7ef22f515cc0ea03fc732000337b5aae507",
+  "createdAt": "2026-10-18T16:57:35Z",
+  "runUrl": "https://github.com/link-assistant/legal/actions/runs/39147003747",
+  "resultsCount": 0,
+  "error": "",
+  "warning": "",
+  "reviewFindings": [
+    {
+      "number": 4,
+      "state": "fixed",
+      "rule": "js/identity-replacement"
+    },
+    {
+      "number": 3,
+      "state": "fixed",
+      "rule": "js/polynomial-redos"
+    },
+    {
+      "number": 2,
+      "state": "fixed",
+      "rule": "js/polynomial-redos"
+    }
+  ]
+}
