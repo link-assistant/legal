@@ -54,6 +54,10 @@ export interface Citation {
   retrievedAt: string;
   score: number;
   matchedTerms: string[];
+  status: string;
+  effectiveFrom: string | null;
+  effectiveTo: string | null;
+  translation: boolean;
 }
 export interface LegalAnswer {
   question: string;
@@ -61,7 +65,12 @@ export interface LegalAnswer {
   answer: string;
   citations: Citation[];
   method: 'deterministic-lexical-retrieval';
-  assessment: { status: string; sources: string[]; inference: string };
+  assessment: {
+    status: string;
+    sources: string[];
+    inference: string;
+    proposition: string;
+  };
   limits: string[];
 }
 export interface Source {

@@ -120,6 +120,7 @@ function validateCitation(rule, law) {
     !Number.isInteger(rule.end) ||
     rule.start < 0 ||
     rule.end <= rule.start ||
+    rule.end > law.text.length ||
     law.text.slice(rule.start, rule.end) !== rule.quote
   ) {
     throw new Error('Rule citation does not match source text');

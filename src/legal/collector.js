@@ -220,6 +220,17 @@ export class SourceClient {
     this.robots = new Map();
   }
   async get(url, source) {
+    await this.checkRobots(url, source);
+    return this.request(url, source);
+  }
+  async postJson(url, value, source) {
+    await this.checkRobots(url, source);
+    return this.request(url, source, {
+      method: 'POST',
+      body: JSON.stringify(value),
+    });
+  }
+  async checkRobots(url, source) {
     allowedUrl(url, source);
     if (this.respectRobots && !new URL(url).pathname.endsWith('/robots.txt')) {
       const origin = new URL(url).origin;
@@ -233,14 +244,25 @@ export class SourceClient {
         throw new Error(`robots.txt disallows collection: ${url}`);
       }
     }
-    return this.request(url, source);
   }
-  async request(url, source, { robots = false } = {}) {
+  async request(url, source, { robots = false, method = 'GET', body } = {}) {
     let current = allowedUrl(url, source);
-    const cached = await this.store.cache(url);
+    const key = method === 'GET' ? url : `${method}\n${url}\n${body}`;
+    const cached = await this.store.cache(key);
     for (let redirect = 0; redirect < 6; redirect++) {
-      const result = await this.attempt(current, source, cached, robots);
+      const result = await this.attempt(
+        current,
+        source,
+        method === 'GET' ? cached : null,
+        robots,
+        { method, body }
+      );
       if (result.redirect) {
+        if (method !== 'GET') {
+          throw new Error(
+            'POST catalog redirects require explicit endpoint verification'
+          );
+        }
         const target = new URL(result.redirect, current);
         if (
           target.protocol === 'http:' &&
@@ -272,7 +294,7 @@ export class SourceClient {
         lastModified: result.lastModified,
         retrievedAt: new Date().toISOString(),
       };
-      await this.store.cache(url, value);
+      await this.store.cache(key, value);
       return { ...value, bytes: result.bytes, fromCache: false };
     }
     throw new Error('Official source redirect limit exceeded');
@@ -290,15 +312,16 @@ export class SourceClient {
     }
     this.lastRequest.set(origin, Date.now());
   }
-  async attempt(url, source, cached, robots) {
+  async attempt(url, source, cached, robots, options) {
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       await this.throttle(url, source);
-      const headers = requestHeaders(cached);
+      const headers = requestHeaders(cached, options.body);
       this.debug({ event: 'request', url, attempt });
       try {
         const response = await this.fetchImpl(url, {
           redirect: 'manual',
           headers,
+          ...options,
           signal: AbortSignal.timeout(this.timeoutMs),
         });
         if ([301, 302, 303, 307, 308].includes(response.status)) {
@@ -469,7 +492,13 @@ export class Collector {
       }
       seen.add(url);
       try {
-        const fetched = await this.client.get(url, source);
+        const fetched = await fetchCatalog(
+          this.client,
+          source,
+          url,
+          page,
+          pageSize
+        );
         const result = discoverPage(
           new TextDecoder().decode(fetched.bytes),
           source,
@@ -498,14 +527,38 @@ export class Collector {
     });
   }
 }
+function npcCatalogBody(page, pageSize) {
+  return {
+    searchRange: 1,
+    sxrq: [],
+    gbrq: [],
+    searchType: 2,
+    sxx: [],
+    gbrqYear: [],
+    flfgCodeId: [],
+    zdjgCodeId: [],
+    searchContent: '',
+    orderByParam: { order: '-1', sort: '' },
+    pageNum: page + 1,
+    pageSize,
+  };
+}
 
-function requestHeaders(cached) {
+function fetchCatalog(client, source, url, page, pageSize) {
+  return source.adapter === 'npc'
+    ? client.postJson(source.catalogUrl, npcCatalogBody(page, pageSize), source)
+    : client.get(url, source);
+}
+function requestHeaders(cached, body) {
   const headers = {
     'user-agent':
       'LegalAssistant/0.1 (+https://github.com/link-assistant/legal)',
     accept:
       'application/xml,application/json,text/html,application/pdf;q=0.9,*/*;q=0.1',
   };
+  if (body !== undefined) {
+    headers['content-type'] = 'application/json';
+  }
   if (cached?.etag) {
     headers['if-none-match'] = cached.etag;
   }
