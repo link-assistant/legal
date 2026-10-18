@@ -1,30 +1,33 @@
 # Preserved verification logs
 
-Current integrated checks are in `unicode-policy-verification.tar.gz`: Node/Bun
-each pass 905 tests; Deno passes 902 with three runtime-specific skips. It also
-preserves lint/format/duplication, browser, package, focused red/green and small
-hostile-input probe logs. `unicode-policy-verification.sha256` records each
-archived file's checksum. Extract it and use `sha256sum -c` as shown below for
-the earlier archive. Failure reproductions, source probes and hosted CI logs
-also remain individually compressed alongside it.
+`unicode-policy-verification.tar.gz` consolidates the recent independent
+recovery sessions. It retains every original archived file byte for byte,
+including robots-policy probes, conditional-cache and combining-mark search
+red/green traces, all nine failed jobs and complete run 39148071370, clean
+checkout/CRLF/empty-release reproductions, browser and package checks, hosted
+Docker evidence and CodeQL results. The latest full local suites pass 912
+Node tests, 912 Bun tests and 909 Deno tests with three runtime-specific skips.
+Earlier logs retain their original counts and timestamps.
 
-`earlier-local-verification.tar.gz` preserves 66 earlier local verification logs
-under their original filenames. Every archived compressed file was checked
-byte-for-byte before consolidation. `earlier-local-verification.sha256` lists
-their SHA-256 checksums. This reduces the PR below GitHub's 300-file diff limit;
-the unconsolidated version had 351 changed files and the diff API returned 406.
+The companion `unicode-policy-verification.sha256` lists every archived
+file's checksum. Consolidating the logs keeps the complete PR within GitHub's
+300-file diff limit. New evidence must preserve existing entries and checksums;
+a passing local result does not replace a fresh hosted result.
 
-To inspect an earlier run from the repository root:
+`earlier-local-verification.tar.gz` preserves 66 earlier compressed logs under
+their original filenames. Every compressed file was verified byte for byte.
+Its companion `.sha256` file lists their checksums. The initial unconsolidated
+PR had 351 changed files and the diff API returned HTTP 406.
+
+To inspect the recent evidence from the repository root:
 
 ```sh
-mkdir -p /tmp/legal-earlier-logs
-tar -xzf docs/case-studies/issue-1/data/logs/earlier-local-verification.tar.gz -C /tmp/legal-earlier-logs
-(cd /tmp/legal-earlier-logs && sha256sum -c "$OLDPWD/docs/case-studies/issue-1/data/logs/earlier-local-verification.sha256")
-gzip -dc /tmp/legal-earlier-logs/tests-node-final.log.gz | less
+mkdir -p /tmp/legal-recent-logs
+tar -xzf docs/case-studies/issue-1/data/logs/unicode-policy-verification.tar.gz -C /tmp/legal-recent-logs
+(cd /tmp/legal-recent-logs && sha256sum -c "$OLDPWD/docs/case-studies/issue-1/data/logs/unicode-policy-verification.sha256")
+less /tmp/legal-recent-logs/bootstrap-platforms-node-full.log
 ```
 
-These logs record different historical revisions. The verification report
-distinguishes the latest local results, older hosted proofs and unfinished
-acceptance criteria.
-
-`conditional-cache-verification.tar.gz` preserves the failing redirect-cache regression, passing focused tests, complete Node/Bun/Deno suites and repository checks. Its companion `conditional-cache-verification.sha256` verifies each archived log. This run follows the cache validator fix; the Unicode archive retains the earlier runtime counts.
+Some older source probes and hosted logs remain individually compressed
+alongside the archives. The verification report distinguishes local checks,
+older hosted proofs and unfinished acceptance criteria.

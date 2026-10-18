@@ -6,7 +6,6 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
-  readdirSync,
   rmSync,
   symlinkSync,
   unlinkSync,
@@ -17,49 +16,10 @@ import { delimiter, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { describe, it, expect } from 'test-anywhere';
 import { itUnless, sandboxed } from './helpers/skip.js';
+import { pendingReleasePlan } from './helpers/pending-release.js';
 
 const config = JSON.parse(readFileSync('.changeset/config.json', 'utf8'));
 const execFileAsync = promisify(execFile);
-
-async function createReleaseCheckout(directory) {
-  const git = async (...args) => {
-    const execution = execFileAsync(
-      'git',
-      [
-        '-c',
-        'user.name=Release fixture',
-        '-c',
-        'user.email=release-fixture@example.invalid',
-        '-c',
-        'commit.gpgsign=false',
-        ...args,
-      ],
-      { cwd: directory, encoding: 'utf8', timeout: 10000 }
-    );
-    execution.child.stdin.end();
-    await execution;
-  };
-  await git('init', '--initial-branch=ci-check');
-  copyFileSync('package.json', join(directory, 'package.json'));
-  mkdirSync(join(directory, '.changeset'));
-  copyFileSync(
-    '.changeset/config.json',
-    join(directory, '.changeset/config.json')
-  );
-  await git('add', '.');
-  await git('commit', '-m', 'Release fixture base');
-  await git('update-ref', 'refs/remotes/origin/main', 'HEAD');
-  const fragments = readdirSync('.changeset').filter(
-    (name) => name.endsWith('.md') && name !== 'README.md'
-  );
-  for (const name of fragments) {
-    copyFileSync(join('.changeset', name), join(directory, '.changeset', name));
-  }
-  await git('add', '.');
-  await git('commit', '-m', 'Actual pending fragments');
-  await git('checkout', '--detach');
-  return fragments.map((name) => name.slice(0, -3)).sort();
-}
 
 function createPrettierBins(dependencies) {
   const bin = join(dependencies, '.bin');
@@ -76,37 +36,16 @@ function createPrettierBins(dependencies) {
 }
 
 itUnless(sandboxed)(
-  'assembles every real pending fragment in a detached checkout without local main',
+  'assembles the real pending release plan without a local main branch',
   async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'changeset-plan-'));
-    const output = join(directory, 'plan.json');
-    try {
-      const fragments = await createReleaseCheckout(directory);
-      const execution = execFileAsync(
-        'node',
-        [
-          resolve('node_modules/@changesets/cli/bin.js'),
-          'status',
-          '--since=origin/main',
-          '--output',
-          output,
-        ],
-        { cwd: directory, encoding: 'utf8', timeout: 20000 }
-      );
-      execution.child.stdin.end();
-      await execution;
-      const plan = JSON.parse(readFileSync(output, 'utf8'));
-      const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-      expect(plan.changesets.map((fragment) => fragment.id).sort()).toEqual(
-        fragments
-      );
-      expect(plan.releases.length).toBeGreaterThan(0);
-      expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
-        true
-      );
-    } finally {
-      rmSync(directory, { recursive: true, force: true });
-    }
+    const { plan, pkg, fragments } = await pendingReleasePlan();
+    expect(plan.changesets.map((fragment) => fragment.id).sort()).toEqual(
+      fragments.map((name) => name.slice(0, -3)).sort()
+    );
+    expect(plan.releases.length).toBe(fragments.length ? 1 : 0);
+    expect(plan.releases.every((release) => release.name === pkg.name)).toBe(
+      true
+    );
   }
 );
 

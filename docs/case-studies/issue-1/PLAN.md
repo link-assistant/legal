@@ -78,3 +78,20 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Download all nine failed runtime job logs from `215c952`, distinguish release-reference, Windows patch line-ending and missing Deno generation failures, and reproduce/fix the detached release-plan check against the remote reference.
 - [x] Reproduce/fix Windows CRLF patch application and generate the Formal AI module before Deno type checking; verify byte-identical fresh Node/Deno builds.
 - [ ] Verify all nine hosted runtime jobs and every other required workflow on the final pushed SHA.
+
+## Fresh checkout CI regressions
+
+- [x] Match failed run 39148071370 to head 215c952 and preserve its full log, all nine failed job logs, timestamps and exact errors.
+- [x] Reproduce the missing local main branch in a clean detached clone; share the isolated real Changesets fixture between release tests.
+- [x] Reproduce Windows CRLF patch rejection and Deno's missing generated module before test discovery; normalize patch line endings and bootstrap explicitly in the Deno job.
+- [x] Reproduce release-test failures after pending fragments are consumed; verify both real pending and empty release plans without changing the worktree's fragments.
+- [x] Verify clean checkout release, Deno import-graph and actual CRLF upstream-patch scenarios; run Node/Bun (907 each), Deno (904 plus three ignored), browser, package and repository checks.
+- [ ] Obtain fresh hosted checks for the CI setup fixes on every runtime and operating system. Preserve and investigate any new failures.
+
+## Integrated platform fixes
+
+- [x] Merge the concurrent clean-checkout fixes with final-URL cache revalidation and combining-mark search regressions, preserving both commit histories.
+- [x] Verify the shared release fixture in a detached repository with only `origin/main`, including pending and consumed fragments.
+- [x] Run the complete combined suites: Node/Bun 912 each, Deno 909 plus three ignored, three Chromium tests, package consumer and repository checks.
+- [x] Consolidate all recent evidence without losing an entry, keeping the complete PR within the 300-file diff limit.
+- [ ] Verify every fresh hosted workflow and Docker runtime on the combined pushed revision.
