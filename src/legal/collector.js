@@ -149,7 +149,10 @@ function allowedUrl(url, source) {
   }
   return value.href;
 }
-export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
+function selectedRobotsGroups(text, userAgent) {
+  if (/^\s*</.test(text)) {
+    throw new Error('Unverified robots.txt policy: received HTML or XML');
+  }
   const groups = [];
   let current = null;
   for (const line of text.split(/\r?\n/)) {
@@ -162,22 +165,41 @@ export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
     const key = parts[1].toLowerCase(),
       value = parts[2];
     if (key === 'user-agent') {
-      if (!current || current.rules.length) {
-        current = { agents: [], rules: [] };
+      if (!current || current.rules.length || current.delayMs !== null) {
+        current = { agents: [], rules: [], delayMs: null };
         groups.push(current);
       }
       current.agents.push(value.toLowerCase());
     } else if (current && ['allow', 'disallow'].includes(key) && value) {
       current.rules.push({ allow: key === 'allow', path: value });
+    } else if (
+      current &&
+      key === 'crawl-delay' &&
+      /^\d+(\.\d+)?$/.test(value)
+    ) {
+      current.delayMs = Number(value) * 1000;
     }
   }
   const agent = userAgent.toLowerCase();
   const specific = groups.filter((group) =>
     group.agents.some((name) => name !== '*' && agent.includes(name))
   );
-  const selected = specific.length
+  return specific.length
     ? specific
     : groups.filter((group) => group.agents.includes('*'));
+}
+export function robotsIntervalMs(text, userAgent = 'LegalAssistant') {
+  const delay = Math.max(
+    0,
+    ...selectedRobotsGroups(text, userAgent).map((group) => group.delayMs ?? 0)
+  );
+  if (!Number.isFinite(delay) || delay > 60000) {
+    throw new Error('robots.txt crawl-delay exceeds the 60 second wait budget');
+  }
+  return delay;
+}
+export function robotsAllowed(text, url, userAgent = 'LegalAssistant') {
+  const selected = selectedRobotsGroups(text, userAgent);
   const path = new URL(url).pathname + new URL(url).search;
   const rules = selected
     .flatMap((group) => group.rules)
@@ -218,6 +240,7 @@ export class SourceClient {
     });
     this.lastRequest = new Map();
     this.robots = new Map();
+    this.publisherIntervals = new Map();
   }
   async get(url, source) {
     await this.checkRobots(url, source);
@@ -243,6 +266,10 @@ export class SourceClient {
       if (!robotsAllowed(this.robots.get(origin), url)) {
         throw new Error(`robots.txt disallows collection: ${url}`);
       }
+      this.publisherIntervals.set(
+        origin,
+        robotsIntervalMs(this.robots.get(origin))
+      );
     }
   }
   async request(url, source, { robots = false, method = 'GET', body } = {}) {
@@ -272,6 +299,9 @@ export class SourceClient {
           target.protocol = 'https:';
         }
         current = allowedUrl(target.href, source);
+        if (!robots) {
+          await this.checkRobots(current, source);
+        }
         continue;
       }
       if (result.status === 304) {
@@ -304,7 +334,10 @@ export class SourceClient {
     const delay = Math.max(
       0,
       (this.lastRequest.get(origin) ?? 0) +
-        (source.intervalMs ?? 1500) -
+        Math.max(
+          source.intervalMs ?? 1500,
+          this.publisherIntervals.get(origin) ?? 0
+        ) -
         Date.now()
     );
     if (delay) {

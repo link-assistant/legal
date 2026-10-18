@@ -13,6 +13,10 @@ This report concerns [PR 2](https://github.com/link-assistant/legal/pull/2). A p
 - A EUR-Lex title-only metadata fixture was accepted as law text. Removing the title selector makes that fixture fail closed. CLI resume tests also reproduced asynchronous collection errors escaping the error handler; those now return exit code 1.
 - The full Deno run exposed an HTTP test waiting indefinitely for a keep-alive socket after `server.close()`. Explicitly closing test connections fixes cleanup; the focused run with leak tracing and the full Deno rerun pass. The interrupted log is preserved separately.
 
+- A same-origin redirect could bypass a robots prohibition. A reproducing test verifies that the disallowed redirect target is never fetched. HTML denial responses masquerading as robots.txt now stop collection, and publisher crawl delays are honored; a delay beyond the bounded wait budget stops the request. These have failing-before/passing-after policy tests.
+- A shared multilingual law ID silently returned the first translation. CLI and HTTP tests reproduced this; callers must now explicitly select a language when an ID is ambiguous. Unknown language editions are rejected.
+- Preview drift detection masked Git failures inside a shell conditional. The preserved run log also showed dubious ownership and Bash syntax executed under sh. The workflow now configures the container worktree, selects Bash, and propagates a failed Git command; a test executes the actual drift script outside a repository to verify failure.
+
 ## Evidence and limits
 
 Local verification after recovery passed:

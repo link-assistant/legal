@@ -104,6 +104,36 @@ describe('official document adapters', () => {
 });
 
 describe('bounded collection and persistent evidence', () => {
+  it('checks robots before following an allowed-origin redirect', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'legal-redirect-robots-'));
+    const requests = [];
+    const client = new SourceClient({
+      store: new CollectionStore(root),
+      sleep: async () => {},
+      retries: 0,
+      fetchImpl: async (url) => {
+        requests.push(url);
+        if (url.endsWith('/robots.txt')) {
+          return response('User-agent: *\nDisallow: /private');
+        }
+        return url.endsWith('/private')
+          ? response(html)
+          : response('', 302, { location: '/private' });
+      },
+    });
+    try {
+      let message = '';
+      try {
+        await client.get(entry.url, source);
+      } catch (error) {
+        message = error.message;
+      }
+      expect(message.includes('robots.txt disallows')).toBe(true);
+      expect(requests.some((url) => url.endsWith('/private'))).toBe(false);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
   it('deduplicates unchanged content, keeps historical versions and resumes after failure', async () => {
     const root = await mkdtemp(join(tmpdir(), 'legal-collect-'));
     try {
