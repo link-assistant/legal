@@ -206,7 +206,9 @@ export interface WikidataEntity {
   officialLanguages: string[];
   subdivisions: string[];
   parts: string[];
+  memberOf: string[];
   dissolved: boolean;
+  codeSubjects: { iso3166_1: string | null; iso639_1: string | null };
 }
 export function parseWikidataEntity(
   document: unknown,
@@ -226,6 +228,7 @@ export interface JurisdictionInventory {
     revision: number | null;
     name: string | null;
     level: 'supranational' | 'national';
+    via?: string[];
     groups?: string[];
     members?: string[];
     officialLanguages: string[];
@@ -242,6 +245,19 @@ export interface JurisdictionInventory {
         officialLanguages?: string[];
       }[];
     };
+  }[];
+  excluded: {
+    wikidata: string;
+    reason: 'dissolved' | 'no-current-iso-3166-1-code' | 'not-fetched';
+  }[];
+  unresolvedLanguages: string[];
+  crossChecks: {
+    organization: string;
+    group: string;
+    wikidata: string;
+    name: string | null;
+    listedByOrganization: boolean;
+    countryMemberStatement: boolean;
   }[];
   evidence: {
     wikidata: string;
@@ -263,6 +279,7 @@ export function buildJurisdictionInventory(options: {
   retrievedAt: string;
   selection?: string[];
   evidence?: JurisdictionInventory['evidence'];
+  crossChecks?: JurisdictionInventory['crossChecks'];
 }): JurisdictionInventory;
 export function inventoryCoverage(
   inventory: JurisdictionInventory,

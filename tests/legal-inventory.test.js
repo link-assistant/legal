@@ -52,7 +52,50 @@ function fixture() {
   });
 }
 
+const deprecated = (value, subject) => ({
+  ...text(value),
+  rank: 'deprecated',
+  qualifiers: {
+    P8327: [{ datavalue: { value: { 'entity-type': 'item', id: subject } } }],
+  },
+});
+
 describe('jurisdiction, subdivision and official-language inventory', () => {
+  it('follows deprecated codes to their intended item and reports exclusions', () => {
+    const entities = [
+      parsed('Q7', 'Constituent', {
+        P297: [deprecated('BB', 'Q8')],
+        P37: [item('Q30')],
+      }),
+      parsed('Q8', 'Kingdom', { P297: [text('BB')], P37: [item('Q30')] }),
+      parsed('Q9', 'Former', { P297: [text('CC')], P576: [text('x')] }),
+      parsed('Q10', 'Uncoded', {}),
+      parsed('Q30', 'Macro', { P218: [deprecated('mm', 'Q31')] }),
+      parsed('Q31', 'Modern', { P218: [text('mm')] }),
+    ];
+    const inventory = buildJurisdictionInventory({
+      entities: entities.map((value) => [value.id, value]),
+      countries: ['Q7', 'Q8', 'Q9', 'Q10', 'Q11'],
+      supranational: [{ id: 'U1', wikidata: 'Q8', membersFrom: 'parts' }],
+      groups: new Map([
+        ['Q7', ['a']],
+        ['Q8', ['b']],
+      ]),
+      retrievedAt: '2026-11-02T00:00:00.000Z',
+    });
+    const kingdom = inventory.jurisdictions.find((value) => value.id === 'BB');
+    expect(kingdom.wikidata).toBe('Q8');
+    expect(kingdom.via).toEqual(['Q7']);
+    expect(kingdom.groups).toEqual(['a', 'b']);
+    expect(kingdom.officialLanguages).toEqual(['mm']);
+    expect(inventory.excluded).toEqual([
+      { wikidata: 'Q9', reason: 'dissolved' },
+      { wikidata: 'Q10', reason: 'no-current-iso-3166-1-code' },
+      { wikidata: 'Q11', reason: 'not-fetched' },
+    ]);
+    expect(inventory.unresolvedLanguages).toEqual([]);
+  });
+
   it('excludes deprecated and ended statements from Wikidata entities', () => {
     const value = parsed('Q9', 'Gamma', {
       P37: [
@@ -85,6 +128,7 @@ describe('jurisdiction, subdivision and official-language inventory', () => {
       'AA-S',
     ]);
     expect(alpha.subdivisions.items[0].officialLanguages).toEqual(['nrt']);
+    expect(inventory.unresolvedLanguages).toEqual([]);
     expect(fixture()).toEqual(inventory);
   });
 

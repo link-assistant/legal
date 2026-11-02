@@ -26,6 +26,13 @@ const strings = (claims) =>
     .map((claim) => claim.mainsnak.datavalue?.value)
     .filter((value) => typeof value === 'string');
 const firstString = (claims) => strings(claims)[0] ?? null;
+// A deprecated code statement may name the item it was intended for (P8327),
+// such as the Netherlands constituent country pointing to the Kingdom.
+const intendedSubject = (claims = []) =>
+  claims
+    .filter((claim) => claim.rank === 'deprecated')
+    .map((claim) => claim.qualifiers?.P8327?.[0]?.datavalue?.value?.id)
+    .find((id) => /^Q\d+$/.test(id ?? '')) ?? null;
 
 // Reads one Special:EntityData JSON document. Statements with an end time or
 // deprecated rank are historical and excluded; dissolution is reported.
@@ -49,18 +56,50 @@ export function parseWikidataEntity(document, requestedId) {
     officialLanguages: entityIds(claims.P37),
     subdivisions: entityIds(claims.P150),
     parts: entityIds(claims.P527),
+    memberOf: entityIds(claims.P463),
     dissolved: valueClaims(claims.P576).length > 0,
+    codeSubjects: {
+      iso3166_1: intendedSubject(claims.P297),
+      iso639_1: intendedSubject(claims.P218),
+    },
   };
 }
 
-function languageCode(entity) {
-  return entity?.iso639_1 ?? entity?.iso639_3 ?? null;
+function languageCode(entity, entities) {
+  const target = entities.get(entity?.codeSubjects?.iso639_1);
+  return (
+    entity?.iso639_1 ??
+    entity?.iso639_3 ??
+    target?.iso639_1 ??
+    target?.iso639_3 ??
+    null
+  );
 }
 
 function languageList(ids, entities) {
   return [
-    ...new Set(ids.map((id) => languageCode(entities.get(id)) ?? id)),
+    ...new Set(ids.map((id) => languageCode(entities.get(id), entities) ?? id)),
   ].sort();
+}
+
+// Returns the entity that carries the current ISO 3166-1 code, following a
+// deprecated code's intended subject once.
+function countryEntity(id, entities) {
+  const entity = entities.get(id);
+  if (entity && !entity.iso3166_1 && entity.codeSubjects?.iso3166_1) {
+    const target = entities.get(entity.codeSubjects.iso3166_1);
+    if (target?.iso3166_1) {
+      return { entity: target, via: id };
+    }
+  }
+  return { entity, via: null };
+}
+
+function exclusionReason(entity) {
+  if (!entity) {
+    return 'not-fetched';
+  }
+  return entity.dissolved ? 'dissolved' : 'no-current-iso-3166-1-code';
 }
 
 function provenance(entity) {
@@ -81,6 +120,70 @@ function subdivisionRecord(id, entities) {
   };
 }
 
+function subdivisionList(entity, known, resolved) {
+  const listed = entity.subdivisions.filter(
+    (item) => !resolved || !known.get(item)?.dissolved
+  );
+  return {
+    level: 'first-level (Wikidata P150)',
+    listed: listed.length,
+    resolved,
+    items: resolved
+      ? listed
+          .map((item) => subdivisionRecord(item, known))
+          .sort((a, b) =>
+            String(a.code ?? a.name).localeCompare(String(b.code ?? b.name))
+          )
+      : listed.map((item) => ({ wikidata: item, resolved: false })),
+  };
+}
+
+function nationalRecord(entity, known, { via, labels, resolved }) {
+  return {
+    id: entity.iso3166_1,
+    ...provenance(entity),
+    via: via ? [via] : [],
+    name: entity.label,
+    level: 'national',
+    groups: [...new Set(labels)].sort(),
+    officialLanguages: languageList(entity.officialLanguages, known),
+    subdivisions: subdivisionList(entity, known, resolved),
+  };
+}
+
+function nationalRecords(countries, known, { groups, resolveSubdivisions }) {
+  const records = [];
+  const excluded = [];
+  const seen = new Map();
+  for (const id of countries) {
+    const { entity, via } = countryEntity(id, known);
+    if (!entity || entity.dissolved || !entity.iso3166_1) {
+      excluded.push({ wikidata: id, reason: exclusionReason(entity) });
+      continue;
+    }
+    const labels = [
+      ...(groups.get(id) ?? []),
+      ...(groups.get(entity.id) ?? []),
+    ];
+    if (seen.has(entity.id)) {
+      const record = seen.get(entity.id);
+      record.groups = [...new Set([...record.groups, ...labels])].sort();
+      record.via = [...new Set([...record.via, ...(via ? [via] : [])])].sort();
+      continue;
+    }
+    const record = nationalRecord(entity, known, {
+      via,
+      labels,
+      resolved:
+        resolveSubdivisions.includes(id) ||
+        resolveSubdivisions.includes(entity.id),
+    });
+    seen.set(entity.id, record);
+    records.push(record);
+  }
+  return { records, excluded };
+}
+
 // Builds a deterministic inventory from parsed entities. `groups` maps a
 // country item to membership labels such as `eu-member`; `resolveSubdivisions`
 // lists countries whose subdivision items were fetched and named.
@@ -93,6 +196,7 @@ export function buildJurisdictionInventory({
   retrievedAt,
   selection = [],
   evidence = [],
+  crossChecks = [],
 }) {
   const known = entities instanceof Map ? entities : new Map(entities);
   const records = [];
@@ -105,40 +209,16 @@ export function buildJurisdictionInventory({
       level: 'supranational',
       officialLanguages: languageList(entity.officialLanguages, known),
       members: entity[item.membersFrom]
-        .map((id) => known.get(id)?.iso3166_1 ?? id)
+        .map((id) => countryEntity(id, known).entity?.iso3166_1 ?? id)
         .sort(),
     });
   }
-  for (const id of countries) {
-    const entity = known.get(id);
-    if (!entity || entity.dissolved || !entity.iso3166_1) {
-      continue;
-    }
-    const resolved = resolveSubdivisions.includes(id);
-    const listed = entity.subdivisions.filter(
-      (item) => !resolved || !known.get(item)?.dissolved
-    );
-    records.push({
-      id: entity.iso3166_1,
-      ...provenance(entity),
-      name: entity.label,
-      level: 'national',
-      groups: [...(groups.get(id) ?? [])].sort(),
-      officialLanguages: languageList(entity.officialLanguages, known),
-      subdivisions: {
-        level: 'first-level (Wikidata P150)',
-        listed: listed.length,
-        resolved,
-        items: resolved
-          ? listed
-              .map((item) => subdivisionRecord(item, known))
-              .sort((a, b) =>
-                String(a.code ?? a.name).localeCompare(String(b.code ?? b.name))
-              )
-          : listed.map((item) => ({ wikidata: item, resolved: false })),
-      },
-    });
-  }
+  const national = nationalRecords(countries, known, {
+    groups,
+    resolveSubdivisions,
+  });
+  records.push(...national.records);
+  const { excluded } = national;
   records.sort(
     (a, b) =>
       Number(a.level !== 'supranational') -
@@ -165,6 +245,15 @@ export function buildJurisdictionInventory({
       'Publishers are identified only through the reviewed source registry. Everything else stays "unidentified".',
     ],
     jurisdictions: records,
+    excluded,
+    unresolvedLanguages: [
+      ...new Set(
+        records.flatMap((record) =>
+          record.officialLanguages.filter((code) => /^Q\d+$/.test(code))
+        )
+      ),
+    ].sort(),
+    crossChecks,
     evidence: [...evidence].sort((a, b) =>
       a.wikidata.localeCompare(b.wikidata)
     ),

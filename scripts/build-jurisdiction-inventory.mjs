@@ -1,7 +1,7 @@
 // Builds data/inventory/jurisdictions.json from Wikidata entity documents.
 // Uses only robots-allowed Special:EntityData/{QID}.json URLs through the
 // production SourceClient (robots, allowlist, throttle, byte limit). Network
-// use is bounded: about 400 sequential requests. Not run in CI.
+// use is bounded: about 450 sequential requests. Not run in CI.
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -71,21 +71,56 @@ const tag = (ids, label) => {
     groups.set(id, new Set([...(groups.get(id) ?? []), label]));
   }
 };
-tag(eu.subdivisions, 'eu-member');
-tag(councilOfEurope.parts, 'council-of-europe-member');
-tag(nonMemberEurope, 'europe-non-member');
-tag(focus, 'issue-1-focus');
-const countries = [
-  ...new Set([
-    ...focus,
-    ...eu.subdivisions,
-    ...councilOfEurope.parts,
-    ...nonMemberEurope,
-  ]),
+const listed = [
+  ...new Set([...focus, ...eu.subdivisions, ...councilOfEurope.parts]),
 ];
-for (const id of countries) {
+for (const id of [...listed, ...nonMemberEurope]) {
   await fetchEntity(id);
 }
+// A deprecated ISO 3166-1 code can name the item that carries it (P8327).
+const resolveCountry = async (id) => {
+  const subject = entities.get(id).codeSubjects.iso3166_1;
+  if (!entities.get(id).iso3166_1 && subject) {
+    await fetchEntity(subject);
+    return subject;
+  }
+  return id;
+};
+const resolved = new Map();
+for (const id of [...listed, ...nonMemberEurope]) {
+  resolved.set(id, await resolveCountry(id));
+}
+// Membership is cross-checked in both directions: the organization's list and
+// each fetched country's current P463 statements. Disagreements are kept.
+const crossChecks = [];
+for (const [label, organization, members] of [
+  ['eu-member', 'Q458', eu.subdivisions],
+  ['council-of-europe-member', 'Q8908', councilOfEurope.parts],
+]) {
+  const fromOrganization = new Set(members.map((id) => resolved.get(id)));
+  const fromCountries = new Set(
+    [...new Set(resolved.values())].filter((id) =>
+      entities.get(id).memberOf.includes(organization)
+    )
+  );
+  const union = [...new Set([...fromOrganization, ...fromCountries])].sort();
+  tag(union, label);
+  for (const id of union) {
+    if (fromOrganization.has(id) !== fromCountries.has(id)) {
+      crossChecks.push({
+        organization,
+        group: label,
+        wikidata: id,
+        name: entities.get(id).label,
+        listedByOrganization: fromOrganization.has(id),
+        countryMemberStatement: fromCountries.has(id),
+      });
+    }
+  }
+}
+tag(nonMemberEurope, 'europe-non-member');
+tag(focus, 'issue-1-focus');
+const countries = [...new Set([...listed, ...nonMemberEurope])];
 for (const id of focus) {
   for (const sub of entities.get(id).subdivisions) {
     await fetchEntity(sub);
@@ -95,7 +130,14 @@ const languageIds = new Set(
   [eu, ...entities.values()].flatMap((entity) => entity.officialLanguages)
 );
 for (const id of [...languageIds].sort()) {
-  await fetchEntity(id);
+  const language = await fetchEntity(id);
+  if (
+    !language.iso639_1 &&
+    !language.iso639_3 &&
+    language.codeSubjects.iso639_1
+  ) {
+    await fetchEntity(language.codeSubjects.iso639_1);
+  }
 }
 
 const inventory = buildJurisdictionInventory({
@@ -110,9 +152,12 @@ const inventory = buildJurisdictionInventory({
     'National: issue 1 focus jurisdictions (US, CN, IN, RU, GE); current EU members; current Council of Europe members (Q8908 P527); Belarus, Vatican City and Kosovo as European states outside both bodies.',
     'Transcontinental states outside these sets (for example Kazakhstan) are excluded and must be decided explicitly.',
     'First-level subdivisions: current P150 statements. Names, ISO 3166-2 codes and official languages are fetched only for the five focus jurisdictions; other subdivisions are listed by Wikidata identifier.',
-    'Official languages: current P37 statements, coded by ISO 639-1 (P218) or else ISO 639-3 (P220).',
+    'Official languages: current P37 statements, coded by ISO 639-1 (P218) or else ISO 639-3 (P220). A deprecated code that names its intended item (P8327) is followed once; languages left without a code keep their Wikidata identifier and are listed in unresolvedLanguages.',
+    'Countries whose ISO 3166-1 code is deprecated in favour of an intended item (P8327) are replaced by that item, recorded in `via`.',
+    'Membership: union of the organization statement (EU P150, Council of Europe P527) and current country P463 statements; disagreements are listed in crossChecks. A member missing from both is not found.',
   ],
   evidence,
+  crossChecks,
 });
 await mkdir(join(output, '..'), { recursive: true });
 await writeFile(output, `${JSON.stringify(inventory, null, 2)}\n`);
