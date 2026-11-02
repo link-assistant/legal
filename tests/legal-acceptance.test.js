@@ -10,8 +10,9 @@ const open = ['partial', 'unfinished', 'blocked'];
 const items = [...tracker.requirements, ...tracker.gaps];
 
 function issueOneRequirements() {
+  // Windows checkouts may use CRLF line endings.
   const lines = readFileSync(tracker.baseline.requirementTable, 'utf8').split(
-    '\n'
+    /\r?\n/
   );
   const start = lines.indexOf('## Requirement inventory and evidence');
   const rows = [];
