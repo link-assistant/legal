@@ -36,7 +36,7 @@ try {
     ],
     root
   );
-  const consumer = `import { add, answerQuestion } from '@link-assistant/legal';
+  const consumer = `import { add, answerQuestion, extractLawReferences } from '@link-assistant/legal';
 import { loadCorpus } from '@link-assistant/legal/server';
 const corpus = await loadCorpus();
 const result = answerQuestion(corpus.laws, 'equal before the law', {jurisdiction:'GE'});
@@ -45,6 +45,9 @@ for (const citation of result.citations) {
   const law = corpus.laws.find(item => item.id === citation.lawId);
   if (law.text.slice(citation.start,citation.end) !== citation.quote) throw new Error('Package citation mismatch');
 }
+const gdpr = corpus.laws.find(law => law.id === 'eu-gdpr-2016-article5-en');
+const mentions = extractLawReferences(gdpr).filter(reference => reference.target.identifier === '89');
+if (mentions.length !== 2 || mentions.some(reference => reference.verified || reference.localCandidateCount || reference.contentHash !== gdpr.contentHash)) throw new Error('Packed reference evidence mismatch');
 console.log('Packed library and bundled corpus passed');`;
   await writeFile(join(root, 'consumer.mjs'), consumer);
   console.log(run(process.execPath, ['consumer.mjs'], root).trim());

@@ -13,3 +13,4 @@ export {
 export { formalizeLaw, encodeKnowledge, decodeKnowledge } from './formalize.js';
 export { tokenize, queryLaws, answerQuestion } from './assistant.js';
 export { evaluateRules } from './reasoning.js';
+export { extractLawReferences } from './references.js';

@@ -137,8 +137,33 @@ export function formalizeLaw(law: Law): {
     verified: false;
     semantics: string;
   }[];
+  references: LawReference[];
   limits: string[];
 };
+export interface LawReference {
+  id: string;
+  lawId: string;
+  contentHash: string;
+  url: string;
+  sectionId: string;
+  quote: string;
+  start: number;
+  end: number;
+  byteStart: number;
+  byteEnd: number;
+  role: 'heading-candidate' | 'reference-candidate';
+  target: {
+    unit: 'article' | 'section' | 'chapter' | 'paragraph';
+    identifier: string;
+    subdivisions: string[];
+  };
+  localCandidates: string[];
+  localCandidateCount: number;
+  candidatesTruncated: boolean;
+  verified: false;
+  semantics: 'citation-syntax-only';
+}
+export function extractLawReferences(law: Law): LawReference[];
 export function encodeKnowledge(value: unknown): string;
 export function decodeKnowledge(notation: string): unknown;
 
