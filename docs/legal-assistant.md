@@ -46,6 +46,20 @@ node scripts/update-collection.mjs examples/collection/config.json
 
 The scheduled runner checkpoints pending records and pagination between bounded runs; failures remain pending. `intervalDays` defaults to seven after a catalog cycle completes. `pagesPerRun` and `documentsPerRun` bound load. The [separate-repository workflow template](../examples/collection/weekly.yml) runs weekly and preserves checkpoints and artifacts, making partial runs visibly fail. Change its cron and configuration for another cadence. It does not publish a permanent corpus here. Publisher-specific redistribution review and permanent repository deployment remain outstanding; `redistributionReviewed:false` explicitly records that status. Run only one scheduled writer per store.
 
+## Evaluation, screening and gaps
+
+```sh
+node bin/legal-assistant.js evaluate [--questions FILE]
+node bin/legal-assistant.js quality
+node bin/legal-assistant.js gaps [--inventory FILE]
+```
+
+`evaluateQuestions(laws, set)` scores a question set. Each answerable case names a law ID, content hash, section and exact quotation, checked against the edition before retrieval is scored. Unanswerable cases pass only when the assistant abstains. The [bundled set](../data/evaluation/questions.json) is bounded to the demo records, and its expected answers are not lawyer-reviewed. The CLI exits 2 while any case fails.
+
+`assessTextQuality(text, language)` and `assessCorpusQuality(laws)` screen extracted text. They flag replacement, private-use, unassigned and control characters, UTF-8 decoded as Latin-1, and letters outside the scripts expected for the language, such as legacy-font Hindi extracted as Latin letters. Unknown languages are `script-unassessed`. Screening is not OCR or a review of accuracy.
+
+`buildJurisdictionInventory` and `inventoryCoverage` produce and compare a planning inventory. [data/inventory/jurisdictions.json](../data/inventory/jurisdictions.json) is built by `scripts/build-jurisdiction-inventory.mjs` from robots-allowed Wikidata entity documents. It lists the EU, issue 1 focus countries and European national jurisdictions with first-level subdivisions and official languages. It is a secondary-source checklist: it is always `complete:false`, publishers outside the registry are `unidentified`, and official languages are not publication languages. `gaps` reports, for each listed jurisdiction, registered publishers, missing official languages and subdivisions with documents.
+
 ## HTTP and Docker
 
 The [OpenAPI document](openapi.json) describes:

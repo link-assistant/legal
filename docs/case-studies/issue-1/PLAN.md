@@ -117,3 +117,10 @@ The interrupted session left its implementation uncommitted. Its worktree and lo
 - [x] Download and inspect all three failed workflows on merged main `a208c29`; identify the credential and repository-setting requirements with exact log lines.
 - [x] Preserve the tested citation increment in a commit and push only the prepared branch.
 - [ ] Obtain an authorized review arrangement for work that cannot enter the already merged PR; keep the remaining acceptance criteria unfinished.
+
+## Issue 3 continuation
+
+- [x] Continue in the single prepared PR 4 for issue 3; no second solver was started.
+- [x] Adopt the citation increment `07ce04e` without rewriting it (merge `4217757`).
+- [x] Reconcile every requirement row and gap in the [issue 3 tracker](../legal-issue-3/acceptance.json) with dated evidence.
+- [ ] Resolve the blocked collection, legal review, permanent corpus and publication items listed there.

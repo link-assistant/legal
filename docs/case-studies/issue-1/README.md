@@ -8,6 +8,8 @@ The implementation supplies a JavaScript library, CLI, read-only HTTP API, Docke
 
 PR 2 was externally merged by `konard` at 17:54:12 UTC on 18 October 2026, producing `a208c29`, and issue 1 closed automatically. The merge does not verify the unfinished criteria. Citation extraction developed during that merge is preserved separately on the prepared branch; it is not included in the merged PR. GitHub cannot add further changes to a merged PR, so completing the requested single-PR workflow now requires a changed review arrangement. See the dated merge and CI evidence in [VERIFICATION.md](VERIFICATION.md).
 
+Issue 3 tracks the unfinished criteria after the merge. Its [acceptance tracker](../legal-issue-3/README.md), dated 2 November 2026, reconciles each row below against current code, records the adoption of the citation increment in PR 4, and keeps product acceptance marked as not met.
+
 ## Requirement inventory and evidence
 
 | Original requirement                                                          | Implementation and verification                                                                                                                                                    | Status / unresolved criterion                                                                                                                                                                                                           |
