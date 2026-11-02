@@ -12,6 +12,9 @@ import {
   CollectionStore,
   SourceClient,
 } from '../src/legal/collector.js';
+import { evaluateQuestions } from '../src/legal/evaluation.js';
+import { assessCorpusQuality } from '../src/legal/quality.js';
+import { inventoryCoverage } from '../src/legal/inventory.js';
 
 const help = `legal-assistant <command> [arguments] [options]
   sources                         Official publisher registry
@@ -23,9 +26,13 @@ const help = `legal-assistant <command> [arguments] [options]
   collect --manifest FILE [--store collections/default] [--limit 100]
   export [--store DIR] --output FILE
   serve [--corpus FILE] [--host 127.0.0.1] [--port 8787]
+  evaluate [--questions FILE]      Exact-proof question evaluation
+  quality                          Encoding and script screening
+  gaps [--inventory FILE]          Jurisdiction/language/subdivision gaps
 Common: --debug, --corpus FILE, --limit N, --help
 Collection honors robots.txt, source allowlists and publisher rate limits.
-Partial collection or discovery exits 2. Invalid input exits 1.`;
+Partial collection or discovery, failed evaluation cases and screening
+issues exit 2. Invalid input exits 1.`;
 function argumentsFor(args) {
   return parseArgs({
     args,
@@ -48,6 +55,8 @@ function argumentsFor(args) {
       'start-page': { type: 'string' },
       host: { type: 'string' },
       port: { type: 'string' },
+      questions: { type: 'string' },
+      inventory: { type: 'string' },
     },
   });
 }
@@ -88,9 +97,8 @@ export async function runLegalCli(
       return await collectionCommand(command, words, values, print, debug);
     }
     const corpus = await loadCorpus(corpusPath(values));
-    if (command === 'coverage') {
-      print(buildCoverage(corpus.laws));
-      return 0;
+    if (['coverage', 'evaluate', 'quality', 'gaps'].includes(command)) {
+      return await reportCommand(command, corpus, values, print);
     }
     if (command === 'ask') {
       print(answerQuestion(corpus.laws, words.join(' '), options));
@@ -179,6 +187,41 @@ function formalizeCommand(corpus, words, values, print) {
   }
   const formal = formalizeLaw(law);
   print(values.format === 'lino' ? encodeKnowledge(formal) : formal);
+  return 0;
+}
+
+async function readJson(path, fallback) {
+  return JSON.parse(
+    await readFile(path ?? new URL(fallback, import.meta.url), 'utf8')
+  );
+}
+
+async function reportCommand(command, corpus, values, print) {
+  if (command === 'coverage') {
+    print(buildCoverage(corpus.laws));
+    return 0;
+  }
+  if (command === 'evaluate') {
+    const set = await readJson(
+      values.questions,
+      '../data/evaluation/questions.json'
+    );
+    const report = evaluateQuestions(corpus.laws, set, {
+      limit: integer(values.limit, 5),
+    });
+    print(report);
+    return report.summary.failed ? 2 : 0;
+  }
+  if (command === 'quality') {
+    const report = assessCorpusQuality(corpus.laws);
+    print(report);
+    return report.summary.needsReview ? 2 : 0;
+  }
+  const inventory = await readJson(
+    values.inventory,
+    '../data/inventory/jurisdictions.json'
+  );
+  print(inventoryCoverage(inventory, corpus.laws));
   return 0;
 }
 

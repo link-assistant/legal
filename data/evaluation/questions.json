@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "demo-corpus-real-questions-2026-11-02",
+  "corpus": "data/demo/corpus.json",
+  "authoredAt": "2026-11-02",
+  "review": "Expected answers and exact source proofs were written by an AI solver from the collected source text. They are not reviewed by a lawyer and must not be read as legal advice.",
+  "scope": "Bounded set over the five-record demo corpus. Passing cases show retrieval of an exact proof span, not legal correctness of an answer, and not coverage outside these records.",
+  "cases": [
+    {
+      "id": "us-representative-age",
+      "category": "answerable",
+      "question": "What is the minimum age to serve as a Representative?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Twenty-five years.",
+        "lawId": "us-constitution-original",
+        "sectionId": "s4",
+        "proof": "attained to the Age of twenty five Years",
+        "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840"
+      }
+    },
+    {
+      "id": "us-president-age",
+      "category": "answerable",
+      "question": "How old must a person be to be eligible to the office of President?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Thirty-five years, plus fourteen years of residence.",
+        "lawId": "us-constitution-original",
+        "sectionId": "s14",
+        "proof": "attained to the Age of thirty five Years",
+        "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840"
+      }
+    },
+    {
+      "id": "us-senator-term",
+      "category": "answerable",
+      "question": "For how many years is a Senator chosen?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Six years.",
+        "lawId": "us-constitution-original",
+        "sectionId": "s5",
+        "proof": "for six Years",
+        "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840"
+      }
+    },
+    {
+      "id": "us-declare-war",
+      "category": "answerable",
+      "question": "Who has the power to declare war?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Congress.",
+        "lawId": "us-constitution-original",
+        "sectionId": "s10",
+        "proof": "To declare War",
+        "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840"
+      }
+    },
+    {
+      "id": "us-habeas-corpus",
+      "category": "answerable",
+      "question": "When may the privilege of the writ of habeas corpus be suspended?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Only when the public safety requires it in cases of rebellion or invasion.",
+        "lawId": "us-constitution-original",
+        "sectionId": "s11",
+        "proof": "unless when in Cases of Rebellion or Invasion the public Safety may require it",
+        "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840"
+      }
+    },
+    {
+      "id": "us-first-amendment",
+      "category": "unanswerable",
+      "question": "Does the First Amendment protect freedom of speech?",
+      "options": {
+        "jurisdiction": "US"
+      },
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "The demo record holds only the first 18,000 normalized characters of the original 1787 transcription (data/demo/manifest.json), ending in Article II. No amendment is collected."
+      }
+    },
+    {
+      "id": "eu-data-minimisation",
+      "category": "answerable",
+      "question": "What does the data minimisation principle require?",
+      "options": {
+        "jurisdiction": "EU"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Personal data must be adequate, relevant and limited to what is necessary for the purposes.",
+        "lawId": "eu-gdpr-2016-article5-en",
+        "sectionId": "s1",
+        "proof": "adequate, relevant and limited to what is necessary",
+        "contentHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1"
+      }
+    },
+    {
+      "id": "eu-accountability",
+      "category": "answerable",
+      "question": "Who must demonstrate compliance with the personal data processing principles?",
+      "options": {
+        "jurisdiction": "EU"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "The controller.",
+        "lawId": "eu-gdpr-2016-article5-en",
+        "sectionId": "s1",
+        "proof": "The controller shall be responsible for, and be able to demonstrate compliance with, paragraph 1",
+        "contentHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1"
+      }
+    },
+    {
+      "id": "eu-storage-limitation",
+      "category": "answerable",
+      "question": "How long may personal data be kept in a form which permits identification?",
+      "options": {
+        "jurisdiction": "EU"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "No longer than necessary for the processing purposes, with Article 89(1) exceptions.",
+        "lawId": "eu-gdpr-2016-article5-en",
+        "sectionId": "s1",
+        "proof": "for no longer than is necessary for the purposes for which the personal data are processed",
+        "contentHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1"
+      }
+    },
+    {
+      "id": "eu-consent-conditions",
+      "category": "unanswerable",
+      "question": "What are the conditions for valid consent under the GDPR?",
+      "options": {
+        "jurisdiction": "EU"
+      },
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "Only GDPR Article 5 is collected. Consent conditions are in Article 7, which is absent."
+      }
+    },
+    {
+      "id": "cn-capital-zh",
+      "category": "answerable",
+      "question": "中华人民共和国的首都是哪里？",
+      "options": {
+        "jurisdiction": "CN",
+        "language": "zh"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "北京。",
+        "lawId": "cn-constitution-2018-zh",
+        "sectionId": "s168",
+        "proof": "中华人民共和国首都是北京",
+        "contentHash": "acadb6a3c3e0820d38ef48a434527f6806f38ac19c1831c644154b9d1d9e0ee7"
+      }
+    },
+    {
+      "id": "cn-power-zh",
+      "category": "answerable",
+      "question": "中华人民共和国的一切权力属于谁？",
+      "options": {
+        "jurisdiction": "CN",
+        "language": "zh"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "属于人民。",
+        "lawId": "cn-constitution-2018-zh",
+        "sectionId": "s16",
+        "proof": "中华人民共和国的一切权力属于人民",
+        "contentHash": "acadb6a3c3e0820d38ef48a434527f6806f38ac19c1831c644154b9d1d9e0ee7"
+      }
+    },
+    {
+      "id": "cn-equality-zh",
+      "category": "answerable",
+      "question": "公民在法律面前平等吗？",
+      "options": {
+        "jurisdiction": "CN",
+        "language": "zh"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "是，中华人民共和国公民在法律面前一律平等。",
+        "lawId": "cn-constitution-2018-zh",
+        "sectionId": "s48",
+        "proof": "中华人民共和国公民在法律面前一律平等",
+        "contentHash": "acadb6a3c3e0820d38ef48a434527f6806f38ac19c1831c644154b9d1d9e0ee7"
+      }
+    },
+    {
+      "id": "cn-power-en",
+      "category": "answerable",
+      "question": "To whom does all power in the People's Republic of China belong?",
+      "options": {
+        "jurisdiction": "CN",
+        "language": "en"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "To the people.",
+        "lawId": "cn-constitution-2014-en",
+        "sectionId": "s4",
+        "proof": "All power in the People’s Republic of China belongs to the people",
+        "contentHash": "78ac2b956e8b7d3d42f89c012a1808220136b6b036c56de75851145ed86017d5"
+      }
+    },
+    {
+      "id": "cn-private-property-en",
+      "category": "answerable",
+      "question": "Is the lawful private property of citizens protected?",
+      "options": {
+        "jurisdiction": "CN",
+        "language": "en"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Yes. It is inviolable and the State protects it in accordance with law.",
+        "lawId": "cn-constitution-2014-en",
+        "sectionId": "s15",
+        "proof": "Citizens’ lawful private property is inviolable",
+        "contentHash": "78ac2b956e8b7d3d42f89c012a1808220136b6b036c56de75851145ed86017d5"
+      }
+    },
+    {
+      "id": "ge-capital",
+      "category": "answerable",
+      "question": "What is the capital of Georgia?",
+      "options": {
+        "jurisdiction": "GE"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Tbilisi.",
+        "lawId": "ge-constitution-en",
+        "sectionId": "s4",
+        "proof": "Tbilisi is the capital of Georgia",
+        "contentHash": "d197297fbe27dbd556670da00a1a78cbe0afdff931e0c489403721206733bf31"
+      }
+    },
+    {
+      "id": "ge-official-language",
+      "category": "answerable",
+      "question": "What is the official language of Georgia?",
+      "options": {
+        "jurisdiction": "GE"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "Georgian, and also Abkhazian in the Autonomous Republic of Abkhazia.",
+        "lawId": "ge-constitution-en",
+        "sectionId": "s4",
+        "proof": "The official language of Georgia shall be Georgian, and, in the Autonomous Republic of Abkhazia, also Abkhazian",
+        "contentHash": "d197297fbe27dbd556670da00a1a78cbe0afdff931e0c489403721206733bf31"
+      }
+    },
+    {
+      "id": "ge-death-penalty",
+      "category": "answerable",
+      "question": "Is the death penalty allowed in Georgia?",
+      "options": {
+        "jurisdiction": "GE"
+      },
+      "expected": {
+        "status": "sources-found",
+        "answer": "No. It is prohibited.",
+        "lawId": "ge-constitution-en",
+        "sectionId": "s13",
+        "proof": "The death penalty shall be prohibited",
+        "contentHash": "d197297fbe27dbd556670da00a1a78cbe0afdff931e0c489403721206733bf31"
+      }
+    },
+    {
+      "id": "ge-capital-ka",
+      "category": "unanswerable",
+      "question": "რა არის საქართველოს დედაქალაქი?",
+      "options": {
+        "jurisdiction": "GE",
+        "language": "ka"
+      },
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "No Georgian-language record is collected; the English translation must not be presented as the Georgian original."
+      }
+    },
+    {
+      "id": "in-article-21-filtered",
+      "category": "unanswerable",
+      "question": "What does Article 21 of the Constitution of India protect?",
+      "options": {
+        "jurisdiction": "IN"
+      },
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "No Indian record is collected."
+      }
+    },
+    {
+      "id": "in-article-21-unfiltered",
+      "category": "unanswerable",
+      "question": "What does Article 21 of the Constitution of India protect?",
+      "options": {},
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "No Indian record is collected. Articles numbered 21 in other constitutions do not answer the question."
+      }
+    },
+    {
+      "id": "in-article-21-hi",
+      "category": "unanswerable",
+      "question": "भारत के संविधान का अनुच्छेद 21 किस अधिकार की रक्षा करता है?",
+      "options": {},
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "No Indian or Hindi record is collected."
+      }
+    },
+    {
+      "id": "ru-state-language",
+      "category": "unanswerable",
+      "question": "Какой язык является государственным языком Российской Федерации?",
+      "options": {},
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "No Russian record is collected."
+      }
+    },
+    {
+      "id": "ge-president-term",
+      "category": "unanswerable",
+      "question": "For how many years is the President of Georgia elected?",
+      "options": {
+        "jurisdiction": "GE"
+      },
+      "expected": {
+        "status": "insufficient-evidence",
+        "reason": "The demo record holds only the first 18,000 characters of the Matsne English translation, ending in Article 18, before the chapter on the President."
+      }
+    }
+  ]
+}

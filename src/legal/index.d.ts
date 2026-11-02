@@ -192,3 +192,197 @@ export function evaluateRules(
   trace: unknown[];
   limits: string[];
 };
+
+export interface WikidataEntity {
+  id: string;
+  requestedId: string;
+  revision: number | null;
+  modified: string | null;
+  label: string | null;
+  iso3166_1: string | null;
+  iso3166_2: string | null;
+  iso639_1: string | null;
+  iso639_3: string | null;
+  officialLanguages: string[];
+  subdivisions: string[];
+  parts: string[];
+  dissolved: boolean;
+}
+export function parseWikidataEntity(
+  document: unknown,
+  requestedId?: string
+): WikidataEntity;
+export interface JurisdictionInventory {
+  schemaVersion: 1;
+  kind: 'secondary-source-planning-inventory';
+  complete: false;
+  retrievedAt: string;
+  source: { name: string; license: string; access: string; robots: string };
+  selection: string[];
+  limits: string[];
+  jurisdictions: {
+    id: string;
+    wikidata: string;
+    revision: number | null;
+    name: string | null;
+    level: 'supranational' | 'national';
+    groups?: string[];
+    members?: string[];
+    officialLanguages: string[];
+    subdivisions?: {
+      level: string;
+      listed: number;
+      resolved: boolean;
+      items: {
+        wikidata: string;
+        resolved: boolean;
+        revision?: number | null;
+        code?: string | null;
+        name?: string | null;
+        officialLanguages?: string[];
+      }[];
+    };
+  }[];
+  evidence: {
+    wikidata: string;
+    revision: number | null;
+    sha256: string;
+    bytes: number;
+  }[];
+}
+export function buildJurisdictionInventory(options: {
+  entities: Map<string, WikidataEntity> | [string, WikidataEntity][];
+  countries: string[];
+  supranational?: {
+    id: string;
+    wikidata: string;
+    membersFrom: 'subdivisions' | 'parts';
+  }[];
+  groups?: Map<string, Iterable<string>>;
+  resolveSubdivisions?: string[];
+  retrievedAt: string;
+  selection?: string[];
+  evidence?: JurisdictionInventory['evidence'];
+}): JurisdictionInventory;
+export function inventoryCoverage(
+  inventory: JurisdictionInventory,
+  laws?: Law[],
+  options?: { sources?: unknown[]; jurisdictions?: unknown[] }
+): {
+  complete: false;
+  level: 'planning-inventory-gap-report';
+  inventoryRetrievedAt: string;
+  summary: Record<string, number>;
+  jurisdictions: {
+    id: string;
+    name: string | null;
+    level: 'supranational' | 'national';
+    publisherStatus: 'registered' | 'unidentified';
+    publishers: string[];
+    officialLanguages: string[];
+    collectedLanguages: string[];
+    missingOfficialLanguages: string[];
+    officialLanguagesOutsideRegistry: string[];
+    documents: number;
+    subdivisions: {
+      listed: number;
+      named: boolean;
+      withDocuments: number;
+      collected: string[];
+    } | null;
+    complete: false;
+  }[];
+  limits: string[];
+};
+
+export interface EvaluationCase {
+  id: string;
+  category?: string;
+  question: string;
+  options?: { jurisdiction?: string; language?: string; asOf?: string };
+  expected:
+    | {
+        status: 'sources-found';
+        answer: string;
+        lawId: string;
+        contentHash: string;
+        sectionId: string;
+        proof: string;
+      }
+    | { status: 'insufficient-evidence'; reason: string };
+}
+export function evaluateQuestions(
+  laws: Law[],
+  set: { id: string; cases: EvaluationCase[] },
+  options?: { limit?: number }
+): {
+  id: string;
+  method: 'exact-proof-retrieval-and-abstention';
+  limit: number;
+  summary: {
+    cases: number;
+    passed: number;
+    failed: number;
+    invalidProofs: number;
+    answerable: number;
+    proofAtRank1: number;
+    proofWithinLimit: number;
+    meanReciprocalRank: number | null;
+    unanswerable: number;
+    correctAbstentions: number;
+  };
+  failures: string[];
+  results: {
+    id: string;
+    category?: string;
+    expectedStatus: string;
+    actualStatus: string;
+    proofRank: number | null;
+    passed: boolean;
+    proofError: string | null;
+    citations: string[];
+  }[];
+  limits: string[];
+};
+
+export interface TextQuality {
+  language: string;
+  expectedScripts: string[] | null;
+  letters: number;
+  expectedScriptShare: number | null;
+  status: 'screened' | 'needs-review' | 'script-unassessed';
+  issues: {
+    code:
+      | 'replacement-character'
+      | 'private-use-character'
+      | 'control-character'
+      | 'unassigned-code-point'
+      | 'utf8-as-latin1'
+      | 'script-mismatch'
+      | 'no-letters';
+    count?: number;
+    firstOffset?: number;
+    share?: number;
+  }[];
+  reviewed: false;
+  limits: string[];
+}
+export function expectedScripts(language: string): string[] | undefined;
+export function assessTextQuality(
+  text: string,
+  language: string,
+  options?: { minScriptShare?: number }
+): TextQuality;
+export function assessCorpusQuality(
+  laws: Law[],
+  options?: { minScriptShare?: number }
+): {
+  complete: false;
+  records: (TextQuality & { lawId: string; contentHash: string })[];
+  summary: {
+    records: number;
+    screened: number;
+    needsReview: number;
+    scriptUnassessed: number;
+  };
+};
