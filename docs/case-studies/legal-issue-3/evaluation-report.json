@@ -1,0 +1,366 @@
+{
+  "id": "demo-corpus-real-questions-2026-11-02",
+  "method": "exact-proof-retrieval-and-abstention",
+  "limit": 5,
+  "summary": {
+    "cases": 24,
+    "passed": 19,
+    "failed": 5,
+    "invalidProofs": 0,
+    "answerable": 16,
+    "proofAtRank1": 15,
+    "proofWithinLimit": 16,
+    "meanReciprocalRank": 0.9688,
+    "unanswerable": 8,
+    "correctAbstentions": 3
+  },
+  "failures": [
+    "us-first-amendment",
+    "eu-consent-conditions",
+    "in-article-21-unfiltered",
+    "in-article-21-hi",
+    "ge-president-term"
+  ],
+  "results": [
+    {
+      "id": "us-representative-age",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s4",
+        "us-constitution-original:s14",
+        "us-constitution-original:s5",
+        "us-constitution-original:s6",
+        "us-constitution-original:s1"
+      ]
+    },
+    {
+      "id": "us-president-age",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s14",
+        "us-constitution-original:s5",
+        "us-constitution-original:s8",
+        "us-constitution-original:s11",
+        "us-constitution-original:s15"
+      ]
+    },
+    {
+      "id": "us-senator-term",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s5",
+        "us-constitution-original:s14",
+        "us-constitution-original:s4",
+        "us-constitution-original:s8",
+        "us-constitution-original:s10"
+      ]
+    },
+    {
+      "id": "us-declare-war",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s10",
+        "us-constitution-original:s12",
+        "us-constitution-original:s4",
+        "us-constitution-original:s5",
+        "us-constitution-original:s14"
+      ]
+    },
+    {
+      "id": "us-habeas-corpus",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s11",
+        "us-constitution-original:s15",
+        "us-constitution-original:s4",
+        "us-constitution-original:s5",
+        "us-constitution-original:s6"
+      ]
+    },
+    {
+      "id": "us-first-amendment",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "sources-found",
+      "proofRank": null,
+      "passed": false,
+      "proofError": null,
+      "citations": [
+        "us-constitution-original:s6",
+        "us-constitution-original:s8",
+        "us-constitution-original:s4",
+        "us-constitution-original:s5",
+        "us-constitution-original:s14"
+      ]
+    },
+    {
+      "id": "eu-data-minimisation",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": ["eu-gdpr-2016-article5-en:s1"]
+    },
+    {
+      "id": "eu-accountability",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": ["eu-gdpr-2016-article5-en:s1"]
+    },
+    {
+      "id": "eu-storage-limitation",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": ["eu-gdpr-2016-article5-en:s1"]
+    },
+    {
+      "id": "eu-consent-conditions",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "sources-found",
+      "proofRank": null,
+      "passed": false,
+      "proofError": null,
+      "citations": ["eu-gdpr-2016-article5-en:s1"]
+    },
+    {
+      "id": "cn-capital-zh",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "cn-constitution-2018-zh:s168",
+        "cn-constitution-2018-zh:s165",
+        "cn-constitution-2018-zh:s2",
+        "cn-constitution-2018-zh:s14",
+        "cn-constitution-2018-zh:s6"
+      ]
+    },
+    {
+      "id": "cn-power-zh",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "cn-constitution-2018-zh:s16",
+        "cn-constitution-2018-zh:s2",
+        "cn-constitution-2018-zh:s14",
+        "cn-constitution-2018-zh:s6",
+        "cn-constitution-2018-zh:s7"
+      ]
+    },
+    {
+      "id": "cn-equality-zh",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "cn-constitution-2018-zh:s48",
+        "cn-constitution-2018-zh:s71",
+        "cn-constitution-2018-zh:s68",
+        "cn-constitution-2018-zh:s66",
+        "cn-constitution-2018-zh:s30"
+      ]
+    },
+    {
+      "id": "cn-power-en",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 2,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "cn-constitution-2014-en:s2",
+        "cn-constitution-2014-en:s4",
+        "cn-constitution-2014-en:s18",
+        "cn-constitution-2014-en:s19",
+        "cn-constitution-2014-en:s12"
+      ]
+    },
+    {
+      "id": "cn-private-property-en",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "cn-constitution-2014-en:s15",
+        "cn-constitution-2014-en:s13",
+        "cn-constitution-2014-en:s10",
+        "cn-constitution-2014-en:s14",
+        "cn-constitution-2014-en:s6"
+      ]
+    },
+    {
+      "id": "ge-capital",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "ge-constitution-en:s4",
+        "ge-constitution-en:s2",
+        "ge-constitution-en:s11",
+        "ge-constitution-en:s15",
+        "ge-constitution-en:s13"
+      ]
+    },
+    {
+      "id": "ge-official-language",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "ge-constitution-en:s4",
+        "ge-constitution-en:s14",
+        "ge-constitution-en:s2",
+        "ge-constitution-en:s11",
+        "ge-constitution-en:s15"
+      ]
+    },
+    {
+      "id": "ge-death-penalty",
+      "category": "answerable",
+      "expectedStatus": "sources-found",
+      "actualStatus": "sources-found",
+      "proofRank": 1,
+      "passed": true,
+      "proofError": null,
+      "citations": [
+        "ge-constitution-en:s13",
+        "ge-constitution-en:s20",
+        "ge-constitution-en:s2",
+        "ge-constitution-en:s11",
+        "ge-constitution-en:s15"
+      ]
+    },
+    {
+      "id": "ge-capital-ka",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "insufficient-evidence",
+      "proofRank": null,
+      "passed": true,
+      "proofError": null,
+      "citations": []
+    },
+    {
+      "id": "in-article-21-filtered",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "insufficient-evidence",
+      "proofRank": null,
+      "passed": true,
+      "proofError": null,
+      "citations": []
+    },
+    {
+      "id": "in-article-21-unfiltered",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "sources-found",
+      "proofRank": null,
+      "passed": false,
+      "proofError": null,
+      "citations": [
+        "ge-constitution-en:s3",
+        "ge-constitution-en:s20",
+        "us-constitution-original:s14",
+        "us-constitution-original:s2",
+        "us-constitution-original:s13"
+      ]
+    },
+    {
+      "id": "in-article-21-hi",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "sources-found",
+      "proofRank": null,
+      "passed": false,
+      "proofError": null,
+      "citations": ["ge-constitution-en:s3"]
+    },
+    {
+      "id": "ru-state-language",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "insufficient-evidence",
+      "proofRank": null,
+      "passed": true,
+      "proofError": null,
+      "citations": []
+    },
+    {
+      "id": "ge-president-term",
+      "category": "unanswerable",
+      "expectedStatus": "insufficient-evidence",
+      "actualStatus": "sources-found",
+      "proofRank": null,
+      "passed": false,
+      "proofError": null,
+      "citations": [
+        "ge-constitution-en:s21",
+        "ge-constitution-en:s4",
+        "ge-constitution-en:s19",
+        "ge-constitution-en:s17",
+        "ge-constitution-en:s5"
+      ]
+    }
+  ],
+  "limits": [
+    "Expected answers are not lawyer-reviewed. A passing case shows retrieval of the expected exact quotation, not a correct legal conclusion.",
+    "The set is bounded to the collected demo records and does not measure coverage of any jurisdiction."
+  ]
+}

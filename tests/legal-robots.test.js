@@ -50,9 +50,12 @@ for (const kind of ['comment', 'directive', 'wildcard']) {
         'experiments/robots-parser-budget.mjs',
         kind,
       ],
-      { timeout: 3000, maxBuffer: 4096, encoding: 'utf8' }
+      // The parent deadline only stops a hung child; the budget is parseMs.
+      { timeout: 15000, maxBuffer: 4096, encoding: 'utf8' }
     );
-    expect(JSON.parse(stdout).passed).toBe(true);
+    const result = JSON.parse(stdout);
+    expect(result.passed).toBe(true);
+    expect(result.parseMs < 1500).toBe(true);
   });
 }
 

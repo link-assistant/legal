@@ -1,0 +1,371 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/link-assistant/legal/issues/3",
+  "originalIssue": "https://github.com/link-assistant/legal/issues/1",
+  "pullRequest": "https://github.com/link-assistant/legal/pull/4",
+  "reconciledAt": "2026-11-02",
+  "baseline": {
+    "mergedPullRequest": "https://github.com/link-assistant/legal/pull/2",
+    "mainCommit": "a208c29c288fb04aeb071d155a6513c13f41ea0f",
+    "requirementTable": "docs/case-studies/issue-1/README.md"
+  },
+  "statuses": {
+    "verified-bounded": "Implemented and verified for the stated bounded scope only.",
+    "implemented": "Implemented and tested; it does not satisfy a broader original criterion by itself.",
+    "partial": "Some of the criterion has evidence; the rest is unfinished.",
+    "unfinished": "Not implemented or not verified. No external blocker is known.",
+    "blocked": "Needs a publisher, reviewer, credential or owner decision that this repository cannot supply."
+  },
+  "ownership": {
+    "owner": "konard",
+    "continuation": "PR 4 on branch issue-3-8b3c6419eab1 is the single authorized continuation for issue 3. No second solver was started.",
+    "evidence": ["docs/case-studies/legal-issue-3/README.md"]
+  },
+  "preservedWork": [
+    {
+      "commit": "07ce04e17945fe79307eaf211c187250d01a5e6d",
+      "title": "feat: retain source-bound citation syntax with explicit unresolved targets",
+      "disposition": "adopted",
+      "mergedVia": "4217757",
+      "evidence": [
+        "src/legal/references.js",
+        "tests/legal-core.test.js",
+        "docs/case-studies/issue-1/README.md"
+      ],
+      "limits": "Citation syntax only: every reference stays verified:false with unreviewed local candidates. It does not resolve cross-references semantically."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R01",
+      "requirement": "Study all nine listed repositories",
+      "status": "verified-bounded",
+      "evidence": ["docs/case-studies/issue-1/data/upstream"],
+      "remaining": "No claim that every historical commit was audited."
+    },
+    {
+      "id": "R02",
+      "requirement": "Take the best collection ideas",
+      "status": "implemented",
+      "evidence": ["src/legal/collector.js", "tests/legal-robots.test.js"],
+      "remaining": "Publisher adapters remain incomplete (R03-R08)."
+    },
+    {
+      "id": "R03",
+      "requirement": "Fully automate all laws in the USA",
+      "status": "unfinished",
+      "evidence": [
+        "tests/legal-uslm.test.js",
+        "docs/case-studies/issue-1/data/govinfo-evidence.json",
+        "data/inventory/jurisdictions.json"
+      ],
+      "remaining": "Federal titles beyond the sample, 50 states, territories, tribal and local publishers, and case law. The inventory lists 56 first-level subdivisions with no publisher identified."
+    },
+    {
+      "id": "R04",
+      "requirement": "Fully automate all European laws",
+      "status": "blocked",
+      "evidence": [
+        "tests/legal-eu.test.js",
+        "docs/case-studies/issue-1/data/eu-robots.txt",
+        "data/inventory/jurisdictions.json"
+      ],
+      "remaining": "Only GDPR Article 5 is collected. Full EU discovery is unverified live. The inventory now lists the EU and every EU, Council of Europe and other European national jurisdiction, but no national European publisher is registered or collected."
+    },
+    {
+      "id": "R05",
+      "requirement": "Fully automate China",
+      "status": "blocked",
+      "evidence": [
+        "docs/case-studies/issue-1/data/npc-robots.txt",
+        "docs/case-studies/issue-1/data/npc-contract.json",
+        "tests/legal-npc.test.js"
+      ],
+      "remaining": "The NPC robots policy disallows automated collection. A permitted source or publisher permission is required; regional and minority-language publishers are not identified."
+    },
+    {
+      "id": "R06",
+      "requirement": "Fully automate India",
+      "status": "blocked",
+      "evidence": [
+        "docs/case-studies/issue-1/data/india-migration-checks.json",
+        "docs/case-studies/issue-1/data/current-government-probes.json"
+      ],
+      "remaining": "Robots retrieval failed (HTTP 403, HTTP 500, timeouts) on every probed origin on 2026-10-18. No Indian record exists; OCR and regional-language coverage are unfinished."
+    },
+    {
+      "id": "R07",
+      "requirement": "Fully automate Russia",
+      "status": "blocked",
+      "evidence": [
+        "docs/case-studies/issue-1/data/current-government-probes.json",
+        "docs/case-studies/issue-1/data/parliament-source-checks.json"
+      ],
+      "remaining": "Pravo timed out and Ministry of Justice robots retrieval was reset on 2026-10-18. No Russian record exists; republic-language and regional coverage are unfinished."
+    },
+    {
+      "id": "R08",
+      "requirement": "Fully automate Georgia",
+      "status": "partial",
+      "evidence": ["data/demo/manifest.json", "tests/legal-ingestion.test.js"],
+      "remaining": "Only an 18,000-character excerpt of the English translation is collected. Georgian and Abkhaz originals, editions and exhaustive discovery are unverified."
+    },
+    {
+      "id": "R09",
+      "requirement": "All government-supported languages",
+      "status": "unfinished",
+      "evidence": [
+        "data/inventory/jurisdictions.json",
+        "src/legal/inventory.js",
+        "tests/legal-inventory.test.js"
+      ],
+      "remaining": "The new official-language inventory is a secondary-source planning checklist, not a publication-language registry. `legal-assistant gaps` reports missing jurisdiction-language pairs; almost all remain uncollected."
+    },
+    {
+      "id": "R10",
+      "requirement": "Temporary real collection and tests built on it",
+      "status": "verified-bounded",
+      "evidence": [
+        "data/demo/manifest.json",
+        "data/demo/corpus.json",
+        "tests/legal-ingestion.test.js"
+      ],
+      "remaining": "Five records; three are truncated excerpts. Not a permanent corpus."
+    },
+    {
+      "id": "R11",
+      "requirement": "Permanent collection later in separate repository, weekly/configurable",
+      "status": "blocked",
+      "evidence": [
+        "examples/collection/config.json",
+        "examples/collection/weekly.yml",
+        "tests/legal-schedule.test.js"
+      ],
+      "remaining": "Scaffold only. Activation needs the owner to create the repository and approve publisher-terms and redistribution reviews (G6)."
+    },
+    {
+      "id": "R12",
+      "requirement": "Avoid overloading government services",
+      "status": "implemented",
+      "evidence": ["src/legal/collector.js", "tests/legal-robots.test.js"],
+      "remaining": "Mock-tested. No large live crawl has been run."
+    },
+    {
+      "id": "R13",
+      "requirement": "Copy Formal AI; patches only stored",
+      "status": "verified-bounded",
+      "evidence": [
+        "patches/formal-ai",
+        "scripts/bootstrap-formal-ai.mjs",
+        "tests/legal-bootstrap.test.js"
+      ],
+      "remaining": "None for the stated scope."
+    },
+    {
+      "id": "R14",
+      "requirement": "Formalize all laws into meta-language",
+      "status": "partial",
+      "evidence": [
+        "src/legal/formalize.js",
+        "src/legal/references.js",
+        "tests/legal-core.test.js"
+      ],
+      "remaining": "Lossless syntax and citation syntax only. Automatic semantics, amendments, scopes, definitions, exceptions and legal equivalence are unfinished (G4)."
+    },
+    {
+      "id": "R15",
+      "requirement": "Virtually any legal question, precise and without LLMs",
+      "status": "unfinished",
+      "evidence": [
+        "data/evaluation/questions.json",
+        "docs/case-studies/legal-issue-3/evaluation-report.json",
+        "tests/legal-evaluation.test.js"
+      ],
+      "remaining": "No LLM is used. The bounded evaluation passes 19 of 24 cases: all 16 answerable proofs are retrieved, but only 3 of 8 unanswerable questions abstain. Arbitrary legal interpretation is not supported."
+    },
+    {
+      "id": "R16",
+      "requirement": "Library for scripts, tests and assistant",
+      "status": "implemented",
+      "evidence": ["src/legal/index.js", "src/legal/index.d.ts"],
+      "remaining": "None for the stated scope."
+    },
+    {
+      "id": "R17",
+      "requirement": "CLI",
+      "status": "implemented",
+      "evidence": ["bin/legal-assistant.js", "tests/legal-surfaces.test.js"],
+      "remaining": "None for the stated scope."
+    },
+    {
+      "id": "R18",
+      "requirement": "API",
+      "status": "implemented",
+      "evidence": ["src/legal/server.js", "docs/openapi.json"],
+      "remaining": "None for the stated scope."
+    },
+    {
+      "id": "R19",
+      "requirement": "Docker API",
+      "status": "verified-bounded",
+      "evidence": ["Dockerfile", "docs/case-studies/issue-1/VERIFICATION.md"],
+      "remaining": "Hosted Docker smoke was verified on 2026-10-18 at earlier commits; it must pass again on this PR head."
+    },
+    {
+      "id": "R20",
+      "requirement": "Fully working GitHub Pages demo using only collected data",
+      "status": "verified-bounded",
+      "evidence": [
+        "docs/case-studies/issue-1/data/public-pages-verified.json",
+        "docs/screenshots/legal-pages-public.png"
+      ],
+      "remaining": "The demo is limited to the five collected records. Public deployment currency is tracked as a separate gate."
+    },
+    {
+      "id": "R21",
+      "requirement": "Use associative stack, JavaScript only",
+      "status": "implemented",
+      "evidence": [
+        "docs/case-studies/issue-1/data/associative-tech-stack.md",
+        "package.json"
+      ],
+      "remaining": "Native and Rust services are not substituted."
+    },
+    {
+      "id": "R22",
+      "requirement": "Report dependency gaps and continue with patches",
+      "status": "verified-bounded",
+      "evidence": [
+        "docs/case-studies/issue-1/data/formal-ai-report.json",
+        "docs/case-studies/issue-1/data/links-notation-report.json"
+      ],
+      "remaining": "None for the stated scope."
+    },
+    {
+      "id": "R23",
+      "requirement": "Lots of precise deterministic tests and no LLM",
+      "status": "implemented",
+      "evidence": ["tests", "docs/case-studies/issue-1/VERIFICATION.md"],
+      "remaining": "Passing bounded tests do not certify unknown source catalogs or semantic universality."
+    },
+    {
+      "id": "R24",
+      "requirement": "Deep case study, additional online facts, every requirement and solution plan",
+      "status": "implemented",
+      "evidence": [
+        "docs/case-studies/issue-1/README.md",
+        "docs/case-studies/legal-issue-3/README.md"
+      ],
+      "remaining": "Unresolved work stays open in this tracker."
+    },
+    {
+      "id": "R25",
+      "requirement": "All work in one PR; release and CI",
+      "status": "blocked",
+      "evidence": [
+        "docs/case-studies/issue-1/VERIFICATION.md",
+        "docs/case-studies/legal-issue-3/README.md"
+      ],
+      "remaining": "PR 2 was merged with the scope unfinished; PR 4 continues it. Release needs npm credentials, and main CI needs owner settings (see gates)."
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G1",
+      "gap": "Jurisdiction, publisher and government-language inventories, including national and non-EU Europe and subnational scope",
+      "status": "partial",
+      "implementation": [
+        "src/legal/inventory.js",
+        "scripts/build-jurisdiction-inventory.mjs",
+        "data/inventory/jurisdictions.json"
+      ],
+      "evidence": ["tests/legal-inventory.test.js"],
+      "decision": "Use robots-allowed Wikidata EntityData documents as a secondary-source planning inventory. Membership is cross-checked in both directions and discrepancies are kept.",
+      "remaining": "Publishers are identified only for registered sources. Subdivisions are named only for the five focus countries. Below first level, tribal, local and special jurisdictions are not enumerated. Publication languages are not established."
+    },
+    {
+      "id": "G2",
+      "gap": "Permitted collection paths with independent completeness checks",
+      "status": "blocked",
+      "implementation": ["src/legal/inventory.js", "bin/legal-assistant.js"],
+      "evidence": ["tests/legal-inventory.test.js"],
+      "decision": "No live publisher access is attempted in this PR, as issue 3 states. `legal-assistant gaps` compares a corpus with the inventory so completeness is measured against an independent list.",
+      "remaining": "Permitted paths are still required for the publishers that blocked robots or access on 2026-10-18 (R05-R07), and per-publisher catalog counts are still required for every inventory row."
+    },
+    {
+      "id": "G3",
+      "gap": "Extraction and OCR quality and language handling",
+      "status": "partial",
+      "implementation": ["src/legal/quality.js", "bin/legal-assistant.js"],
+      "evidence": [
+        "tests/legal-quality.test.js",
+        "docs/case-studies/legal-issue-3/quality-report.json"
+      ],
+      "decision": "Add deterministic screening for decoding damage and script mismatch, including legacy-font Hindi read as Latin letters. Screening is not review.",
+      "remaining": "No OCR engine is integrated; scanned PDFs are still rejected. Reviewed OCR, segmentation and terminology per language are unfinished."
+    },
+    {
+      "id": "G4",
+      "gap": "Edition-bound modeling of amendments, dates, scopes, citations, definitions, exceptions and conflicts",
+      "status": "blocked",
+      "implementation": ["src/legal/reasoning.js", "src/legal/references.js"],
+      "evidence": ["tests/legal-reasoning.test.js", "tests/legal-core.test.js"],
+      "decision": "Executable meaning is accepted only from named reviewers (`reviewedBy`). Rules are hash-bound and carry effective dates, exceptions and conflicts. No meaning is inferred automatically, and no reviewed rule corpus is fabricated.",
+      "remaining": "Needs qualified legal reviewers for each jurisdiction, plus amendment, consolidation and definition models validated against those reviews."
+    },
+    {
+      "id": "G5",
+      "gap": "Bounded real-question evaluation with expected answers and source proofs",
+      "status": "implemented",
+      "implementation": [
+        "src/legal/evaluation.js",
+        "data/evaluation/questions.json"
+      ],
+      "evidence": [
+        "tests/legal-evaluation.test.js",
+        "docs/case-studies/legal-issue-3/evaluation-report.json"
+      ],
+      "decision": "24 cases over the collected demo records, each with an edition-bound exact proof or an abstention reason. Expected answers are not lawyer-reviewed.",
+      "measured": {
+        "cases": 24,
+        "passed": 19,
+        "answerable": 16,
+        "proofWithinLimit": 16,
+        "unanswerable": 8,
+        "correctAbstentions": 3
+      },
+      "remaining": "The current retriever fails 5 abstention cases. Lawyer review of expected answers and cases for uncollected jurisdictions remain."
+    },
+    {
+      "id": "G6",
+      "gap": "Separate review before activating a permanent corpus",
+      "status": "blocked",
+      "implementation": ["examples/collection/config.json"],
+      "evidence": ["tests/legal-schedule.test.js"],
+      "decision": "The permanent collection stays inactive. Activation is an owner decision after publisher-terms and redistribution review.",
+      "remaining": "The owner must create the separate repository and record the review outcome."
+    }
+  ],
+  "gates": {
+    "demo": {
+      "status": "verified-bounded",
+      "detail": "Five collected records with raw evidence and hashes; three are truncated excerpts."
+    },
+    "ci": {
+      "status": "tracked-in-pr",
+      "detail": "PR 4 checks are reported on the pull request. On main, Security fails because Dependency graph is disabled, and Checks and release and Example app fail because publishing and preview tokens are missing."
+    },
+    "deployment": {
+      "status": "verified-bounded",
+      "detail": "GitHub Pages was last deployed from main a208c29 at 2026-10-18T17:55Z and returned HTTP 200 on 2026-11-02. That deployment predates the adopted citation increment (07ce04e). This PR does not change the browser demo; redeployment happens after merge."
+    },
+    "npmPublication": {
+      "status": "blocked",
+      "detail": "`npm view @link-assistant/legal` returned 404 on 2026-11-02. Publishing needs a trusted publisher or NPM_TOKEN."
+    },
+    "productAcceptance": {
+      "status": "not-met",
+      "detail": "Issue 1 acceptance is not met while any requirement or gap is unfinished, partial or blocked."
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'test-anywhere';
 import { readFile } from 'node:fs/promises';
 import { runLegalCli } from '../bin/legal-assistant.js';
 import { createLegalServer, loadCorpus } from '../src/legal/server.js';
+import { extractLawReferences, decodeKnowledge } from '../src/legal/index.js';
 
 async function withServer(action) {
   const corpus = await loadCorpus();
@@ -100,6 +101,29 @@ describe('shared CLI and HTTP assistant', () => {
       );
       expect(result.status).toBe(200);
       expect((await result.text()).includes(law.id)).toBe(true);
+    }));
+  it('shares actual GDPR reference evidence across library, CLI, JSON and LiNo API', async () =>
+    withServer(async (base, corpus) => {
+      const law = corpus.laws.find(
+        (item) => item.id === 'eu-gdpr-2016-article5-en'
+      );
+      const references = extractLawReferences(law);
+      const output = [];
+      const errors = [];
+      expect(
+        await runLegalCli(['formalize', law.id], {
+          stdout: (line) => output.push(line),
+          stderr: (line) => errors.push(line),
+        })
+      ).toBe(0);
+      expect(errors).toEqual([]);
+      expect(JSON.parse(output.join('\n')).references).toEqual(references);
+      const url = `${base}/v1/laws/${law.id}/formalization`;
+      expect((await (await fetch(url)).json()).references).toEqual(references);
+      expect(
+        decodeKnowledge(await (await fetch(`${url}?format=lino`)).text())
+          .references
+      ).toEqual(references);
     }));
   it('keeps local source HTML links resolvable before building the demo', async () => {
     const { access } = await import('node:fs/promises');

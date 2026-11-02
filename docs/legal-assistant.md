@@ -4,7 +4,7 @@
 
 A law record contains a stable ID, jurisdiction, BCP-47-style language tag, title, official URL, retrieval timestamp, normalized text, edition/status, effective-date interval when known, translation flag and SHA-256 hashes. Normalization uses NFC and LF and trims the outer whitespace. Each section stores exact UTF-16 string offsets and UTF-8 byte offsets into normalized text. These are not offsets into the original HTML/PDF. `rawHash` identifies the original downloaded bytes separately.
 
-`normalizeLaw`, `queryLaws`, `answerQuestion`, `formalizeLaw`, `encodeKnowledge`, `decodeKnowledge`, `buildCoverage` and `evaluateRules` are public library exports. Import collection/persistence from `@link-assistant/legal/collector`; import HTTP helpers from `@link-assistant/legal/server`.
+`normalizeLaw`, `queryLaws`, `answerQuestion`, `formalizeLaw`, `extractLawReferences`, `encodeKnowledge`, `decodeKnowledge`, `buildCoverage` and `evaluateRules` are public library exports. Import collection/persistence from `@link-assistant/legal/collector`; import HTTP helpers from `@link-assistant/legal/server`.
 
 `answerQuestion` ranks lexical overlap and returns whole source sections. It uses Unicode words and Han bigrams without machine translation. Different inflections, synonyms, cross-language questions and unstated facts can miss relevant laws. A positive match establishes only that matching text was collected. An empty result is not a statement about the law.
 
@@ -13,6 +13,8 @@ An `asOf` filter excludes unknown-date records. Collection time is not legal eff
 ## Formalization and rules
 
 `formalizeLaw` builds real `meta-language` lossless text networks, verifies reconstruction, records exact source spans and classifies surface modal cues. `links-notation` parses interchange syntax and `lino-objects-codec` encodes/decodes structures. Modal cues are tagged `verified:false`; syntactic losslessness does not prove legal equivalence.
+
+`extractLawReferences(law)` extracts unreviewed citation syntax from a normalized law; `formalizeLaw` includes the same array as `references`. Each mention retains its exact quotation, character/UTF-8 offsets, source ID/hash/URL, unit, literal identifier and explicit parenthesized subdivisions. The bounded grammar recognizes English article/section/paragraph forms, selected Russian article forms, Georgian `მუხლი`, Hindi `अनुच्छेद`/`धारा`, Chinese numbered article/chapter/section forms and `§`. Other inflections, languages, lists, ranges, implicit context and cross-instrument identity are not interpreted. A heading-like mention is tagged `heading-candidate`; this heuristic is not a verified structural parse. `localCandidates` identifies literal matching headings in this record, with the full `localCandidateCount` and a `candidatesTruncated` flag when only the first 16 are returned. Multiple candidates remain ambiguous; a candidate does not prove that the cited subdivision exists. More than 10,000 mentions raises `RangeError` rather than silently dropping evidence; split larger inputs. Every mention has `verified:false` and `semantics:"citation-syntax-only"`. The collected GDPR Article 5 yields two exact `Article 89(1)` references with no local target; the tool does not invent the uncollected Article 89 or infer the legal effect of that reference.
 
 `evaluateRules(laws, rules, facts, context)` evaluates explicitly reviewed source-bound rules. A rule records `reviewedBy`, law ID/hash, exact quotation/offsets, jurisdiction, effective dates, fact conjunctions in `when` and `unless`, and a boolean predicate conclusion. Unknown facts remain unknown; an established exception prevents application; competing true/false conclusions return conflict. Context requires jurisdiction, `asOf`, and predicate. A source change invalidates stale rule hashes. No priority or legal interpretation is invented. Tests use plainly labeled synthetic rules; no unreviewed sample law rule is represented as authoritative.
 
@@ -43,6 +45,20 @@ node scripts/update-collection.mjs examples/collection/config.json
 ```
 
 The scheduled runner checkpoints pending records and pagination between bounded runs; failures remain pending. `intervalDays` defaults to seven after a catalog cycle completes. `pagesPerRun` and `documentsPerRun` bound load. The [separate-repository workflow template](../examples/collection/weekly.yml) runs weekly and preserves checkpoints and artifacts, making partial runs visibly fail. Change its cron and configuration for another cadence. It does not publish a permanent corpus here. Publisher-specific redistribution review and permanent repository deployment remain outstanding; `redistributionReviewed:false` explicitly records that status. Run only one scheduled writer per store.
+
+## Evaluation, screening and gaps
+
+```sh
+node bin/legal-assistant.js evaluate [--questions FILE]
+node bin/legal-assistant.js quality
+node bin/legal-assistant.js gaps [--inventory FILE]
+```
+
+`evaluateQuestions(laws, set)` scores a question set. Each answerable case names a law ID, content hash, section and exact quotation, checked against the edition before retrieval is scored. Unanswerable cases pass only when the assistant abstains. The [bundled set](../data/evaluation/questions.json) is bounded to the demo records, and its expected answers are not lawyer-reviewed. The CLI exits 2 while any case fails.
+
+`assessTextQuality(text, language)` and `assessCorpusQuality(laws)` screen extracted text. They flag replacement, private-use, unassigned and control characters, UTF-8 decoded as Latin-1, and letters outside the scripts expected for the language, such as legacy-font Hindi extracted as Latin letters. Unknown languages are `script-unassessed`. Screening is not OCR or a review of accuracy.
+
+`buildJurisdictionInventory` and `inventoryCoverage` produce and compare a planning inventory. [data/inventory/jurisdictions.json](../data/inventory/jurisdictions.json) is built by `scripts/build-jurisdiction-inventory.mjs` from robots-allowed Wikidata entity documents. It lists the EU, issue 1 focus countries and European national jurisdictions with first-level subdivisions and official languages. It is a secondary-source checklist: it is always `complete:false`, publishers outside the registry are `unidentified`, and official languages are not publication languages. `gaps` reports, for each listed jurisdiction, registered publishers, missing official languages and subdivisions with documents.
 
 ## HTTP and Docker
 
