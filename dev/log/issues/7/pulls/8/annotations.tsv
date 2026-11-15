@@ -1,0 +1,18 @@
+132954310170	notice	.github	1	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132954310216	notice	.github	20	Preview images regenerated and (if applicable) committed to main.
+132954310216	failure	.github	34	Process completed with exit code 1.
+132954310216	failure	.github	33	RELEASE_PR_TOKEN is required to push generated preview images.
+132956017083	failure	.github	40	Process completed with exit code 1.
+132956017083	failure	.github	39	Failing jobs: preview-regen
+132954309235	notice	.github	163	Summary report available at: https://github.com/link-assistant/legal/actions/runs/43760599347#summary-132954309235
+132954309767	failure	.github	23	Process completed with exit code 1.
+132956738653	failure	.github	28	Process completed with exit code 1.
+132956738653	failure	.github	27	Failing jobs: dependency-review
+132954309539	failure	.github	23	Process completed with exit code 1.
+132954309539	failure	.github	22	release-preflight: refusing to release with 1 refused credential(s)
+132954309539	failure	.github	21	release-preflight: npm OIDC package exchange rejected (404); configure a trusted publisher or bootstrap token
+132956759712	notice	.github	1	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132956759801	notice	.github	1	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132956759856	notice	.github	1	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132957463821	failure	.github	84	Process completed with exit code 1.
+132957463821	failure	.github	83	Failing jobs: release-preflight
