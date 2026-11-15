@@ -12,3 +12,4 @@ src/generated/
 experiments/official/
 ci-logs/
 collections/
+dev/log/

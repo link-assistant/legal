@@ -1,5 +1,9 @@
 {
   "nodeModulesDir": "auto",
+  "allowScripts": {
+    "allow": ["npm:esbuild@0.28.2"],
+    "deny": ["npm:node-pty@1.1.0"]
+  },
   "test": {
     "include": ["tests/"],
     "exclude": ["examples/", "node_modules/"]

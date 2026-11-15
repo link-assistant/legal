@@ -125,7 +125,8 @@ export class CollectionStore {
     } catch (error) {
       if (error.code === 'EEXIST') {
         throw new Error(
-          'Another collection is running; remove stale .collection-lock only after verifying no collector is active'
+          'Another collection is running; remove stale .collection-lock only after verifying no collector is active',
+          { cause: error }
         );
       }
       throw error;

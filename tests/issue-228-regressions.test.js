@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'test-anywhere';
+import { parse } from 'yaml';
 import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -9,6 +10,7 @@ import {
 } from '../scripts/publish-retry.mjs';
 import { parseArgs, waitForNpmVersion } from '../scripts/wait-for-npm.mjs';
 import { itUnless, sandboxed } from './helpers/skip.js';
+import { HANG_GUARD_MS } from './helpers/bounded-run.js';
 
 const read = (file) => readFileSync(file, 'utf8').replaceAll('\r\n', '\n');
 const workflow = read('.github/workflows/workflows.yml');
@@ -44,13 +46,17 @@ describe('repository-wide workflow audit coverage', () => {
 describe('link checker input selection', () => {
   it('walks hidden Markdown and HTML while retaining ignore/exclusion rules', () => {
     const workflow = read('.github/workflows/links.yml');
-    const args = workflow.match(/^ {10}args: >-\n((?: {12}.*\n)+)/m)[1];
+    const step = parse(workflow).jobs['link-checker'].steps.find(
+      (item) => item.id === 'lychee'
+    );
+    const args = step.run.match(/^lychee ([\s\S]*?) \|\| code=\$\?/m)[1];
     expect(args).toContain('--hidden');
     expect(args).toContain('--extensions md,html');
     expect(args).not.toContain('*');
-    expect(args.trim().endsWith('\n            .')).toBe(true);
+    expect(args.trim().endsWith(' .')).toBe(true);
     for (const file of [
       'docs/case-studies',
+      'dev/log',
       'examples/universal-app/index.html',
       'tests/fixtures',
     ]) {
@@ -86,15 +92,18 @@ describe('Deno lock and npm install script policies', () => {
     const lock = JSON.parse(read(`${root}package-lock.json`));
     const scripts = Object.entries(lock.packages)
       .filter(([, info]) => info.hasInstallScript)
-      .map(([entry, info]) => info.name ?? entry.split('node_modules/').at(-1));
+      .map(
+        ([entry, info]) =>
+          `${info.name ?? entry.split('node_modules/').at(-1)}@${info.version}`
+      );
     expect(scripts.length).toBeGreaterThan(0);
     for (const name of scripts) {
       expect(typeof pkg.allowScripts?.[name]).toBe('boolean');
     }
     expect(pkg.allowScripts).toEqual({
-      'electron-winstaller': true,
-      esbuild: true,
-      fsevents: true,
+      'electron-winstaller@5.4.0': true,
+      'esbuild@0.25.12': true,
+      'fsevents@2.3.3': true,
     });
   });
 });
@@ -184,7 +193,7 @@ describe('quiet, effective tooling configuration', () => {
             '100',
             fixture,
           ],
-          { encoding: 'utf8', timeout: 15000 }
+          { encoding: 'utf8', timeout: HANG_GUARD_MS }
         );
         expect(`${result.stdout}${result.stderr}`).not.toMatch(
           /unknown field/i

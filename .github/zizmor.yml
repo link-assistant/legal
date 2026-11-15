@@ -27,3 +27,6 @@ rules:
       - release.yml
       - example-app.yml
       - action.yml
+      - links.yml
+      - security.yml
+      - workflows.yml

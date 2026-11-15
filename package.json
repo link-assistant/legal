@@ -94,16 +94,20 @@
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "1.64.1",
+    "command-stream": "2.4.0",
     "esbuild": "0.28.2",
-    "eslint": "^9.38.0",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
     "jscpd": "^5.4.0",
+    "lino-arguments": "0.4.0",
     "lint-staged": "^16.4.0",
     "prettier": "^3.6.2",
-    "test-anywhere": "^0.8.48"
+    "test-anywhere": "^0.8.48",
+    "yaml": "2.9.1"
   },
   "lint-staged": {
     "*.{js,mjs,cjs}": [
@@ -114,6 +118,12 @@
     "*.md": [
       "prettier --write",
       "prettier --check"
+    ],
+    "*.sh": [
+      "pipx run --no-path-check --spec shellcheck-py==0.11.0.1 shellcheck"
+    ],
+    ".husky/*": [
+      "pipx run --no-path-check --spec shellcheck-py==0.11.0.1 shellcheck"
     ]
   },
   "dependencies": {
@@ -127,7 +137,13 @@
     "pdfjs-dist": "6.4.299"
   },
   "allowScripts": {
-    "esbuild": true,
-    "@napi-rs/canvas": false
+    "esbuild@0.28.2": true,
+    "@napi-rs/canvas": false,
+    "node-pty": false
+  },
+  "overrides": {
+    "minimatch@>=7 <11": "^11.0.4",
+    "glob@>=9 <=14.0.1": "^14.0.2",
+    "encoding-sniffer": "1.0.2"
   }
 }

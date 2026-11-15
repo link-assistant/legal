@@ -87,7 +87,11 @@ function createChangeFixture(filePath, eventName, options = {}) {
   }
 
   mkdirSync(path.dirname(path.join(root, filePath)), { recursive: true });
-  writeFileSync(path.join(root, filePath), 'export const ignored = true;\n');
+  // Bun reads bunfig.toml from its working directory, so it must parse.
+  const content = filePath.endsWith('.toml')
+    ? '# Fixture change\n'
+    : 'export const ignored = true;\n';
+  writeFileSync(path.join(root, filePath), content);
   commit(root, 'Add excluded file');
 
   if (eventName === 'pull_request') {
@@ -155,7 +159,6 @@ describe('detect-code-changes CLI', () => {
 
   for (const eventName of ['pull_request', 'push']) {
     for (const filePath of [
-      'experiments/repro.mjs',
       'dev/log/repro.js',
       'docs/case-studies/issue-113/repro.md',
     ]) {
@@ -205,9 +208,7 @@ describe('detect-code-changes CLI', () => {
   // only after the js/ prefix has been stripped.
   for (const eventName of ['pull_request', 'push']) {
     for (const filePath of [
-      'js/examples/demo.mjs',
       'js/.changeset/tidy-cats-shine.md',
-      'js/experiments/repro.mjs',
       'js/dev/log/repro.js',
       'js/docs/case-studies/issue-141/repro.md',
     ]) {
@@ -277,6 +278,46 @@ describe('detect-code-changes CLI', () => {
       }
     }
   );
+});
+
+describe('detect-code-changes file types', () => {
+  // The pipeline runs shell scripts, publishes type declarations and builds
+  // the Dockerfile, so a change to any of them must run the checks.
+  for (const eventName of ['pull_request', 'push']) {
+    for (const filePath of [
+      'scripts/check-pages.sh',
+      'src/index.d.ts',
+      'Dockerfile',
+      'bunfig.toml',
+      'tests/fixtures/pages-stub/gh',
+    ]) {
+      itUnless(sandboxed)(`counts ${filePath} as code on ${eventName}`, () => {
+        const root = createChangeFixture(filePath, eventName);
+
+        try {
+          const { outputs, result } = runDetectCodeChanges(root, eventName);
+
+          expect(result.status).toBe(0);
+          expect(outputs).toContain('any-code-changed=true\n');
+        } finally {
+          rmSync(root, { force: true, recursive: true });
+        }
+      });
+    }
+  }
+
+  itUnless(sandboxed)('does not count a .gitkeep placeholder as code', () => {
+    const root = createChangeFixture('assets/.gitkeep', 'push');
+
+    try {
+      const { outputs, result } = runDetectCodeChanges(root, 'push');
+
+      expect(result.status).toBe(0);
+      expect(outputs).toContain('any-code-changed=false\n');
+    } finally {
+      rmSync(root, { force: true, recursive: true });
+    }
+  });
 });
 
 // A pull request can carry several commits, and a superseded run may never
@@ -523,4 +564,37 @@ describe('detect-code-changes push ranges', () => {
       }
     }
   );
+});
+
+describe('example and experiment syntax triggers', () => {
+  for (const eventName of ['pull_request', 'push']) {
+    for (const packageRoot of ['.', 'js']) {
+      for (const file of [
+        'examples/demo.js',
+        'examples/demo.mjs',
+        'examples/nested/demo.cjs',
+        'experiments/repro.mjs',
+      ]) {
+        itUnless(sandboxed)(
+          `syntax checks ${file} on ${eventName} in ${packageRoot}`,
+          () => {
+            const filePath =
+              packageRoot === '.' ? file : `${packageRoot}/${file}`;
+            const root = createChangeFixture(filePath, eventName, {
+              packageRoot,
+            });
+            try {
+              const { outputs, result } = runDetectCodeChanges(root, eventName);
+              expect(result.status).toBe(0);
+              expect(outputs).toContain('js-changed=true\n');
+              expect(outputs).toContain('docs-changed=false\n');
+              expect(outputs).toContain('any-code-changed=false\n');
+            } finally {
+              rmSync(root, { force: true, recursive: true });
+            }
+          }
+        );
+      }
+    }
+  }
 });

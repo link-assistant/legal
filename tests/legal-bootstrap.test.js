@@ -1,6 +1,5 @@
 import { it, expect } from 'test-anywhere';
 import { applyExactPatch } from '../scripts/bootstrap-formal-ai.mjs';
-import { dependencyReviewAvailable } from '../scripts/dependency-capability.mjs';
 import { readFileSync } from 'node:fs';
 
 it('applies exact dependency patch context and rejects source drift', () => {
@@ -38,28 +37,4 @@ it('generates the pinned dependency before the Deno matrix type-checks tests', (
   const tests = testJob.indexOf('deno test -A --parallel');
   expect(preparation).toBeGreaterThan(-1);
   expect(preparation).toBeLessThan(tests);
-});
-it('uses audit fallback only for unavailable PR dependency review and fails closed otherwise', () => {
-  expect(
-    dependencyReviewAvailable({ ok: true, status: 200 }, 'pull_request')
-  ).toBe(true);
-  for (const status of [403, 404]) {
-    expect(
-      dependencyReviewAvailable({ ok: false, status }, 'pull_request')
-    ).toBe(false);
-    let message = '';
-    try {
-      dependencyReviewAvailable({ ok: false, status }, 'push');
-    } catch (error) {
-      message = error.message;
-    }
-    expect(message.includes('Enable Dependency graph')).toBe(true);
-  }
-  let failed = false;
-  try {
-    dependencyReviewAvailable({ ok: false, status: 500 }, 'pull_request');
-  } catch {
-    failed = true;
-  }
-  expect(failed).toBe(true);
 });

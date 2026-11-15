@@ -20,7 +20,7 @@
 // (package.json in js/) the js/ prefix is stripped first and files belonging
 // to other languages are ignored, so the lists below match in both layouts.
 //
-// Ignored for every change-gating output:
+// Ignored for code/changeset gating (syntax still checks examples/experiments):
 // - .changeset/ folder (changeset metadata)
 // - docs/case-studies/ folder (research documents)
 // - dev/log/ folder (development logs)
@@ -309,12 +309,19 @@ function getChangedFiles() {
   }
 }
 
+/**
+ * Everything else counts as code, so a file type nobody listed (a shell
+ * script, a type declaration, the Dockerfile) still runs the checks.
+ *
+ * @param {string} filePath package-relative path
+ * @returns {boolean}
+ */
 function isExcludedFromCodeChanges(filePath) {
-  if (filePath.endsWith('.md')) {
+  if (filePath.endsWith('.md') || filePath.endsWith('/.gitkeep')) {
     return true;
   }
 
-  return filePath.startsWith('docs/');
+  return filePath.startsWith('docs/') || filePath === '.gitkeep';
 }
 
 async function detectChanges() {
@@ -339,8 +346,10 @@ async function detectChanges() {
     (file) => !ignoredPathPrefixes.some((prefix) => file.startsWith(prefix))
   );
 
-  const jsChanged = relevantChangedFiles.some((file) =>
-    /\.(mjs|cjs|js)$/.test(file)
+  const jsChanged = packageChangedFiles.some(
+    (file) =>
+      !/^(?:docs\/case-studies|dev\/log)\//.test(file) &&
+      /\.(mjs|cjs|js)$/.test(file)
   );
   setOutput('js-changed', jsChanged ? 'true' : 'false');
 
@@ -359,11 +368,7 @@ async function detectChanges() {
   }
   console.log('');
 
-  const codeFileExtensionPattern = /\.(mjs|cjs|js|json|yml|yaml)$/;
-  const anyCodeChanged = codeChangedFiles.some(
-    (file) =>
-      codeFileExtensionPattern.test(file) || file.startsWith(workflowPathPrefix)
-  );
+  const anyCodeChanged = codeChangedFiles.length > 0;
   setOutput('any-code-changed', anyCodeChanged ? 'true' : 'false');
 
   console.log('\nChange detection completed.');
