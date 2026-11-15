@@ -50,13 +50,20 @@ export function validatePackReport(report, budget = MAX_TARBALL_BYTES) {
 }
 
 export function checkNpmTarballSize({ cwd = '.', run = execFileSync } = {}) {
-  const output = run('npm', ['pack', '--dry-run', '--json'], {
-    cwd,
-    encoding: 'utf8',
-    maxBuffer: 16 * 1024 * 1024,
-    env: { ...process.env, npm_config_loglevel: 'silent' },
-    shell: process.platform === 'win32',
-  });
+  // npm pack runs prepack/prepare in the foreground by default, forwarding
+  // their stdout ahead of the JSON report; background them so only the
+  // report reaches stdout (npm still prints their output if they fail).
+  const output = run(
+    'npm',
+    ['pack', '--dry-run', '--json', '--foreground-scripts=false'],
+    {
+      cwd,
+      encoding: 'utf8',
+      maxBuffer: 16 * 1024 * 1024,
+      env: { ...process.env, npm_config_loglevel: 'silent' },
+      shell: process.platform === 'win32',
+    }
+  );
   const reports = validatePackReport(JSON.parse(output));
   for (const pack of reports) {
     console.log(

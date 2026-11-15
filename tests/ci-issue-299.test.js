@@ -1,5 +1,13 @@
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import {
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it } from 'test-anywhere';
 import { parse } from 'yaml';
 import {
@@ -110,12 +118,37 @@ describe('npm tarball size and permanent failures', () => {
     it(`rejects missing or invalid npm evidence ${JSON.stringify(report)}`, () =>
       assert.throws(() => validatePackReport(report)));
   }
+  it('keeps lifecycle-script stdout out of the npm pack JSON report', () => {
+    // prepack/prepare run in the foreground for npm pack and used to print
+    // ahead of the report, so JSON.parse failed on the first byte.
+    const cwd = mkdtempSync(join(tmpdir(), 'tarball-size-'));
+    try {
+      writeFileSync(
+        join(cwd, 'package.json'),
+        JSON.stringify({
+          name: 'lifecycle-probe',
+          version: '1.0.0',
+          files: ['package.json'],
+          scripts: { prepack: 'node -e "console.log(process.cwd())"' },
+        })
+      );
+      const [report] = checkNpmTarballSize({ cwd });
+      assert.equal(report.name, 'lifecycle-probe');
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
   it('uses npm dry-run without creating a tarball and honors package cwd', () => {
     checkNpmTarballSize({
       cwd: 'js',
       run: (command, args, options) => {
         assert.equal(command, 'npm');
-        assert.deepEqual(args, ['pack', '--dry-run', '--json']);
+        assert.deepEqual(args, [
+          'pack',
+          '--dry-run',
+          '--json',
+          '--foreground-scripts=false',
+        ]);
         assert.equal(options.cwd, 'js');
         return JSON.stringify(pack());
       },
