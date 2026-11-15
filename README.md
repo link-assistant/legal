@@ -6,7 +6,7 @@ JavaScript tools to collect official legal texts, preserve their provenance, exp
 
 ## Run the assistant
 
-Use Node.js 22.13 or later (24 recommended). The first installation downloads a checksum-pinned Formal AI JavaScript module and applies the committed patch; only the patch is stored in Git.
+Use Node.js 22.13 or later (24 recommended). A source checkout downloads a checksum-pinned Formal AI JavaScript module and applies the committed patch during installation. `npm pack` also generates this module before packaging; npm consumers receive it in the tarball without a post-install download.
 
 ```sh
 npm ci
@@ -17,6 +17,26 @@ node bin/legal-assistant.js gaps       # corpus versus the planning inventory
 node bin/legal-assistant.js formalize ge-constitution-en --format lino
 npm start
 ```
+
+Install the published package with `npm install -g @link-assistant/legal`.
+`legal --version` prints the package version; `legal-assistant --help` lists the
+legal-source commands. The retained arithmetic commands are `legal add 2 3`
+and `legal multiply 6 7`.
+
+To verify a release artifact locally:
+
+```sh
+npm pack
+npm install -g ./link-assistant-legal-*.tgz
+legal --version
+```
+
+The `files` allowlist ships runtime JavaScript and types, the generated Formal AI
+module, demo/evaluation/inventory data, the OpenAPI document, and collection and
+bootstrap tooling with its patch. Tests, experiments, CI configuration, full local
+collections and development tooling are excluded. Run
+`node experiments/package-smoke.mjs` to pack and install into temporary local and
+global prefixes, check npm bin shims and exercise the bundled library and corpus.
 
 The API listens at `http://127.0.0.1:8787`. Read the [API and collection guide](docs/legal-assistant.md) or request `/openapi.json`.
 
@@ -50,7 +70,7 @@ const laws = collectedCorpus.laws.map(normalizeLaw);
 const result = answerQuestion(laws, 'freedom', { language: 'en' });
 ```
 
-The original template APIs (`add`, `multiply`, `delay`), CLI alias and universal app remain available. The development and release instructions below are retained for contributors.
+The original template APIs (`add`, `multiply`, `delay`), arithmetic CLI (now named `legal`) and universal app remain available. The development and release instructions below are retained for contributors.
 
 ---
 
@@ -58,7 +78,6 @@ The original template APIs (`add`, `multiply`, `delay`), CLI alias and universal
 
 A comprehensive template for AI-driven JavaScript/TypeScript development with full CI/CD pipeline support.
 
-The retained template originally published `@link-foundation/example-package-name`.
 This repository prepares releases of `@link-assistant/legal`; npm trusted publishing
 must be configured for that package before the first release.
 
@@ -112,7 +131,7 @@ npm run example:web:build
 npm run example:desktop:package
 
 # Try the CLI locally
-node bin/example-package-name.js add 2 3
+node bin/legal.js add 2 3
 ```
 
 ## Project Structure
@@ -331,7 +350,7 @@ Add regex patterns to `.lycheeignore` to exclude URLs from checks (e.g., local d
 
 After creating a repository from this template, update the package name in:
 
-1. `package.json`: replace `"@link-foundation/example-package-name"` with your package name
+1. `package.json`: update `name`, `bin` and the runtime `files` allowlist
 2. `.changeset/config.json`: Package references
 
 Release scripts derive the package name from `package.json` at runtime, so no

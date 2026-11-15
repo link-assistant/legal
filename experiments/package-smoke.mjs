@@ -2,8 +2,9 @@ import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import assert from 'node:assert/strict';
 
-// Exercise a packed artifact from a clean consumer directory, without install scripts.
+// Exercise the actual tarball outside the checkout, with normal install scripts.
 const root = await mkdtemp(join(tmpdir(), 'legal-package-'));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const run = (command, args, cwd) =>
@@ -19,23 +20,19 @@ try {
     ['pack', '--json', '--pack-destination', root],
     process.cwd()
   );
-  const archive = join(
-    root,
-    JSON.parse(packed.slice(packed.indexOf('[\n')))[0].filename
-  );
+  const [artifact] = JSON.parse(packed.slice(packed.indexOf('[\n')));
+  const files = artifact.files.map((file) => file.path);
+  assert(files.includes('src/generated/formal-ai-relative.mjs'));
+  for (const path of files) {
+    assert(
+      !/^(?:tests|experiments|\.github|collections|web)\//.test(path),
+      path
+    );
+    assert(!path.includes('example-package-name'), path);
+  }
+  const archive = join(root, artifact.filename);
   await writeFile(join(root, 'package.json'), '{}\n');
-  run(
-    npm,
-    [
-      'install',
-      '--ignore-scripts',
-      '--omit=dev',
-      '--no-audit',
-      '--no-fund',
-      archive,
-    ],
-    root
-  );
+  run(npm, ['install', '--omit=dev', '--no-audit', '--no-fund', archive], root);
   const consumer = `import { add, answerQuestion, extractLawReferences } from '@link-assistant/legal';
 import { loadCorpus } from '@link-assistant/legal/server';
 const corpus = await loadCorpus();
@@ -56,6 +53,39 @@ console.log('Packed library and bundled corpus passed');`;
       join(root, 'node_modules/@link-assistant/legal/package.json'),
       'utf8'
     )
+  );
+  assert(!JSON.stringify(metadata).includes('example-package-name'));
+  assert.equal(metadata.version, artifact.version);
+  const bin = join(
+    root,
+    'node_modules/.bin',
+    `legal${process.platform === 'win32' ? '.cmd' : ''}`
+  );
+  assert.equal(run(bin, ['--version'], root).trim(), metadata.version);
+  assert.equal(run(bin, ['multiply', '6', '7'], root).trim(), '42');
+  // npm installs must also work when dependency lifecycle scripts are disabled.
+  const prefix = join(root, 'global');
+  run(
+    npm,
+    [
+      'install',
+      '-g',
+      '--prefix',
+      prefix,
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      archive,
+    ],
+    root
+  );
+  const globalBin =
+    process.platform === 'win32'
+      ? join(prefix, 'legal.cmd')
+      : join(prefix, 'bin/legal');
+  assert.equal(run(globalBin, ['--version'], root).trim(), metadata.version);
+  console.log(
+    `Packed legal --version: ${metadata.version} (local and global npm shims)`
   );
   const cli = join(
     root,

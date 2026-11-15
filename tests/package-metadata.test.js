@@ -10,7 +10,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-import { runCli } from '../bin/example-package-name.js';
+import { runCli } from '../bin/legal.js';
 import { itUnless, sandboxed } from './helpers/skip.js';
 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
@@ -22,7 +22,7 @@ function windowsSymlinkSkipReason() {
   }
   const fixture = mkdtempSync(join(tmpdir(), 'symlink-permission-'));
   try {
-    symlinkSync(resolve('bin/example-package-name.js'), join(fixture, 'bin'));
+    symlinkSync(resolve('bin/legal.js'), join(fixture, 'bin'));
     return null;
   } catch (error) {
     if (error.code === 'EPERM') {
@@ -46,10 +46,17 @@ describe('publishable package metadata', () => {
 
   it('defines a globally installable CLI command', () => {
     expect(packageJson.bin).toEqual({
-      'example-package-name': './bin/example-package-name.js',
+      legal: './bin/legal.js',
       'legal-assistant': './bin/legal-assistant.js',
     });
-    expect(existsSync('bin/example-package-name.js')).toBe(true);
+    expect(existsSync('bin/legal.js')).toBe(true);
+    expect(lockJson.packages[''].bin).toEqual({
+      legal: 'bin/legal.js',
+      'legal-assistant': 'bin/legal-assistant.js',
+    });
+    expect(JSON.stringify(packageJson).includes('example-package-name')).toBe(
+      false
+    );
   });
 
   it('runs package functions through the CLI command', () => {
@@ -67,17 +74,25 @@ describe('publishable package metadata', () => {
     expect(stderr).toEqual([]);
   });
 
+  it('prints the package version', () => {
+    const stdout = [];
+    expect(runCli(['--version'], { stdout: (line) => stdout.push(line) })).toBe(
+      0
+    );
+    expect(stdout).toEqual([packageJson.version]);
+  });
+
   itUnless(
     sandboxed,
     symlinkSkipReason,
     globalThis.Deno &&
       'Deno resolves relative imports from the bin symlink directory'
   )('runs when invoked through an npm-style bin symlink', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'example-package-name-'));
-    const linkPath = join(tempRoot, 'example-package-name');
+    const tempRoot = mkdtempSync(join(tmpdir(), 'legal-'));
+    const linkPath = join(tempRoot, 'legal');
 
     try {
-      symlinkSync(resolve('bin/example-package-name.js'), linkPath);
+      symlinkSync(resolve('bin/legal.js'), linkPath);
       const result = spawnSync(
         process.execPath,
         [
@@ -100,8 +115,11 @@ describe('publishable package metadata', () => {
 
   it('publishes only the package runtime surface', () => {
     expect(packageJson.files).toEqual([
-      'bin/',
-      'src/',
+      'bin/legal.js',
+      'bin/legal-assistant.js',
+      'src/**/*.js',
+      'src/**/*.d.ts',
+      'src/generated/formal-ai-relative.mjs',
       'CHANGELOG.md',
       'LICENSE',
       'README.md',
