@@ -83,7 +83,7 @@ jobs:
 
       - name: Restore link cache
         id: restore-link-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .lycheecache
           key: cache-lychee-${{ runner.os }}-${{ steps.link-cache.outputs.day }}-${{ github.sha }}
@@ -133,7 +133,7 @@ jobs:
 
       - name: Save main link cache
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.restore-link-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: .lycheecache
           key: ${{ steps.restore-link-cache.outputs.cache-primary-key }}
