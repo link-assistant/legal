@@ -1,0 +1,81 @@
+{
+  "complete": false,
+  "records": [
+    {
+      "lawId": "us-constitution-original",
+      "language": "en",
+      "contentHash": "644721284d7ad7ebbbe5841043e7feee0a448d19b0d10ab58980e0eb6ff2f840",
+      "expectedScripts": ["Latin"],
+      "letters": 14471,
+      "expectedScriptShare": 1,
+      "status": "screened",
+      "issues": [],
+      "reviewed": false,
+      "limits": [
+        "Screening detects decoding damage and script mismatch only. It does not verify OCR, spelling, completeness or legal accuracy."
+      ]
+    },
+    {
+      "lawId": "cn-constitution-2014-en",
+      "language": "en",
+      "contentHash": "78ac2b956e8b7d3d42f89c012a1808220136b6b036c56de75851145ed86017d5",
+      "expectedScripts": ["Latin"],
+      "letters": 14882,
+      "expectedScriptShare": 1,
+      "status": "screened",
+      "issues": [],
+      "reviewed": false,
+      "limits": [
+        "Screening detects decoding damage and script mismatch only. It does not verify OCR, spelling, completeness or legal accuracy."
+      ]
+    },
+    {
+      "lawId": "cn-constitution-2018-zh",
+      "language": "zh",
+      "contentHash": "acadb6a3c3e0820d38ef48a434527f6806f38ac19c1831c644154b9d1d9e0ee7",
+      "expectedScripts": ["Han"],
+      "letters": 15912,
+      "expectedScriptShare": 1,
+      "status": "screened",
+      "issues": [],
+      "reviewed": false,
+      "limits": [
+        "Screening detects decoding damage and script mismatch only. It does not verify OCR, spelling, completeness or legal accuracy."
+      ]
+    },
+    {
+      "lawId": "ge-constitution-en",
+      "language": "en",
+      "contentHash": "d197297fbe27dbd556670da00a1a78cbe0afdff931e0c489403721206733bf31",
+      "expectedScripts": ["Latin"],
+      "letters": 13906,
+      "expectedScriptShare": 1,
+      "status": "screened",
+      "issues": [],
+      "reviewed": false,
+      "limits": [
+        "Screening detects decoding damage and script mismatch only. It does not verify OCR, spelling, completeness or legal accuracy."
+      ]
+    },
+    {
+      "lawId": "eu-gdpr-2016-article5-en",
+      "language": "en",
+      "contentHash": "82428a797816de529f1a766e3fa28392c1f35a5e9d597944edfad7cde6acefb1",
+      "expectedScripts": ["Latin"],
+      "letters": 1647,
+      "expectedScriptShare": 1,
+      "status": "screened",
+      "issues": [],
+      "reviewed": false,
+      "limits": [
+        "Screening detects decoding damage and script mismatch only. It does not verify OCR, spelling, completeness or legal accuracy."
+      ]
+    }
+  ],
+  "summary": {
+    "records": 5,
+    "screened": 5,
+    "needsReview": 0,
+    "scriptUnassessed": 0
+  }
+}

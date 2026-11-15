@@ -38,3 +38,16 @@ health/citations, full CodeQL SARIF and alert metadata, and public browser
 verification. The SARIF retains one baseline finding in the unchanged issue-3
 historical snapshot; it does not report zero results. `additional-source-*`
 retains the later Know India and presidential-origin policy retrieval failures.
+
+The `final-*` entries record the five passing evidence-only workflows on
+`3b4283a` and their zero-result JavaScript/Actions SARIF. The `references-*`
+entries retain the subsequent actual-GDPR reference red/green tests, complete
+and focused runtime suites, browser/package/check results, and an independent
+local Playwright MCP LiNo download with its exact decoded source-bound mentions.
+These syntax candidates do not establish legal equivalence or target identity.
+
+The `merged-main-*` entries preserve the external merge/issue state, all three
+failed main workflow logs and job metadata. Their errors concern npm publisher
+setup, the disabled dependency graph and the missing preview-push token. The
+verification report cites exact lines; these later failures do not contradict
+the earlier passing PR checks or complete unfinished acceptance criteria.

@@ -2,7 +2,7 @@
 
 JavaScript tools to collect official legal texts, preserve their provenance, export lossless meta-language networks, and search them with exact citations. The library, CLI, HTTP API, Docker image and browser demo share the same engine. No LLM is used.
 
-**Coverage is incomplete.** The demo contains five bounded official-source records from the US, EU, China and Georgia. It includes historical text and translations. The publisher registry also describes India and Russia, but their adapters and language coverage are not fully verified. Search finds text; it does not answer arbitrary legal questions or establish applicability. See the [issue 1 case study](docs/case-studies/issue-1/README.md) for every requirement, evidence and blocked criteria.
+**Coverage is incomplete.** The demo contains five bounded official-source records from the US, EU, China and Georgia. It includes historical text and translations. The publisher registry also describes India and Russia, but their adapters and language coverage are not fully verified. Search finds text; it does not answer arbitrary legal questions or establish applicability. See the [issue 1 case study](docs/case-studies/issue-1/README.md) for every requirement, evidence and blocked criteria, and the [issue 3 acceptance tracker](docs/case-studies/legal-issue-3/README.md) for their status on 2 November 2026.
 
 ## Run the assistant
 
@@ -12,6 +12,8 @@ Use Node.js 22.13 or later (24 recommended). The first installation downloads a 
 npm ci
 node bin/legal-assistant.js ask "equal before the law" --jurisdiction GE
 node bin/legal-assistant.js coverage
+node bin/legal-assistant.js evaluate   # bounded question set; exits 2 while cases fail
+node bin/legal-assistant.js gaps       # corpus versus the planning inventory
 node bin/legal-assistant.js formalize ge-constitution-en --format lino
 npm start
 ```

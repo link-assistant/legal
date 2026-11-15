@@ -106,6 +106,8 @@ describe('publishable package metadata', () => {
       'LICENSE',
       'README.md',
       'data/demo/',
+      'data/evaluation/',
+      'data/inventory/',
       'patches/',
       'scripts/bootstrap-formal-ai.mjs',
       'docs/openapi.json',

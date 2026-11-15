@@ -190,7 +190,7 @@
     },
     "/v1/laws/{id}/formalization": {
       "get": {
-        "summary": "Lossless syntax with unverified modal cues",
+        "summary": "Lossless syntax with unverified modal cues and source-bound citation candidates",
         "parameters": [
           {
             "name": "id",

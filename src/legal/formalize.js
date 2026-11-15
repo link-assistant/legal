@@ -1,6 +1,7 @@
 import { LinkNetwork } from 'meta-language';
 import { encode, decode } from 'lino-objects-codec';
 import { Parser } from 'links-notation';
+import { extractLawReferences } from './references.js';
 
 // Modal cues describe the text. They are never promoted to executable legal rules.
 const cues = [
@@ -33,6 +34,7 @@ export const encodeKnowledge = (value) => encode({ obj: value });
 export const decodeKnowledge = (notation) => decode({ notation });
 
 export function formalizeLaw(law) {
+  const references = extractLawReferences(law);
   // Process bounded sections to keep the lossless meta-language network small.
   const networks = [];
   const claims = [];
@@ -87,8 +89,10 @@ export function formalizeLaw(law) {
     roundTrip: reconstructed === law.text,
     networks,
     claims,
+    references,
     limits: [
       'Lossless syntax is verified; legal meaning, exceptions and applicability are not proved.',
+      'Citation syntax and matching local heading candidates are unreviewed. They do not establish target identity, subdivision existence, cross-law links or legal applicability. Unsupported reference syntax remains in the source text.',
     ],
   };
   // Verify the actual interchange parser accepts what we publish.
