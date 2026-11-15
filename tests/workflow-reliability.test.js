@@ -1,8 +1,15 @@
 import { describe, it, expect } from 'test-anywhere';
 import { readFileSync, readdirSync } from 'node:fs';
+import { parse } from 'yaml';
 
 const WORKFLOW_DIRECTORY = '.github/workflows';
-const SUPPORTED_CONCURRENCY_KEYS = new Set(['group', 'cancel-in-progress']);
+// GitHub documents `queue` although actionlint 1.7.12 does not know it yet:
+// https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+const SUPPORTED_CONCURRENCY_KEYS = new Set([
+  'group',
+  'cancel-in-progress',
+  'queue',
+]);
 
 function readWorkflow(filePath) {
   return readFileSync(filePath, 'utf8').replaceAll('\r\n', '\n');
@@ -130,18 +137,17 @@ function expectOrdered(text, markers) {
 
 function expectMainWriterConcurrency(jobBlock) {
   expect(jobBlock).toContain(
-    '    concurrency:\n      group: main-writer-${{ github.repository }}-main\n      cancel-in-progress: false'
+    '    concurrency:\n      group: main-writer-${{ github.repository }}-main\n      cancel-in-progress: false\n      queue: max'
   );
 }
 
 function expectCancellableCheckConcurrency(
   jobBlock,
   jobName,
-  matrixSuffix = '',
-  cancelInProgress = 'true'
+  matrixSuffix = ''
 ) {
   expect(jobBlock).toContain(
-    `    concurrency:\n      group: check-\${{ github.workflow }}-\${{ github.ref }}-${jobName}${matrixSuffix}\n      cancel-in-progress: ${cancelInProgress}`
+    `    concurrency:\n      group: check-\${{ github.workflow }}-\${{ github.ref }}-${jobName}${matrixSuffix}\n      cancel-in-progress: true`
   );
 }
 
@@ -180,6 +186,37 @@ function createTestJobContext({
 }
 
 describe('workflow concurrency policy', () => {
+  for (const ref of ['refs/heads/main', 'refs/pull/293/merge']) {
+    it(`cancels all read-only checks and preserves writers on ${ref}`, () => {
+      for (const file of listWorkflowPaths()) {
+        const source = parse(readWorkflow(file));
+        for (const job of Object.values(source.jobs)) {
+          const policy = job.concurrency;
+          if (!policy) {
+            continue;
+          }
+          const group = policy.group.replaceAll('${{ github.ref }}', ref);
+          if (group.startsWith('check-')) {
+            // Literal true must hold on both main and PR refs.
+            expect(policy['cancel-in-progress']).toBe(true);
+            for (const dimension of Object.keys(job.strategy?.matrix || {})) {
+              if (['include', 'exclude'].includes(dimension)) {
+                continue;
+              }
+              expect(group).toContain(`matrix.${dimension}`);
+            }
+          }
+          if (group.startsWith('main-writer-')) {
+            expect(source.concurrency).toBeUndefined();
+            expect(group).toBe('main-writer-${{ github.repository }}-main');
+            expect(policy['cancel-in-progress']).toBe(false);
+            expect(policy.queue).toBe('max');
+          }
+        }
+      }
+    });
+  }
+
   it('detects unsupported keys in a concurrency block', () => {
     const invalidWorkflow = [
       'jobs:',
@@ -188,10 +225,39 @@ describe('workflow concurrency policy', () => {
       '      group: main-writer',
       '      cancel-in-progress: false',
       '      queue: max',
+      '      cancel-in-flight: true',
       '    steps: []',
     ].join('\n');
 
-    expect(getUnsupportedConcurrencyKeys(invalidWorkflow)).toEqual(['queue']);
+    expect(getUnsupportedConcurrencyKeys(invalidWorkflow)).toEqual([
+      'cancel-in-flight',
+    ]);
+  });
+
+  it('keeps every waiting main writer in the queue', () => {
+    // With the default `queue: single`, a third writer that starts waiting
+    // cancels the one already waiting, so a due release ends up cancelled.
+    const writers = [];
+
+    for (const workflowPath of listWorkflowPaths()) {
+      const blocks = readWorkflow(workflowPath).split(/\n {4}concurrency:\n/);
+
+      for (const block of blocks.slice(1)) {
+        const settings = block.split(/\n(?! {6})/)[0];
+
+        if (settings.includes('group: main-writer-')) {
+          writers.push(settings);
+          expect(settings).toContain('cancel-in-progress: false');
+          expect(settings).toContain('queue: max');
+        }
+        // GitHub rejects the workflow when a queue may also cancel.
+        if (settings.includes('queue: max')) {
+          expect(settings).not.toContain('cancel-in-progress: true');
+        }
+      }
+    }
+
+    expect(writers.length).toBe(7);
   });
 
   it('uses only keys supported by GitHub Actions', () => {
@@ -239,16 +305,13 @@ describe('workflow concurrency policy', () => {
     ]) {
       expectCancellableCheckConcurrency(
         getJobBlock(releaseWorkflow, jobName),
-        jobName,
-        '',
-        "${{ github.ref != 'refs/heads/main' }}"
+        jobName
       );
     }
     expectCancellableCheckConcurrency(
       getJobBlock(releaseWorkflow, 'test'),
       'test',
-      '-${{ matrix.runtime }}-${{ matrix.os }}',
-      "${{ github.ref != 'refs/heads/main' }}"
+      '-${{ matrix.runtime }}-${{ matrix.os }}'
     );
 
     for (const jobName of ['web-build', 'android-build', 'ios-build']) {
@@ -290,7 +353,7 @@ describe('workflow reliability policy', () => {
         'workflow_dispatch:',
         gitDefaultBranchEnv,
         'jobs:',
-        '- uses: actions/checkout@v6',
+        '- uses: actions/checkout@v7',
       ]);
     }
   });
@@ -307,9 +370,10 @@ describe('workflow reliability policy', () => {
       '--hidden',
       '--extensions md,html',
       '--exclude-path docs/case-studies',
+      '--exclude-path dev/log',
       `--exclude-path ${viteSourceHtmlPath}`,
       '--exclude-path tests/fixtures',
-      '\n            .',
+      ' . || code=$?',
     ]);
   });
 
@@ -323,15 +387,17 @@ describe('workflow reliability policy', () => {
       'name: Upload screenshot failure artifacts'
     );
     expect(previewRegenJob).toContain('if: failure()');
-    expect(previewRegenJob).toContain('uses: actions/upload-artifact@v7');
+    expect(previewRegenJob).toContain(
+      'uses: ./.github/actions/artifact-transport'
+    );
     expect(previewRegenJob).toContain(
       'name: preview-regen-failure-${{ github.run_id }}'
     );
-    expect(previewRegenJob).toContain('docs/screenshots/');
-    expect(previewRegenJob).toContain('web/test-results/');
-    expect(previewRegenJob).toContain('web/playwright-report/');
+    expect(previewRegenJob).toContain('path: docs/screenshots/example-app/');
+    expect(previewRegenJob).not.toContain('web/test-results/');
+    expect(previewRegenJob).not.toContain('web/playwright-report/');
     expect(previewRegenJob).toContain('retention-days: 7');
-    expect(previewRegenJob).toContain('if-no-files-found: ignore');
+    expect(previewRegenJob).toContain('if-no-files-found: error');
   });
 
   it('uses the official Playwright image for preview regeneration with browser downloads disabled', () => {
@@ -612,7 +678,7 @@ describe('npm user config cleanup', () => {
       const job = getJobBlock(workflow, jobName);
 
       expectOrdered(job, [
-        'uses: actions/setup-node@v6',
+        'uses: actions/setup-node@v7',
         '- name: Remove deprecated npm auth config',
         '- name: Install dependencies',
       ]);

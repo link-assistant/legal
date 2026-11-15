@@ -1,0 +1,40 @@
+# Dependabot turns advisories and new releases into pull requests that run the
+# whole pipeline before they can merge. The cooldown waits a week after a
+# release before proposing it, so a compromised release is usually found and
+# yanked before it reaches the pipeline.
+#
+# The root npm project is not listed: deno.lock records the root package.json
+# dependencies and Dependabot cannot regenerate it, so every root update would
+# fail the frozen Deno check. The scheduled Security run audits the root lock
+# and fails on a moderate advisory that `npm audit fix` resolves.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /examples/universal-app
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      example-app:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /.github/actions/artifact-transport
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      artifact-transport:
+        patterns: ['*']

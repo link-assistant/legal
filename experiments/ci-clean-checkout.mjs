@@ -93,7 +93,7 @@ try {
         ['run', '-A', 'scripts/bootstrap-formal-ai.mjs'],
         { cwd: root }
       );
-      console.log(bootstrap.stdout);
+      console.log(bootstrap.stderr);
     }
   }
   console.log(`Clean detached checkout without main: ${mode}`);

@@ -94,5 +94,7 @@ if (
   process.argv[1] &&
   resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-  console.log(await bootstrapFormalAI({ sourceFile: process.argv[2] }));
+  // stderr: npm runs this from prepack/prepare, whose stdout npm forwards into
+  // machine-readable output such as `npm pack --json`.
+  console.error(await bootstrapFormalAI({ sourceFile: process.argv[2] }));
 }
