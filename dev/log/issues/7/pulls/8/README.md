@@ -165,7 +165,8 @@ JavaScript-only.
 ## Debugging switches (off by default)
 
 - `DEPENDABOT_HEALTH_DEBUG=1`: traces every API page of the Dependabot scan.
-- `DEPENDENCY_GRAPH_ATTEMPTS=<n>`: probe retry count for the dependency graph.
+- `DEPENDENCY_GRAPH_DEBUG=1`: prints every raw dependency-graph API answer;
+  `DEPENDENCY_GRAPH_ATTEMPTS=<n>` sets the probe retry count.
 - Existing template switches (`scripts/debug-print.mjs`) are unchanged.
 
 ## Reproduction scripts
@@ -175,3 +176,9 @@ JavaScript-only.
   the 0a62b80 merge base).
 - `experiments/issue-7-npm-pack-json-lifecycle.sh`: shows lifecycle stdout
   breaking `npm pack --json` and the `--foreground-scripts=false` fix.
+
+## Final PR state
+
+All six workflows passed on 8fa6524. `ci/annotations-8fa6524.tsv` lists every
+annotation left: the two expected maintainer-action warnings (dependency
+graph, first npm publish) and GitHub's own macOS arm64 capacity notices.

@@ -1,0 +1,6 @@
+132973388242	notice	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132973388236	notice	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132973388167	notice	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132972332586	notice	Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+132972332569	warning	The dependency graph of link-assistant/legal is disabled, so dependency review cannot run. A repository administrator has to enable "Dependency graph" at https://github.com/link-assistant/legal/settings/security_analysis. Skipping dependency review for this pull request.
+132972332271	warning	release-preflight: npm has no package @link-assistant/legal yet, and npm configures trusted publishing only for published packages. Add an NPM_TOKEN repository secret (a granular token allowed to publish @link-assistant/legal) at https://github.com/link-assistant/legal/settings/secrets/actions for the first release, then add a trusted publisher for link-assistant/legal, workflow release.yml, at https://www.npmjs.com/package/@link-assistant/legal/access and delete the secret
