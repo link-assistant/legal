@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'test-anywhere';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import {
   GATE_JOBS,
   classifyJobs,
@@ -247,13 +247,12 @@ describe('rerun-unacquired workflow', () => {
   ).replaceAll('\r\n', '\n');
 
   it('watches every workflow that runs on its own', () => {
-    for (const file of [
-      'release.yml',
-      'example-app.yml',
-      'security.yml',
-      'links.yml',
-      'workflows.yml',
-    ]) {
+    // Derive the list so a new workflow cannot be left unwatched.
+    const files = readdirSync('.github/workflows').filter(
+      (file) => file.endsWith('.yml') && file !== 'rerun-unacquired.yml'
+    );
+    expect(files).toContain('dependabot-health.yml');
+    for (const file of files) {
       const name = readFileSync(`.github/workflows/${file}`, 'utf8').match(
         /^name: (.+)$/m
       )[1];

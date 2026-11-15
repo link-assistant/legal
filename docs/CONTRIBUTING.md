@@ -245,6 +245,22 @@ moderate advisory that `npm audit fix` resolves without `--force`. Fix it with
 `npm update <package>` or an `overrides` entry. When only a breaking upgrade
 would remove an advisory, the run stays green and keeps reporting it.
 
+### Dependabot updates
+
+`.github/dependabot.yml` proposes weekly, grouped updates for GitHub Actions,
+`examples/universal-app` and `.github/actions/artifact-transport`. Each entry
+waits seven days after a release (`cooldown`), so a compromised release is
+usually yanked before it reaches the pipeline. The root npm project is not
+listed: `deno.lock` records the root dependencies and Dependabot cannot
+regenerate it, so its pull requests would fail the frozen Deno check. Update the
+root dependencies by hand and refresh both locks.
+
+The Dependabot Health workflow runs daily and fails when a Dependabot pull
+request has been open for more than 14 days or keeps collecting "Dependabot is
+rebasing this PR" banners. Each stuck pull request is annotated with its link:
+fix and merge it, or close it so Dependabot proposes a fresh update. Set
+`DEPENDABOT_HEALTH_DEBUG=1` to trace the API pages it read.
+
 ### Dependency install scripts and syntax coverage
 
 Every dependency with an install script needs an explicit `allowScripts`

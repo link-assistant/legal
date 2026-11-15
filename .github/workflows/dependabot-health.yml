@@ -1,0 +1,94 @@
+name: Dependabot Health
+
+on:
+  schedule:
+    - cron: '7 15 * * *'
+  workflow_dispatch:
+  # Exercise the workflow in PR CI without making unrelated PRs depend on the
+  # age of an existing bot PR. The repository-wide scan runs on schedule.
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/workflows/dependabot-health.yml'
+      - 'scripts/check-dependabot-health.mjs'
+      - 'scripts/github-api.mjs'
+      - 'tests/dependabot-health.test.js'
+
+permissions:
+  contents: read
+
+env:
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  health:
+    name: Check Dependabot PR health
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: check-${{ github.workflow }}-${{ github.ref }}-health
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+
+      - name: Verify health policy in pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test --test-timeout=30000 tests/dependabot-health.test.js
+
+      - name: Report stuck Dependabot pull requests
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-dependabot-health.mjs
+
+  pipeline-status:
+    name: Pipeline Status
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    concurrency:
+      group: check-${{ github.workflow }}-${{ github.ref }}-pipeline-status
+      cancel-in-progress: true
+    # A status function is required: without one the gate inherits the
+    # implicit "every dependency succeeded" condition and is skipped in
+    # exactly the runs it exists to report.
+    if: >-
+      !cancelled()
+    needs:
+      - health
+    # actions: read lets the gate list this run's jobs and name the ones
+    # GitHub never acquired a runner for.
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+
+      - name: Fail the run when a required job was cancelled or failed
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          GH_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEAD_REF: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
+        run: bash scripts/check-pipeline-status.sh
