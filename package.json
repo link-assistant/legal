@@ -6,12 +6,15 @@
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "bin": {
-    "example-package-name": "./bin/example-package-name.js",
+    "legal": "./bin/legal.js",
     "legal-assistant": "./bin/legal-assistant.js"
   },
   "files": [
-    "bin/",
-    "src/",
+    "bin/legal.js",
+    "bin/legal-assistant.js",
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "src/generated/formal-ai-relative.mjs",
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
