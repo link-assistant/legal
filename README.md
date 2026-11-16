@@ -37,6 +37,8 @@ bootstrap tooling with its patch. Tests, experiments, CI configuration, full loc
 collections and development tooling are excluded. Run
 `node experiments/package-smoke.mjs` to pack and install into temporary local and
 global prefixes, check npm bin shims and exercise the bundled library and corpus.
+The check packs an isolated source copy without the generated module or installed
+dependencies, verifying that packaging regenerates the module from scratch.
 
 The API listens at `http://127.0.0.1:8787`. Read the [API and collection guide](docs/legal-assistant.md) or request `/openapi.json`.
 

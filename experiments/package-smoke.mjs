@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -15,14 +15,55 @@ const run = (command, args, cwd) =>
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 try {
+  // Pack a clean source fixture: a developer's cached generated module must
+  // never hide a broken prepack/prepare hook. Keep the checkout untouched.
+  const source = join(root, 'source');
+  await mkdir(source);
+  for (const path of [
+    'package.json',
+    'bin',
+    'src',
+    'data',
+    'patches',
+    'scripts',
+    'docs/openapi.json',
+    'CHANGELOG.md',
+    'LICENSE',
+    'README.md',
+  ]) {
+    await cp(path, join(source, path), {
+      recursive: true,
+      filter: (path) => !path.replaceAll('\\', '/').includes('src/generated'),
+    });
+  }
+  // Retain exclusion coverage without copying potentially large dev trees.
+  for (const path of [
+    'tests',
+    'experiments',
+    '.github',
+    'collections',
+    'web',
+  ]) {
+    await mkdir(join(source, path));
+    await writeFile(
+      join(source, path, 'pack-sentinel.txt'),
+      'exclude from npm\n'
+    );
+  }
+  const generated = join(source, 'src/generated/formal-ai-relative.mjs');
+  await assert.rejects(readFile(generated), { code: 'ENOENT' });
   const packed = run(
     npm,
     ['pack', '--json', '--pack-destination', root],
-    process.cwd()
+    source
   );
+  assert((await readFile(generated, 'utf8')).startsWith('// legal-bootstrap '));
   const [artifact] = JSON.parse(packed.slice(packed.indexOf('[\n')));
   const files = artifact.files.map((file) => file.path);
   assert(files.includes('src/generated/formal-ai-relative.mjs'));
+  console.log(
+    'Fresh npm pack generated and included the pinned Formal AI module'
+  );
   for (const path of files) {
     assert(
       !/^(?:tests|experiments|\.github|collections|web)\//.test(path),
