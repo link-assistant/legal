@@ -36,6 +36,20 @@ try {
       filter: (path) => !path.replaceAll('\\', '/').includes('src/generated'),
     });
   }
+  // Retain exclusion coverage without copying potentially large dev trees.
+  for (const path of [
+    'tests',
+    'experiments',
+    '.github',
+    'collections',
+    'web',
+  ]) {
+    await mkdir(join(source, path));
+    await writeFile(
+      join(source, path, 'pack-sentinel.txt'),
+      'exclude from npm\n'
+    );
+  }
   const generated = join(source, 'src/generated/formal-ai-relative.mjs');
   await assert.rejects(readFile(generated), { code: 'ENOENT' });
   const packed = run(
